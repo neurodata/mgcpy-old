@@ -2,14 +2,16 @@ language: python
 
 python:
   - "3.6"
-  
+
 branches:
   only:
   - master
   - development
-  
+
 install: pip install -r requirements.txt
 
 script:
-  pytest
-  
+  py.test --cov=mgcpy
+
+after_success:
+  - coveralls
