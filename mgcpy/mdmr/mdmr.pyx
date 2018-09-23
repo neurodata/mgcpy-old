@@ -3,6 +3,7 @@
 Spyder Editor
 
 This is a temporary script file.
+Code is adapted from Anibal Solon's implementation in CPAC
 """
 
 cimport cython
