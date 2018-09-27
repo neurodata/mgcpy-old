@@ -48,7 +48,6 @@ def center_distance_matrix(distance_matrix, base_global_correlation="mgc", is_ra
     """
     n = distance_matrix.shape[0]
     ranked_distance_matrix = None
-    expected_distance_matrix = None
 
     if is_ranked:
         ranked_distance_matrix = rank_distance_matrix(distance_matrix)
@@ -59,11 +58,10 @@ def center_distance_matrix(distance_matrix, base_global_correlation="mgc", is_ra
         distance_matrix = ranked_distance_matrix
 
     # 'mgc' distance transform (col-wise mean) - default
-    if base_global_correlation == "mgc":
-        expected_distance_matrix = np.repeat(((distance_matrix.mean(axis=0) * n) / (n-1)), n).reshape(-1, n).T
+    expected_distance_matrix = np.repeat(((distance_matrix.mean(axis=0) * n) / (n-1)), n).reshape(-1, n).T
 
     # unbiased version of dcor distance transform (col-wise mean + row-wise mean - mean)
-    elif base_global_correlation == "dcor":
+    if base_global_correlation == "dcor":
         expected_distance_matrix = np.repeat(((distance_matrix.mean(axis=0) * n) / (n-2)), n).reshape(-1, n).T \
                                     + np.repeat(((distance_matrix.mean(axis=1) * n) / (n-2)), n).reshape(-1, n) \
                                     - (distance_matrix.sum() / ((n-1) * (n-2)))
@@ -72,9 +70,6 @@ def center_distance_matrix(distance_matrix, base_global_correlation="mgc", is_ra
     # mantel distance transform
     elif base_global_correlation == "mantel":
         expected_distance_matrix = distance_matrix.sum() / (n * (n-1))
-
-    if not expected_distance_matrix:
-        raise RuntimeError("Unknown base_global_correlation parameter: " + str(base_global_correlation))
 
     centered_distance_matrix = distance_matrix - expected_distance_matrix
 
