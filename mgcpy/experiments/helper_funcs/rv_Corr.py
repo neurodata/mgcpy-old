@@ -40,7 +40,7 @@ def rVCorr(mat1, mat2, option=0):
     option = np.minimum(np.abs(option), sizeY)
     if (option == 0):
         covar = np.trace(covar * covar.T)
-        corr = np.divide(covar, np.sqrt(np.trace(varX* varX)
+        corr = np.divide(covar, np.sqrt(np.trace(varX * varX)
                                 * np.trace(varY * varY)))
     else:
         covar = np.sum(np.power(svds(covar, option), 2))
