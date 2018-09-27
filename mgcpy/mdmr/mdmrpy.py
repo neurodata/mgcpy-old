@@ -1,41 +1,27 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
+Created on Wed Sep 19 19:46:26 2018
 
-This is a temporary script file.
+@author: sunda
 """
-
-#cimport cython
-#cimport numpy as np
-#import numpy as np
-#from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
-
+import numpy as np
+import scipy.io as scpio
+import scipy as scp
+import copy
 DTYPE = np.float64
-ctypedef np.float64_t DTYPE_t
-
 ITYPE = np.int32
-ctypedef np.int32_t ITYPE_t
 
-
-#@cython.boundscheck(False)
-#@cython.wraparound(False)
 def check_rank(X):
     k    = X.shape[1]
     rank = np.linalg.matrix_rank(X)
     if rank < k:
         raise Exception("matrix is rank deficient (rank %i vs cols %i)" % (rank, k))
-
-
-#@cython.boundscheck(False)
-#@cython.wraparound(False)
+        
 def hatify(X):
     Q1, _ = np.linalg.qr(X)
     H = Q1.dot(Q1.T)
     return H
 
-
-#@cython.boundscheck(False)
-#@cython.wraparound(False)
 def gower_center(Y):
     n = Y.shape[0]
     I = np.eye(n,n)
@@ -47,29 +33,22 @@ def gower_center(Y):
     
     return G
 
-
-#@cython.boundscheck(False)
-#@cython.wraparound(False)
 def gower_center_many(Ys):
-    observations = np.sqrt(Ys.shape[0])
+    observations = int(np.sqrt(Ys.shape[0]))
     tests        = Ys.shape[1]
     Gs           = np.zeros_like(Ys)
     
     for i in range(tests):
+        print(type(observations))
         D        = Ys[:, i].reshape(observations, observations)
         Gs[:, i] = gower_center(D).flatten()
     
     return Gs
 
 
-#@cython.boundscheck(False)
-#@cython.wraparound(False)
 def gen_h(x, columns, permutations):
     return hatify(x[permutations][:, np.array(columns)])
 
-
-#@cython.boundscheck(False)
-#@cython.wraparound(False)
 def gen_H2_perms(X, columns, permutation_indexes):
     permutations, observations = permutation_indexes.shape
     variables = X.shape[1]
@@ -85,9 +64,6 @@ def gen_H2_perms(X, columns, permutation_indexes):
     
     return H2_permutations
 
-
-#@cython.boundscheck(False)
-#@cython.wraparound(False)
 def gen_IH_perms(X, columns, permutation_indexes):
     permutations, observations = permutation_indexes.shape
     I            = np.eye(observations, observations)
@@ -99,17 +75,12 @@ def gen_IH_perms(X, columns, permutation_indexes):
     
     return IH_permutations
 
-
-#@cython.wraparound(False)
 def calc_ftest(Hs, IHs, Gs, m2, nm):
     N = Hs.T.dot(Gs)
     D = IHs.T.dot(Gs)
     F = (N / m2) / (D / nm)
     return F
 
-
-#@cython.boundscheck(False)
-#@cython.wraparound(False)
 def fperms_to_pvals(F_perms):
     permutations, tests = F_perms.shape
     pvals = np.zeros(tests)
@@ -118,13 +89,7 @@ def fperms_to_pvals(F_perms):
         pvals[i] = j / permutations
     return pvals
 
-
-#@cython.boundscheck(False)
-#@cython.wraparound(False)
-def mdmr(np.ndarray[DTYPE_t, ndim=2] D,
-         np.ndarray[DTYPE_t, ndim=2] X,
-         np.ndarray[ITYPE_t, ndim=1] columns,
-         int permutations):
+def mdmr(D, X, columns, permutations):
 
     check_rank(X)
 
@@ -133,12 +98,12 @@ def mdmr(np.ndarray[DTYPE_t, ndim=2] D,
         raise Exception("# of subjects incompatible between X and D")
     
     X = np.hstack((np.ones((X.shape[0], 1)), X))
-    columns = columns.copy()
-    columns += 1
+    columns = copy.copy(columns)
+#    columns += 1
 
     Gs = gower_center_many(D)
 
-    df_among = float(columns.shape[0])
+    df_among = float(columns)
     df_resid = float(subjects - X.shape[1])
 
     permutation_indexes = np.zeros((permutations + 1, subjects), dtype=np.int)
@@ -155,3 +120,15 @@ def mdmr(np.ndarray[DTYPE_t, ndim=2] D,
     p_vals = fperms_to_pvals(F_perms)
     
     return F_perms[0, :], p_vals 
+
+
+
+
+#x = scpio.loadmat('x.mat')['x']
+#D = scp.spatial.distance.pdist(x, 'euclidean')
+#D = scp.spatial.distance.squareform(D)
+#D = D.reshape((10000,1))
+#print(D.shape)
+#print(x.shape)
+#columns = 100
+#mdmr(D,x,columns, 5)
