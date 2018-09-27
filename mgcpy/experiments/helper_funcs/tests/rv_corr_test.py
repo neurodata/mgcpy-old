@@ -7,5 +7,5 @@ def test_local_corr1():
     b = np.arange(8)
     A = np.vstack([a,b])
     assert rv_corr(A, A)[0] == 1
-    
+
 test_local_corr1()
