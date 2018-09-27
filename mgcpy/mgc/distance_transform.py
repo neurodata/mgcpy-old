@@ -74,7 +74,7 @@ def center_distance_matrix(distance_matrix, base_global_correlation="mgc", is_ra
     centered_distance_matrix = distance_matrix - expected_distance_matrix
 
     # the diagonal entries are always excluded
-    centered_distance_matrix = np.fill_diagonal(centered_distance_matrix, 0)
+    np.fill_diagonal(centered_distance_matrix, 0)
 
     return {"centered_distance_matrix": centered_distance_matrix,
             "ranked_distance_matrix": ranked_distance_matrix}
