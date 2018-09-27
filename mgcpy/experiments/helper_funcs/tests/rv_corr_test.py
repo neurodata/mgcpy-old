@@ -1,11 +1,11 @@
-import pytest
 import numpy as np
-from scipy.stats import pearsonr
 
 from mgcpy.experiments.helper_funcs.rv_corr import rv_corr
 
-
-def test_rank_distance_matrix():
-    a = np.array([1, 4, 6])
-    b = np.array([1, 1, 1])
-    assert np.array_equal(rv_corr(a,b), pearsonr(a, b))
+def test_local_corr1():
+    a = np.array([1, 4, 6, 5, 1, 9, 12, 3])
+    b = np.arange(8)
+    A = np.vstack([a,b])
+    assert rv_corr(A, A)[0] == 1
+    
+test_local_corr1()

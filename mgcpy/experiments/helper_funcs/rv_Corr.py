@@ -5,10 +5,10 @@
 import numpy as np
 from numpy import matlib as mb
 from scipy.sparse.linalg import svds
-from scipy.spatial.distance import squareform, pdist
+from scipy.spatial import distance_matrix
 
 
-def rv_corr(mat1, mat2, option=0):  
+def rv_corr(mat1_data, mat2_data, option=0):  
     """
     Main function that calculates all the local correlation coefficients.
     
@@ -20,12 +20,16 @@ def rv_corr(mat1, mat2, option=0):
     :return: The local correlation ''corr'' and local covaraince ''covar'' of
              ''mat1'' and ''mat2''
     """
-    mat1[np.isnan(mat1)] = 0
-    mat2[np.isnan(mat2)] = 0
-    if (np.allclose(mat1.T, mat1) == False):
-        mat1 = squareform(pdist(mat1));
-    if (np.allclose(mat2.T, mat2) == False):
-        mat2=squareform(pdist(mat2));
+    mat1_data[np.isnan(mat1_data)] = 0
+    mat2_data[np.isnan(mat2_data)] = 0
+    
+    if (mat1_data.shape[0] != mat1_data.shape[1]) \
+        or (np.allclose(mat1_data.T, mat1_data)):
+        mat1 = distance_matrix(mat1_data, mat1_data)
+        
+    if (mat2_data.shape[0] != mat2_data.shape[1]) \
+        or (np.allclose(mat2_data.T, mat2_data)):
+        mat2 = distance_matrix(mat2_data, mat2_data)
     
     sizeX = mat1.shape[0]
     sizeY = mat1.shape[1]
@@ -48,3 +52,8 @@ def rv_corr(mat1, mat2, option=0):
                                 * np.sum(np.power(svds(varY, option), 2))))
     
     return corr, covar
+
+a = np.array([1, 4, 6, 5, 1, 9, 12, 3])
+b = np.arange(8)
+A = np.vstack([a,b])
+rv_corr(A,A)
