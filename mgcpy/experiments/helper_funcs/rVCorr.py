@@ -1,54 +1,50 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Sep 19 16:54:53 2018
 
-@author: spanda
-"""
-
-""" Function calculates local correlation coefficients"""
 
 import numpy as np
 from numpy import matlib as mb
 from scipy.sparse.linalg import svds
+from scipy.spatial.distance import squareform, pdist
 
-def rVCorr(mat1, mat2, option):  
-       
-    sizeX, sizeY = np.size(mat1, 0), np.size(mat1, 1)
+
+def rVCorr(mat1, mat2, option=0):  
+    """
+    Main function that calculates all the local correlation coefficients.
+    
+    :param mat1: a n-dimensional data matrix
+    :param mat2: a n-dimensional data matrix
+    :param option: a number that specifies which global correlation to use, 
+                   including 'mcor','dcor','mantel'.
+                   
+    :return: The local correlation ''corr'' and local covaraince ''covar'' of
+             ''mat1'' and ''mat2''
+    """
+    mat1[np.isnan(mat1)] = 0
+    mat2[np.isnan(mat2)] = 0
+    if (np.allclose(mat1.T, mat1) == False):
+        mat1 = squareform(pdist(mat1));
+    if (np.allclose(mat2.T, mat2) == False):
+        mat2=squareform(pdist(mat2));
+    
+    sizeX = mat1.shape[0]
+    sizeY = mat1.shape[1]
     
     mat1 = mat1 - mb.repmat(np.mean(mat1, 1), sizeX, 1)
     mat2 = mat2 - mb.repmat(np.mean(mat2, 1), sizeX, 1)
     
-    covariance = np.transpose(mat1) * mat2
-    varianceX = np.transpose(mat1) * mat1
-    varianceY = np.transpose(mat2) * mat2
+    covar = mat1.T * mat2
+    varX = mat1.T * mat1
+    varY = mat2.T * mat2
     
     option = np.minimum(np.abs(option), sizeY)
-    
     if (option == 0):
-        covariance = np.trace(covariance * np.transpose(covariance))
-        correlation = np.divide(covariance, np.sqrt(np.trace(varianceX * varianceX) * np.trace(varianceY * varianceY)))
+        covar = np.trace(covar * covar.T)
+        corr = np.divide(covar, np.sqrt(np.trace(varX* varX)
+                                * np.trace(varY * varY)))
     else:
-        covariance = np.sum(np.power(svds(covariance, option), 2))
-        correlation = np.divide(covariance, np.sqrt(np.sum(np.power(svds(varianceX, option), 2)) * np.sum(np.power(svds(varianceY, option), 2))))
+        covar = np.sum(np.power(svds(covar, option), 2))
+        corr = np.divide(covar, np.sqrt(np.sum(np.power(svds(varX, option), 2))
+                                * np.sum(np.power(svds(varY, option), 2))))
     
-    return correlation
-
-A = np.array([[0, 23, 56, 90, 5, 63, 49], 
-     [23, 0, 80, 15, 95, 4, 43], 
-     [56, 80, 0, 94, 27, 41, 90], 
-     [90, 15, 94, 0, 95, 95, 89], 
-     [5, 95, 27, 95, 0, 35, 37], 
-     [63, 4, 41, 95, 35, 0, 31], 
-     [49, 43, 90, 89, 37, 11, 0]])
-
-B = np.array([[0, 18, 5, 3, 6, 75, 72], 
-     [18, 0, 75, 46, 50, 6, 41], 
-     [5, 75, 0, 35, 31, 44, 92], 
-     [3, 46, 35, 0, 87, 62, 55], 
-     [6, 50, 31, 87, 0, 57, 55], 
-     [75, 6, 44, 62, 57, 0, 45], 
-     [72, 41, 92, 55, 55, 45, 0]])
-
-rVCorr(A, A, 0)
-rVCorr(A, B, 1)
+    return corr, covar
