@@ -8,7 +8,7 @@ from scipy.sparse.linalg import svds
 from scipy.spatial.distance import squareform, pdist
 
 
-def rVCorr(mat1, mat2, option=0):  
+def rv_corr(mat1, mat2, option=0):  
     """
     Main function that calculates all the local correlation coefficients.
     
