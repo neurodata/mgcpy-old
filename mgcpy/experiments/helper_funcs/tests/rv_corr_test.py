@@ -7,6 +7,6 @@ def test_local_corr():
     b = np.arange(8)
     A = np.vstack([a,b])
     assert rv_corr(A, A)[0] == 1
-    assert rv_corr(A, A, 1)[0] == 1
+    assert np.array_equal(rv_corr(A, A, 1)[0], np.array([[1., 1.], [1., 1.]]))
 
 test_local_corr()
