@@ -47,12 +47,10 @@ def center_distance_matrix(distance_matrix, base_global_correlation="mgc", is_ra
     :rtype: dictionary
     """
     n = distance_matrix.shape[0]
-    ranked_distance_matrix = None
+    ranked_distance_matrix = np.zeros(distance_matrix.shape)
 
     if is_ranked:
         ranked_distance_matrix = rank_distance_matrix(distance_matrix)
-    else:
-        ranked_distance_matrix = np.zeros(distance_matrix.shape)
 
     if base_global_correlation == "rank":
         distance_matrix = ranked_distance_matrix
