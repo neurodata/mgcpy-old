@@ -2,6 +2,32 @@ import numpy as np
 import scipy.stats
 
 
+def rank_distance_matrix(distance_matrix):
+    """"
+    Sorts the entries within each column in ascending order
+
+    For ties, the "minimum" ranking is used, e.g. if there are
+    repeating distance entries, The order is like 1,2,2,3,3,4,...
+
+    :param distance_matrix: a symmetric distance matrix.
+    :type distance_matrix: 2D numpy.array
+
+    :return: column-wise ranked matrix of ``distance_matrix``
+    :rtype: 2D numpy.array
+    """
+    n_rows = distance_matrix.shape[0]
+    ranked_distance_matrix = np.zeros(distance_matrix.shape)
+    for i in range(n_rows):
+        column = distance_matrix[:, i]
+        ranked_column = np.array(scipy.stats.rankdata(column, "min"))
+        sorted_unique_ranked_column = sorted(list(set(ranked_column)))
+        if (len(ranked_column) != len(sorted_unique_ranked_column)):
+            for j, rank in enumerate(sorted_unique_ranked_column):
+                ranked_column[ranked_column == rank] = j + 1
+        ranked_distance_matrix[:, i] = ranked_column
+    return ranked_distance_matrix
+
+
 def center_distance_matrix(distance_matrix, base_global_correlation="mgc", is_ranked=True):
     """
     Appropriately transform distance matrices by centering them, based on the
@@ -57,29 +83,3 @@ def center_distance_matrix(distance_matrix, base_global_correlation="mgc", is_ra
 
     return {"centered_distance_matrix": centered_distance_matrix,
             "ranked_distance_matrix": ranked_distance_matrix}
-
-
-def rank_distance_matrix(distance_matrix):
-    """"
-    Sorts the entries within each column in ascending order
-
-    For ties, the "minimum" ranking is used, e.g. if there are
-    repeating distance entries, The order is like 1,2,2,3,3,4,...
-
-    :param distance_matrix: a symmetric distance matrix.
-    :type distance_matrix: 2D numpy.array
-
-    :return: column-wise ranked matrix of ``distance_matrix``
-    :rtype: 2D numpy.array
-    """
-    n_rows = distance_matrix.shape[0]
-    ranked_distance_matrix = np.zeros(distance_matrix.shape)
-    for i in range(n_rows):
-        column = distance_matrix[:, i]
-        ranked_column = np.array(scipy.stats.rankdata(column, "min"))
-        sorted_unique_ranked_column = sorted(list(set(ranked_column)))
-        if (len(ranked_column) != len(sorted_unique_ranked_column)):
-            for j, rank in enumerate(sorted_unique_ranked_column):
-                ranked_column[ranked_column == rank] = j + 1
-        ranked_distance_matrix[:, i] = ranked_column
-    return ranked_distance_matrix
