@@ -117,6 +117,7 @@ def transform_distance_matrix(distance_matrix_A, distance_matrix_B, base_global_
     **Example:**
     >>> import numpy as np
     >>> from scipy.spatial import distance_matrix
+    >>> from mgcpy.mgc.distance_transform import transform_distance_matrix
 
     >>> X = np.array([[2, 1, 100], [4, 2, 10], [8, 3, 10]])
     >>> Y = np.array([[30, 20, 10], [5, 10, 20], [8, 16, 32]])
