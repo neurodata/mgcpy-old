@@ -54,7 +54,7 @@ def local_covariance(distance_matrix_A, distance_matrix_B, ranked_distance_matri
             expected_Y[l] += b
 
     for k in range(n_X - 1):
-        covariance_X_Y[k+1, 0] += covariance_X_Y[k, 0]
+        covariance_X_Y[k+1, 0] += covariance_X_Y[k, 0]  # caveat when porting from R (0 to n-1)
         expected_X[k+1] += expected_X[k]
 
     for l in range(n_Y - 1):
@@ -67,7 +67,7 @@ def local_covariance(distance_matrix_A, distance_matrix_B, ranked_distance_matri
                                          covariance_X_Y[k, l+1] - covariance_X_Y[k, l])
 
     # centering the covariances
-    covariance_X_Y = covariance_X_Y - ((expected_X.reshape(-1, 1) @ expected_Y.reshape(-1, 1).T) / n**2)
+    covariance_X_Y = covariance_X_Y - ((expected_X.reshape(-1, 1) @ expected_Y.reshape(-1, 1).T) / n**2)  # caveat when porting from R (reshape)
 
     return covariance_X_Y
 
@@ -143,7 +143,7 @@ def local_correlations(matrix_A, matrix_B, base_global_correlation="mgc"):
     warnings.filterwarnings("ignore")
     # normalizing the covariances yields the local family of correlations
     local_correlation_matrix = local_covariance_matrix / \
-        np.sqrt(local_variance_A.reshape(-1, 1) @ local_variance_B.reshape(-1, 1).T).real
+        np.sqrt(local_variance_A.reshape(-1, 1) @ local_variance_B.reshape(-1, 1).T).real  # 2 caveats when porting from R (np.sqrt and reshape)
 
     # avoid computational issues that may cause a few local correlations to be negligebly larger than 1
     local_correlation_matrix[local_correlation_matrix > 1] = 1
