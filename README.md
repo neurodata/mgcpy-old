@@ -15,6 +15,9 @@ python3 setup.py install
 ```
 - `sudo python3 setup.py install`, if required
 
+## MGC Algorithm's Flow
+![MGCPY Flow](MGCPY.png)
+
 ## License
 
 This project is covered under the **Apache 2.0 License**.
