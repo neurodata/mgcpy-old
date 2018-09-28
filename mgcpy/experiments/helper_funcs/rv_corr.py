@@ -17,8 +17,8 @@ def rv_corr(mat1_data, mat2_data, option=0):
     :param option: a number that specifies which global correlation to use,
                    including 'mcor','dcor','mantel'.
 
-    :return: The local correlation ''corr'' and local covaraince ''covar'' of
-             ''mat1'' and ''mat2''
+    :return: The local correlation ``corr`` and local covaraince ``covar`` of
+             ``mat1`` and ``mat2``
     """
     mat1_data[np.isnan(mat1_data)] = 0
     mat2_data[np.isnan(mat2_data)] = 0
