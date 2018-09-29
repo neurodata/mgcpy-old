@@ -3,8 +3,7 @@ from scipy.spatial import distance
 
 
 def dist_transform(A, B, corr_type):
-    '''
-    Transform the distance matrices in a specified way
+    '''Transform the distance matrices in a specified way
 
     :param A, B: n*n distance matrix
     :param corr_type: a string indicating which global correlation to build upon, e.g. 'dcorr'
@@ -18,8 +17,7 @@ def dist_transform(A, B, corr_type):
 
 
 def dist_center(A, corr_type):
-    '''
-    Center the distance matrix as specified by the correlation test
+    '''Center the distance matrix as specified by the correlation test
     that uses it
 
     :param A: an n*n distance matrix to be centered
@@ -34,11 +32,13 @@ def dist_center(A, corr_type):
 
     # unbiased dcorr transform
     if corr_type == 'dcorr':
-        # all the means are not divided by n exactly so that the transform is unbiased
-        # the mean taken over the rows
-        # convert the vector of row means into matrix so that entries in
-        # the same column has the same row mean
-        # can be directly subtract off later
+        '''
+        all the means are not divided by n exactly so that the transform is unbiased
+        the mean taken over the rows
+        convert the vector of row means into matrix so that entries in
+        the same column has the same row mean
+        can be directly subtract off later
+        '''
         row_mean = np.tile(np.sum(A, axis=0)/(n-2), (n, 1))
         # the mean taken over the columns
         # convert into matrix so that entries in the same row has the same column mean
