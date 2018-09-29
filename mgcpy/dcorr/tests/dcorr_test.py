@@ -10,3 +10,7 @@ def test_dcorr():
     assert np.round(dcorr(X, Y, 'dcorr'), 4) == 0.9707
     assert np.round(dcorr(X, Y, 'mcorr'), 4) == 0.9550
     assert np.round(dcorr(X, Y, 'mantel'), 4) == 0.8351
+    # test the special case when one of the dataset has zero variance
+    X = np.array([1, 1, 1])[:, np.newaxis]
+    Y = np.array([1, 2, 3])[:, np.newaxis]
+    assert dcorr(X, Y, 'dcorr') == 0

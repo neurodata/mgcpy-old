@@ -29,14 +29,16 @@ def dcorr(X, Y, corr_type='dcorr', metric='euclidean'):
     varA = global_cov(A, np.transpose(A))
     varB = global_cov(B, np.transpose(B))
 
-    corr = cov/np.real(np.sqrt(varA*varB))
+    # check the case when one of the dataset has zero variance
+    if varA <= 0 or varB <= 0:
+        corr = 0
+    else:
+        corr = cov/np.real(np.sqrt(varA*varB))
 
     # use absolute value for mantel coefficients
     if corr_type == 'mantel':
         return np.abs(corr)
 
-    if varA <= 0 or varB <= 0:
-        corr = 0
     return corr
 
 
