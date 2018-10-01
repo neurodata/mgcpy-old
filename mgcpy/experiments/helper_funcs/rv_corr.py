@@ -23,12 +23,12 @@ def rv_corr(mat1_data, mat2_data, option=0):
     mat1_data[np.isnan(mat1_data)] = 0
     mat2_data[np.isnan(mat2_data)] = 0
 
-    if (mat1_data.shape[0] != mat1_data.shape[1]) \
-        or (np.allclose(mat1_data.T, mat1_data)):
+    if ((mat1_data.shape[0] != mat1_data.shape[1])
+         or (np.allclose(mat1_data.T, mat1_data))):
         mat1 = distance_matrix(mat1_data, mat1_data)
 
-    if (mat2_data.shape[0] != mat2_data.shape[1]) \
-        or (np.allclose(mat2_data.T, mat2_data)):
+    if ((mat2_data.shape[0] != mat2_data.shape[1])
+         or (np.allclose(mat2_data.T, mat2_data))):
         mat2 = distance_matrix(mat2_data, mat2_data)
 
     sizeX = mat1.shape[0]
