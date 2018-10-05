@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from mgcpy.dcorr.dcorr import dcorr
+from mgcpy.independence_tests.dcorr import dcorr
 
 
 def test_dcorr():
