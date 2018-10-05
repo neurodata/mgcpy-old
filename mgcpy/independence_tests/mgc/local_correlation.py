@@ -6,7 +6,7 @@ import numpy as np
 from scipy.spatial import distance_matrix
 import warnings
 
-from mgcpy.mgc.distance_transform import transform_distance_matrix
+from mgcpy.independence_tests.mgc.distance_transform import transform_distance_matrix
 
 
 def local_covariance(distance_matrix_A, distance_matrix_B, ranked_distance_matrix_A, ranked_distance_matrix_B):
@@ -78,12 +78,12 @@ def local_correlations(matrix_A, matrix_B, base_global_correlation="mgc"):
 
     :param matrix_A: is interpreted as either:
         - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-        - a [n*n] data matrix, a square matrix with n samples in n dimensions
+        - a [n*d] data matrix, a square matrix with n samples in d dimensions
     :type matrix_B: 2D numpy.array
 
     :param matrix_B: is interpreted as either:
         - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-        - a [n*n] data matrix, a square matrix with n samples in n dimensions
+        - a [n*d] data matrix, a square matrix with n samples in d dimensions
     :type matrix_B: 2D numpy.array
 
     :param base_global_correlation: specifies which global correlation to build up-on,
