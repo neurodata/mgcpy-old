@@ -78,12 +78,12 @@ def local_correlations(matrix_A, matrix_B, base_global_correlation="mgc"):
 
     :param matrix_A: is interpreted as either:
         - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-        - a [n*n] data matrix, a square matrix with n samples in n dimensions
+        - a [n*d] data matrix, a square matrix with n samples in d dimensions
     :type matrix_B: 2D numpy.array
 
     :param matrix_B: is interpreted as either:
         - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-        - a [n*n] data matrix, a square matrix with n samples in n dimensions
+        - a [n*d] data matrix, a square matrix with n samples in d dimensions
     :type matrix_B: 2D numpy.array
 
     :param base_global_correlation: specifies which global correlation to build up-on,
