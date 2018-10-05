@@ -29,5 +29,11 @@ class IndependenceTest(ABC):
         """
         Abstract method to compute the test statistic,
         given `self.data_matrix_X` and `self.data_matrix_Y`.
+
+        :return: returns a list of two items, that contains:
+            - :test_statistic: the test statistic computed using the respective independence test
+            - :independence_test_metadata: (optional) metadata other than the test_statistic,
+                                           that the independence tests computes in the process
+        :rtype: float, dict
         """
         pass
