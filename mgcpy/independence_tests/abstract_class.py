@@ -8,10 +8,10 @@ class IndependenceTest(ABC):
     Specifies the generic interface that must be implemented by
     all the independence tests in the mgcpy package.
 
-    :param data_matrix_X: a [n*d] data matrix, a square matrix with n samples in d dimensions
+    :param data_matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
     :type data_matrix_X: 2D `numpy.array`
 
-    :param data_matrix_Y: a [n*d] data matrix, a square matrix with n samples in d dimensions
+    :param data_matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
     :type data_matrix_Y: 2D `numpy.array`
 
     :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
