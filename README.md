@@ -13,6 +13,17 @@ It contains statistical tests including dHSIC, DCORR, HHG, RVCorr, MDMR, and MGC
 `mgcpy` is a Python package containing tools for multiscale graph correlation and other statistical tests, that is capable of dealing with high dimensional and multivariate data.
 >>>>>>> 63454719ad124bd1896cc779da95cef7ba8923f8
 
+## Install from Github
+```
+git clone https://github.com/NeuroDataDesign/mgcpy
+cd mgcpy
+python3 setup.py install
+```
+- `sudo python3 setup.py install`, if required
+
+## MGC Algorithm's Flow
+![MGCPY Flow](MGCPY.png)
+
 ## License
 
 This project is covered under the **Apache 2.0 License**.
