@@ -1,52 +1,117 @@
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
+from scipy.stats import t
 from mgcpy.utils.dist_transform import dist_transform
+from mgcpy.independence_tests.abstract_class import IndependenceTest
 
 
-def dcorr(X, Y, corr_type='dcorr', metric='euclidean'):
+class DCorr(IndependenceTest):
+    def __init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix, corr_type='mcorr'):
+        '''
+        :param data_matrix_X: [n*p], n: number of examples, p: dimension of each example
+        :type: 2D numpy.array
+
+        :param data_matrix_Y: [n*q], n: number of examples, q: dimension of each example
+        :type: 2D numpy array
+
+        :param corr_type: the type of global correlation to use, can be 'dcorr', 'mcorr', 'mantel'
+        :type: str
+        '''
+        IndependenceTest.__init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
+        self.corr_type = corr_type
+        self.test_stat = None
+
+    def test_statistic(self):
+        '''
+        Compute the correlation between data_matrix_X and data_matrix_Y using dcorr/mcorr/mantel
+
+        Procedure: compute two distance matrices, each n*n using pdist and squareform
+        then perform distance transformation using dist_transform()
+        calculate correlation by computing all global covariance and variance using global_cov(A, B)
+
+        :return: the value of the correlation test statistic
+        :rtype: float
+        '''
+
+        dist_mtx_X, dist_mtx_Y = self.compute_distance_matrix(data_matrix_X=self.data_matrix_X, data_matrix_Y=self.data_matrix_Y)
+        # perform distance transformation
+        transformed_dist_mtx_X, transformed_dist_mtx_Y = dist_transform(dist_mtx_X, dist_mtx_Y, self.corr_type)
+        # transformed_dist_mtx need not be symmetric
+        covariance = self.compute_global_covariance(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_Y))
+        variance_X = self.compute_global_covariance(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_X))
+        variance_Y = self.compute_global_covariance(transformed_dist_mtx_Y, np.transpose(transformed_dist_mtx_Y))
+
+        # check the case when one of the dataset has zero variance
+        if variance_X <= 0 or variance_Y <= 0:
+            correlation = 0
+        else:
+            correlation = covariance/np.real(np.sqrt(variance_X*variance_Y))
+
+        # use absolute value for mantel coefficients
+        if self.corr_type == 'mantel':
+            return np.abs(correlation)
+
+        self.test_stat = correlation
+        return self.test_stat
+
     '''
-    Compute the correlation between X and Y using dcorr/mcorr/mantel
-
-    Procedure: compute two distance matrices A and B, each n*n using pdist and squareform
-    then perform distance transformation using dist_transform(A, B)
-    calculate correlation by computing all global covariance and variance using global_cov(A, B)
-
-    :param X: data matrix, size n*p, n: number of examples, p: dimension of each example
-    :param Y: data matrix, size n*q, p and q can be different
-    :param corr_type: a string specifying which global correlation to use, can be 'dcorr', 'mcorr', 'mantel'
-    :param metric: the type of metric used to compute distance
-    :return: a single value (test statistic)
+    def compute_distance_matrix(self):
+        # obtain the pairwise distance matrix for X and Y
+        dist_mtx_X = squareform(pdist(self.data_matrix_X, metric=self.metric))
+        dist_mtx_Y = squareform(pdist(self.data_matrix_Y, metric=self.metric))
+        return (dist_mtx_X, dist_mtx_Y)
     '''
-    # obtain the pairwise distance matrix for X and Y
-    A = squareform(pdist(X, metric=metric))
-    B = squareform(pdist(Y, metric=metric))
 
-    # perform distance transformation
-    A, B = dist_transform(A, B, corr_type)
-    # after distance transformation, A and B need not be symmetric
-    # e.g. not after mcorr transform, so transpose is necessary
-    cov = global_cov(A, np.transpose(B))
-    varA = global_cov(A, np.transpose(A))
-    varB = global_cov(B, np.transpose(B))
+    def compute_global_covariance(self, dist_mtx_X, dist_mtx_Y):
+        '''
+        Compute the global covariance using distance matrix A and B
 
-    # check the case when one of the dataset has zero variance
-    if varA <= 0 or varB <= 0:
-        corr = 0
-    else:
-        corr = cov/np.real(np.sqrt(varA*varB))
+        :param A, B: n*n distance matrix
+        :return: float representing the covariance/variance
+        '''
+        return np.sum(np.multiply(dist_mtx_X, dist_mtx_Y))
 
-    # use absolute value for mantel coefficients
-    if corr_type == 'mantel':
-        return np.abs(corr)
+    def p_value(self):
+        '''
+        Compute the p-value
+        if the correlation test is mcorr, p-value can be computed using a t test
+        otherwise computed using permutation test
 
-    return corr
+        :return: float representing the p-value
+        '''
+        # calculte the test statistic if haven't done so
+        if not self.test_stat:
+            self.test_statistic()
+        if self.corr_type == 'mcorr':
+            n = self.data_matrix_X.shape[0]
+            if n < 4:
+                print('Not enough samples')
+                return None
+            '''
+            for the unbiased centering scheme used to compute mcorr test statistic
+            we can use a t-test to compute the p-value
+            notation follows from: Székely, Gábor J., and Maria L. Rizzo.
+            "The distance correlation t-test of independence in high dimension."
+            Journal of Multivariate Analysis 117 (2013): 193-213.
+            '''
+            v = n*(n-3)/2
+            # T converges in distribution to a t distribution under the null
+            if self.test_stat == 1:
+                '''
+                if test statistic is 1, the t test statistic goes to inf
+                '''
+                T = np.inf
+            else:
+                T = np.sqrt(v-1) * self.test_stat / np.sqrt((1-np.square(self.test_stat)))
+            # p-value is the probability of obtaining values more extreme than the test statistic
+            # under the null
+            if T < 0:
+                return t.cdf(T, df=v-1)
+            else:
+                return 1 - t.cdf(T, df=v-1)
+        else:
+            # permutation test
+            pass
 
-
-def global_cov(A, B):
-    '''
-    Compute the global covariance using distance matrix A and B
-
-    :param A, B: n*n distance matrix
-    :return: float representing the covariance/variance
-    '''
-    return np.sum(np.multiply(A, B))
+    def power(self):
+        pass
