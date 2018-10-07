@@ -8,7 +8,7 @@ data(mdmrdata)
 D <- dist(Y.mdmr, method = "euclidean")
 
 # Conduct MDMR
-mdmr.res <- mdmr(X = X.mdmr, D = D)
+mdmr.res <- mdmr(X = X.mdmr, D = D, perm.p = TRUE, nperm = 100)
 
 # Check results
 summary(mdmr.res)

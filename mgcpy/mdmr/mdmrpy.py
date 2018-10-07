@@ -57,9 +57,13 @@ def gen_H2_perms(X, columns, permutation_indexes):
     for i in range(permutations):
         perm_X = X[permutation_indexes[i, :]]
         cols_X = perm_X[:, columns]
+        fix = cols_X.shape[0]
+        cols_X = cols_X.reshape((fix,1))
         H = hatify(cols_X)
-        other_columns = [i for i in range(variables) if i not in columns]
+#        H = hatify(perm_X)
+        other_columns = [i for i in range(variables) if i != columns]
         H2 = H - hatify(X[:, other_columns])
+#        H2 = H
         H2_permutations[:, i] = H2.flatten()
     
     return H2_permutations
@@ -70,7 +74,11 @@ def gen_IH_perms(X, columns, permutation_indexes):
     
     IH_permutations = np.zeros((observations ** 2, permutations))
     for i in range(permutations):
-        IH = I - hatify(X[permutation_indexes[i, :]][:, columns])
+        cols_X = X[permutation_indexes[i, :]][:, columns]
+        fix = cols_X.shape[0]
+        cols_X = cols_X.reshape((fix,1))
+        IH = I - hatify(cols_X)
+#        IH = I - hatify(X[permutation_indexes[i, :]])
         IH_permutations[:,i] = IH.flatten()
     
     return IH_permutations
@@ -89,7 +97,7 @@ def fperms_to_pvals(F_perms):
         pvals[i] = j / permutations
     return pvals
 
-def mdmr(D, X, columns, permutations):
+def mdmr(D, X, columns, permutations = 100):
 
     check_rank(X)
 
