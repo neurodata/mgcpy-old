@@ -283,24 +283,23 @@ def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 0.5
-    :param bern_prob: the bernoulli probability, defaults to 5
+    :param bern_prob: the bernoulli probability, defaults to 0.5
     
     :return: the data matrix and a response array
     """
-    binom_dist = np.random.binomial(num_samp, p=bern_prob, 
-                                    size=(num_samp, num_dim))
-    sig = np.diag(np.ones(shape=(num_dim)) * (num_dim))
+    binom_dist = np.random.binomial(1, p=bern_prob, size=num_samp)
+    sig = np.diag(np.ones(shape=num_dim) * num_dim)
     gauss_noise1 = (np.random.multivariate_normal(
                                                   cov=sig, 
                                                   mean=np.zeros(num_dim), 
                                                   size=num_samp
                                                   ))
-    x = (np.array(np.random.binomial(num_samp*num_dim, 
-                                     size=(num_samp, num_dim), p=bern_prob))
+    x = (np.array(np.random.binomial(1, size=num_samp * num_dim, 
+                                     p=bern_prob)).reshape(num_samp, num_dim)
         + noise*gauss_noise1)
     
     coeffs = gen_coeffs(num_dim)
-    y = np.empty((num_samp, 1))
+    y = np.empty(shape=(num_samp, 1))
     y[:] = np.nan
     
     gauss_noise2 = np.random.normal(loc=0, scale=1, size=(num_samp,))
@@ -309,6 +308,10 @@ def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
                 + noise*gauss_noise2[i])
     
     return x, y
+
+import matplotlib.pyplot as plt
+returns = ubern_sim(100, 1, noise=0)
+plt.plot(returns[0], returns[1], 'bo')
 
 
 #def gen_sample_labels(num_class, class_equal=True):
