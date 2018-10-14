@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
 from scipy.stats import t
+import math
 from mgcpy.utils.dist_transform import dist_transform
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 
@@ -22,7 +23,6 @@ class DCorr(IndependenceTest):
         '''
         IndependenceTest.__init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
         self.corr_type = corr_type
-        self.test_stat = None
         self.is_distance_mtx = is_distance_mtx
 
     def test_statistic(self, data_matrix_X=None, data_matrix_Y=None):
@@ -71,8 +71,7 @@ class DCorr(IndependenceTest):
         if self.corr_type == 'mantel':
             return np.abs(correlation)
 
-        self.test_stat = correlation
-        return self.test_stat
+        return correlation
 
     '''
     def compute_distance_matrix(self):
@@ -90,36 +89,6 @@ class DCorr(IndependenceTest):
         :return: float representing the covariance/variance
         '''
         return np.sum(np.multiply(dist_mtx_X, dist_mtx_Y))
-
-    def p_value(self):
-        '''
-        Compute the p-value
-        if the correlation test is mcorr, p-value can be computed using a t test
-        otherwise computed using permutation test
-
-        :return: float representing the p-value
-        '''
-        # calculte the test statistic if haven't done so
-        if not self.test_stat:
-            self.test_statistic()
-        if self.corr_type == 'mcorr':
-            '''
-            for the unbiased centering scheme used to compute mcorr test statistic
-            we can use a t-test to compute the p-value
-            notation follows from: Székely, Gábor J., and Maria L. Rizzo.
-            "The distance correlation t-test of independence in high dimension."
-            Journal of Multivariate Analysis 117 (2013): 193-213.
-            '''
-            T, df = self.mcorr_T(data_matrix_X=self.data_matrix_X, data_matrix_Y=self.data_matrix_Y)
-            # p-value is the probability of obtaining values more extreme than the test statistic
-            # under the null
-            if T < 0:
-                return t.cdf(T, df=df)
-            else:
-                return 1 - t.cdf(T, df=df)
-        else:
-            # permutation test
-            pass
 
     def mcorr_T(self, data_matrix_X, data_matrix_Y):
         '''
@@ -151,46 +120,36 @@ class DCorr(IndependenceTest):
             T = np.sqrt(v-1) * test_stat / np.sqrt((1-np.square(test_stat)))
         return (T, v-1)
 
-    def power(self, repeats=1000, alpha=.05):
+    def p_value(self, repeats=1000):
         '''
-        Estimate power
-        to obtain the null distribution, randomly permute the data
-        to obtain the alternative distribution, subsample the data
+        Compute the p-value
+        if the correlation test is mcorr, p-value can be computed using a t test
+        otherwise computed using permutation test
 
-        :param repeats: the number of times we permute/subsample the data
-        to estimate the distribution
-        :type: int
-        :param alpha: the type I error level
+        :return: float representing the p-value
         '''
+        # calculte the test statistic with the given data
+        test_stat = self.test_statistic()
         if self.corr_type == 'mcorr':
             '''
-            if the correlation test is mcorr, we can leverage the t-test
-            instead of having to estimate the null distribution
+            for the unbiased centering scheme used to compute mcorr test statistic
+            we can use a t-test to compute the p-value
+            notation follows from: Székely, Gábor J., and Maria L. Rizzo.
+            "The distance correlation t-test of independence in high dimension."
+            Journal of Multivariate Analysis 117 (2013): 193-213.
             '''
-            n = self.data_matrix_X.shape[0]
-            # deal with this case later
-            if n < 4:
-                print('Not enough samples')
-                return None
-            v = n*(n-3)/2
-            # the boundary of the rejection regions, reject null if the test statistic is more extreme
-            negative_cutoff, positive_cutoff = t.interval(1-alpha/2, df=v-1)
-            # count the number of time the test rejects the null hypothesis
-            count_reject_null = 0
-            for rep in range(repeats):
-                # indicies for the subsamples
-                new_indices = np.random.choice(n, n, replace=True)
-                data_matrix_X = self.data_matrix_X[new_indices, :]
-                data_matrix_Y = self.data_matrix_Y[new_indices, :]
-                # estimate alternative distribution by computing T on subsampled data
-                T, df = self.mcorr_T(data_matrix_X, data_matrix_Y)
-                if T <= negative_cutoff or T >= positive_cutoff:
-                    count_reject_null += 1
-            return count_reject_null / repeats
-
+            T, df = self.mcorr_T(data_matrix_X=self.data_matrix_X, data_matrix_Y=self.data_matrix_Y)
+            # p-value is the probability of obtaining values more extreme than the test statistic
+            # under the null
+            if T < 0:
+                return t.cdf(T, df=df)
+            else:
+                return 1 - t.cdf(T, df=df)
         else:
-            n = self.data_matrix_X.shape[0]
-            # test statistics under the null
+            # estimate the null by a permutation test
             test_stats_null = np.zeros(repeats)
             for rep in range(repeats):
-                permutation = np.random.permutation()
+                permuted_y = np.random.permutation(self.data_matrix_Y)
+                test_stats_null[rep] = self.test_statistic(data_matrix_X=self.data_matrix_X, data_matrix_Y=permuted_y)
+            # p-value is the probability of observing more extreme test statistic under the null
+            return np.where(test_stats_null >= test_stat)[0].shape[0] / repeats
