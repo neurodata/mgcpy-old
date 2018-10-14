@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from mgcpy.independence_tests.mgc.sample_statistic import mgc_sample
+from mgcpy.independence_tests.mgc.mgc import MGC
 
 
 def test_mgc_sample_linear():
@@ -13,10 +13,11 @@ def test_mgc_sample_linear():
     mgc_statistic = 0.4389398
     optimal_scale = [10, 10]
 
-    result = mgc_sample(X, Y)
+    mgc = MGC(X, Y, None)
+    mgc_statistic_res, independence_test_metadata = mgc.test_statistic()
 
-    assert np.allclose(mgc_statistic, result["mgc_statistic"])
-    assert np.allclose(optimal_scale, result["optimal_scale"])
+    assert np.allclose(mgc_statistic, mgc_statistic_res)
+    assert np.allclose(optimal_scale, independence_test_metadata["optimal_scale"])
 
 
 def test_mgc_sample_non_linear():
@@ -29,7 +30,8 @@ def test_mgc_sample_non_linear():
     mgc_statistic = 0.1991505
     optimal_scale = [2, 6]
 
-    result = mgc_sample(X, Y)
+    mgc = MGC(X, Y, None)
+    mgc_statistic_res, independence_test_metadata = mgc.test_statistic()
 
-    assert np.allclose(mgc_statistic, result["mgc_statistic"])
-    assert np.allclose(optimal_scale, result["optimal_scale"])
+    assert np.allclose(mgc_statistic, mgc_statistic_res)
+    assert np.allclose(optimal_scale, independence_test_metadata["optimal_scale"])

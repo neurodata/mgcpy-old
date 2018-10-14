@@ -7,8 +7,6 @@ import numpy as np
 import scipy.ndimage
 import scipy.stats
 
-from mgcpy.independence_tests.mgc.local_correlation import local_correlations
-
 
 def threshold_local_correlations(local_correlation_matrix, sample_size):
     """
@@ -96,7 +94,8 @@ def smooth_significant_local_correlations(significant_connected_region, local_co
             max_local_correlation = np.max(local_correlation_matrix[significant_connected_region])
 
             # find all scales within significant_connected_region that maximize the local correlation
-            max_local_correlation_index = np.where((local_correlation_matrix >= max_local_correlation) & significant_connected_region)
+            max_local_correlation_index = np.where(
+                (local_correlation_matrix >= max_local_correlation) & significant_connected_region)
 
             # adding 1s to match R indexing
             k = max_local_correlation_index[0][0] + 1
@@ -107,63 +106,4 @@ def smooth_significant_local_correlations(significant_connected_region, local_co
                 optimal_scale = [k, l]
 
     return {"mgc_statistic": mgc_statistic,
-            "optimal_scale": optimal_scale}
-
-
-def mgc_sample(matrix_A, matrix_B, base_global_correlation="mgc"):
-    """
-    Computes the MGC measure between two datasets.
-    - It first computes all the local correlations
-    - Then, it returns the maximal statistic among all local correlations based on thresholding.
-
-    :param matrix_A: is interpreted as either:
-        - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-        - a [n*d] data matrix, a square matrix with n samples in d dimensions
-    :type matrix_A: 2D numpy.array
-
-    :param matrix_B: is interpreted as either:
-        - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-        - a [n*d] data matrix, a square matrix with n samples in d dimensions
-    :type matrix_B: 2D numpy.array
-
-    :param base_global_correlation: specifies which global correlation to build up-on,
-                                    including 'mgc','dcor','mantel', and 'rank'.
-                                    Defaults to mgc.
-    :type base_global_correlation: str
-
-    :return: A ``dict`` with the following keys:
-    :rtype: dict
-        - :mgc_statistic: the sample MGC statistic within [-1, 1]
-        - :correlation_matrix: a 2D matrix of all local correlations within [-1,1]
-        - :optimal_scale: the estimated optimal scale as an [x, y] pair.
-
-    **Example:**
-    >>> import numpy as np
-    >>> from mgcpy.mgc.sample_statistic import mgc_sample
-
-    >>> X = np.array([[2, 1, 100], [4, 2, 10], [8, 3, 10]])
-    >>> Y = np.array([[30, 20, 10], [5, 10, 20], [8, 16, 32]])
-    >>> result = mgc_sample(X, Y)
-    """
-    # compute all local correlations
-    local_correlation_matrix = local_correlations(matrix_A, matrix_B, base_global_correlation)[
-                                                  "local_correlation_matrix"]
-    m, n = local_correlation_matrix.shape
-    if m == 1 or n == 1:
-        mgc_statistic = local_correlation_matrix[m - 1][n - 1]
-        optimal_scale = m * n
-    else:
-        sample_size = len(matrix_A) - 1  # sample size minus 1
-
-        # find a connected region of significant local correlations, by thresholding
-        significant_connected_region = threshold_local_correlations(
-            local_correlation_matrix, sample_size)
-
-        # find the maximum within the significant region
-        result = smooth_significant_local_correlations(
-            significant_connected_region, local_correlation_matrix)
-        mgc_statistic, optimal_scale = result["mgc_statistic"], result["optimal_scale"]
-
-    return {"mgc_statistic": mgc_statistic,
-            "local_correlation_matrix": local_correlation_matrix,
             "optimal_scale": optimal_scale}
