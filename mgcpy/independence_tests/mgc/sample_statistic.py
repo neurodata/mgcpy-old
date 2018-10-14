@@ -93,16 +93,15 @@ def smooth_significant_local_correlations(significant_connected_region, local_co
 
         # proceed only when the connected region's area is sufficiently large
         if np.sum(significant_connected_region) >= 2 * min(m, n):
+            max_local_correlation = np.max(local_correlation_matrix[significant_connected_region])
 
             # find all scales within significant_connected_region that maximize the local correlation
-            max_local_correlation_index = np.argmax(
-                local_correlation_matrix[significant_connected_region])
+            max_local_correlation_index = np.where((local_correlation_matrix >= max_local_correlation) & significant_connected_region)
 
-            # finding the x, y values from the max index, but adding 1s to match R indexing
-            k = max_local_correlation_index % m + 1
-            l = int(max_local_correlation_index / m) + 1
+            # adding 1s to match R indexing
+            k = max_local_correlation_index[0][0] + 1
+            l = max_local_correlation_index[1][0] + 1
 
-            max_local_correlation = np.max(local_correlation_matrix[significant_connected_region])
             if max_local_correlation >= mgc_statistic:
                 mgc_statistic = max_local_correlation
                 optimal_scale = [k, l]
