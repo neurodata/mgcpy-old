@@ -31,21 +31,12 @@ D = D.reshape((a,1))
 #print(X.shape)
 
 #####################################################
-columns = 1
+#columns = 1
 #permutations = 100
-print ("Column =", columns)
+#print ("Column =", columns)
 
-[a,b] = mdmr(D,X,columns, permutations)
-print ("Fperm Statistic =", a, "P-value =", b)
-#####################################################
-columns = 2
-print ("Column =", columns)
-
-[a,b] = mdmr(D,X,columns, permutations)
-print ("Fperm Statistic =", a, "P-value =", b)
-######################################################
-columns = 3
-print ("Column =", columns)
-
-[a,b] = mdmr(D,X,columns, permutations)
-print ("Fperm Statistic =", a, "P-value =", b)
+results = mdmr(D,X)
+for i in range(0,results.shape[0]):
+    print("Column =", int(results[i,0]))
+    print("F_Perm =", results[i,1])
+    print("P-Value =", results[i,2])

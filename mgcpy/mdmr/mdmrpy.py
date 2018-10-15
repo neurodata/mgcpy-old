@@ -97,8 +97,9 @@ def fperms_to_pvals(F_perms):
         pvals[i] = j / permutations
     return pvals
 
-def mdmr(D, X, columns, permutations = 100):
+def mdmr(D, X, permutations = 100):
 
+    columns = X.shape[1]
     check_rank(X)
 
     subjects = X.shape[0]
@@ -106,28 +107,33 @@ def mdmr(D, X, columns, permutations = 100):
         raise Exception("# of subjects incompatible between X and D")
     
     X = np.hstack((np.ones((X.shape[0], 1)), X))
-    columns = copy.copy(columns)
-#    columns += 1
-
-    Gs = gower_center_many(D)
-
-    df_among = float(columns)
-    df_resid = float(subjects - X.shape[1])
-
-    permutation_indexes = np.zeros((permutations + 1, subjects), dtype=np.int)
-    permutation_indexes[0, :] = range(subjects)
-    for i in range(1, permutations + 1):
-        permutation_indexes[i,:] = np.random.permutation(subjects)
-
-    H2perms = gen_H2_perms(X, columns, permutation_indexes)
-    IHperms = gen_IH_perms(X, columns, permutation_indexes)
-
-    F_perms = calc_ftest(H2perms, IHperms, Gs,
-                        df_among, df_resid)
-
-    p_vals = fperms_to_pvals(F_perms)
+    results = np.zeros((columns,3))
+    for col in range(1, columns+1):
+        col = copy.copy(col)
+    #    columns += 1
     
-    return F_perms[0, :], p_vals 
+        Gs = gower_center_many(D)
+    
+        df_among = float(col)
+        df_resid = float(subjects - X.shape[1])
+    
+        permutation_indexes = np.zeros((permutations + 1, subjects), dtype=np.int)
+        permutation_indexes[0, :] = range(subjects)
+        for i in range(1, permutations + 1):
+            permutation_indexes[i,:] = np.random.permutation(subjects)
+    
+        H2perms = gen_H2_perms(X, col, permutation_indexes)
+        IHperms = gen_IH_perms(X, col, permutation_indexes)
+    
+        F_perms = calc_ftest(H2perms, IHperms, Gs,
+                            df_among, df_resid)
+    
+        p_vals = fperms_to_pvals(F_perms)
+        results[col-1,0] = col
+        results[col-1,1] = F_perms[0, :]
+        results[col-1,2] = p_vals
+    
+    return results
 
 
 
