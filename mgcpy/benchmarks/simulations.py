@@ -51,14 +51,13 @@ def linear_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     coeffs = gen_coeffs(num_dim)
-    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp,))
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
     if (num_dim == 1):
         kappa = 1
     else:
         kappa = 0
     
-    y = (np.matmul(a=x, b=coeffs) 
-         + kappa*noise*gauss_noise).reshape(num_samp, 1)
+    y = (np.matmul(a=x, b=coeffs) + kappa*noise*gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
@@ -80,14 +79,13 @@ def exp_sim(num_samp, num_dim, noise=10, indep=False, low=0, high=3):
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     coeffs = gen_coeffs(num_dim)
-    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp,))
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
     if (num_dim == 1):
         kappa = 1
     else:
         kappa = 0
     
-    y = (np.exp(np.matmul(a=x, b=coeffs)) 
-         + kappa*noise*gauss_noise).reshape(num_samp, 1)
+    y = (np.exp(np.matmul(a=x, b=coeffs)) + kappa*noise*gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
@@ -114,7 +112,7 @@ def cub_sim(num_samp, num_dim, noise=80, indep=False, low=-1, high=1,
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     coeffs = gen_coeffs(num_dim)
-    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp,))
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
     if (num_dim == 1):
         kappa = 1
     else:
@@ -124,7 +122,7 @@ def cub_sim(num_samp, num_dim, noise=80, indep=False, low=-1, high=1,
     y = ((cub_coeff[2] * (x_coeffs-scale)**3)
         + (cub_coeff[1] * (x_coeffs-scale)**2)
         + (cub_coeff[0] * (x_coeffs-scale))
-        + kappa * noise * gauss_noise).reshape(num_samp, 1)
+        + kappa * noise * gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
@@ -141,7 +139,7 @@ def joint_sim(num_samp, num_dim, noise=0.5):
 
     :return: the data matrix and a response array
     """
-    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp,))
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
     if (num_dim == 1):
         kappa = 1
     else:
@@ -153,8 +151,7 @@ def joint_sim(num_samp, num_dim, noise=0.5):
     
     samp = (np.random.multivariate_normal(cov=sig, mean=np.zeros(2*num_dim), 
                                           size=num_samp))
-    y = (samp[:, num_dim : (2*num_dim)] 
-         + kappa*noise*gauss_noise.reshape(num_samp, 1))
+    y = samp[:, num_dim : (2*num_dim)] + kappa*noise*gauss_noise
     x = samp[:, 0:num_dim]
     
     return x, y
@@ -175,7 +172,7 @@ def step_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     coeffs = gen_coeffs(num_dim)
-    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp,))
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
     if (num_dim == 1):
         kappa = 1
     else:
@@ -185,7 +182,7 @@ def step_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     x_coeff_temp = x_coeff.copy()
     x_coeff_temp[x_coeff < 0] = 0
     x_coeff_temp[x_coeff > 0] = 1
-    y = (x_coeff_temp + kappa*noise*gauss_noise).reshape(num_samp, 1)
+    y = (x_coeff_temp + kappa*noise*gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
@@ -207,14 +204,13 @@ def quad_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     coeffs = gen_coeffs(num_dim)
-    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp,))
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
     if (num_dim == 1):
         kappa = 1
     else:
         kappa = 0
     
-    y = ((np.matmul(a=x, b=coeffs)**2) 
-          + kappa*noise*gauss_noise).reshape(num_samp, 1)
+    y = ((np.matmul(a=x, b=coeffs)**2) + kappa*noise*gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
@@ -237,16 +233,16 @@ def w_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     u = gen_x_unif(num_samp, num_dim, low=low, high=high)
     coeffs = gen_coeffs(num_dim)
-    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp,))
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
     if (num_dim == 1):
         kappa = 1
     else:
         kappa = 0
-    gauss_noise = np.random.normal(loc=0, scale=1, size=(x.shape[0],))
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(x.shape[0], 1))
     
     y = (4 * ((np.matmul(a=x, b=coeffs)**2 - 0.5)**2 
               + np.matmul(a=u, b=coeffs)/500) 
-              + kappa*noise*gauss_noise).reshape(num_samp, 1)
+              + kappa*noise*gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
@@ -292,7 +288,7 @@ def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
     
     :return: the data matrix and a response array
     """
-    binom_dist = np.random.binomial(1, p=bern_prob, size=num_samp)
+    binom_dist = np.random.binomial(1, p=bern_prob, size=(num_samp, 1))
     sig = np.diag(np.ones(shape=num_dim) * num_dim)
     gauss_noise1 = (np.random.multivariate_normal(
                                                   cov=sig, 
@@ -307,7 +303,7 @@ def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
     y = np.empty(shape=(num_samp, 1))
     y[:] = np.nan
     
-    gauss_noise2 = np.random.normal(loc=0, scale=1, size=(num_samp,))
+    gauss_noise2 = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
     for i in range(num_samp):
         y[i] = (np.matmul((2*binom_dist[i]-1) * coeffs.T, x[i, :]) 
                 + noise*gauss_noise2[i])
@@ -315,7 +311,7 @@ def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
     return x, y
 
 
-def log_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
+def log_sim(num_samp, num_dim, noise=1, indep=False, base=2):
     """
     Function for generating a logarithmic simulation.
 
@@ -323,21 +319,58 @@ def log_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 1
     :param indep: whether to sample x and y independently, defaults to false
-    :param low: the lower limit of the data matrix, defaults to -1
-    :param high: the upper limit of the data matrix, defaults to 1
+    :param base: the base of the log, defaults to 2
 
     :return: the data matrix and a response array
     """
-    x = gen_x_unif(num_samp, num_dim, low=low, high=high)
-    coeffs = gen_coeffs(num_dim)
-    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp,))
+    sig = np.diag(np.ones(shape=(num_dim)))
+    x = (np.random.multivariate_normal(cov=sig, mean=np.zeros(num_dim), 
+                                          size=num_samp))
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
     if (num_dim == 1):
         kappa = 1
     else:
         kappa = 0
     
-    y = np.matmul(a=x, b=coeffs) + kappa*noise*gauss_noise
+    y = (base * np.divide(np.log(np.abs(x)), np.log(base) 
+         + kappa*noise*gauss_noise))
+    if indep:
+        x = (np.random.multivariate_normal(cov=sig, mean=np.zeros(num_dim), 
+                                          size=num_samp))
+    
+    return x, y
+
+
+def root_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, n_root=4):
+    """
+    Function for generating an nth root simulation.
+
+    :param num_samp: number of samples for the simulation
+    :param num_dim: number of dimensions for the simulation
+    :param noise: noise level of the simulation, defaults to 1
+    :param indep: whether to sample x and y independently, defaults to false
+    :param low: the lower limit of the data matrix, defaults to -1
+    :param high: the upper limit of the data matrix, defaults to 1
+    :param n_root: the root of the simulation, defaults to 4
+
+    :return: the data matrix and a response array
+    """
+    x = gen_x_unif(num_samp, num_dim, low=low, high=high)
+    coeffs = gen_coeffs(num_dim)
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
+    if (num_dim == 1):
+        kappa = 1
+    else:
+        kappa = 0
+    
+    y = (np.power(np.abs(np.matmul(a=x, b=coeffs.reshape(num_dim, 1))), 1/n_root) 
+         + kappa*noise*gauss_noise/n_root)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
     return x, y
+
+import matplotlib.pyplot as plt
+returns = root_sim(100, 1, noise=0)
+plt.plot(returns[0], returns[1], 'bo')
+plt.axis('off')
