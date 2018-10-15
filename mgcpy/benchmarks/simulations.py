@@ -57,7 +57,8 @@ def linear_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     else:
         kappa = 0
     
-    y = np.matmul(a=x, b=coeffs) + kappa*noise*gauss_noise
+    y = (np.matmul(a=x, b=coeffs) 
+         + kappa*noise*gauss_noise).reshape(num_samp, 1)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
@@ -85,7 +86,8 @@ def exp_sim(num_samp, num_dim, noise=10, indep=False, low=0, high=3):
     else:
         kappa = 0
     
-    y = np.exp(np.matmul(a=x, b=coeffs)) + kappa*noise*gauss_noise
+    y = (np.exp(np.matmul(a=x, b=coeffs)) 
+         + kappa*noise*gauss_noise).reshape(num_samp, 1)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
@@ -122,7 +124,7 @@ def cub_sim(num_samp, num_dim, noise=80, indep=False, low=-1, high=1,
     y = ((cub_coeff[2] * (x_coeffs-scale)**3)
         + (cub_coeff[1] * (x_coeffs-scale)**2)
         + (cub_coeff[0] * (x_coeffs-scale))
-        + kappa * noise * gauss_noise)
+        + kappa * noise * gauss_noise).reshape(num_samp, 1)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
@@ -183,7 +185,7 @@ def step_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     x_coeff_temp = x_coeff.copy()
     x_coeff_temp[x_coeff < 0] = 0
     x_coeff_temp[x_coeff > 0] = 1
-    y = x_coeff_temp + kappa*noise*gauss_noise
+    y = (x_coeff_temp + kappa*noise*gauss_noise).reshape(num_samp, 1)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
@@ -211,7 +213,8 @@ def quad_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     else:
         kappa = 0
     
-    y = (np.matmul(a=x, b=coeffs)**2) + kappa*noise*gauss_noise
+    y = ((np.matmul(a=x, b=coeffs)**2) 
+          + kappa*noise*gauss_noise).reshape(num_samp, 1)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
@@ -242,7 +245,8 @@ def w_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     gauss_noise = np.random.normal(loc=0, scale=1, size=(x.shape[0],))
     
     y = (4 * ((np.matmul(a=x, b=coeffs)**2 - 0.5)**2 
-              + np.matmul(a=u, b=coeffs)/500) + kappa*noise*gauss_noise)
+              + np.matmul(a=u, b=coeffs)/500) 
+              + kappa*noise*gauss_noise).reshape(num_samp, 1)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
@@ -264,14 +268,14 @@ def spiral_sim(num_samp, num_dim, noise=0.4, low=-0, high=5):
     uniform_dist = gen_x_unif(num_samp, num_dim=1, low=low, high=high)
     the_x = np.array(np.cos(np.pi * uniform_dist)).reshape(num_samp, 1)
     y = uniform_dist * np.sin(np.pi * uniform_dist)
-    x = np.zeros(shape=(num_samp, num_dim))
+    x = np.ones(shape=(num_samp, num_dim))
     
     if num_dim > 1:
-        for i in range(num_dim):
+        for i in range(num_dim - 1):
             x[:, i] = (y * np.power(the_x, i)).T
     x[:, num_dim-1] = uniform_dist.T * x[:, num_dim-1]
     
-    gauss_noise = np.random.normal(loc=0, scale=1, size=(x.shape[0],))
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(x.shape[0], 1))
     y = y + noise*num_dim*gauss_noise
     
     return x, y
@@ -307,5 +311,33 @@ def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
     for i in range(num_samp):
         y[i] = (np.matmul((2*binom_dist[i]-1) * coeffs.T, x[i, :]) 
                 + noise*gauss_noise2[i])
+    
+    return x, y
+
+
+def log_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
+    """
+    Function for generating a logarithmic simulation.
+
+    :param num_samp: number of samples for the simulation
+    :param num_dim: number of dimensions for the simulation
+    :param noise: noise level of the simulation, defaults to 1
+    :param indep: whether to sample x and y independently, defaults to false
+    :param low: the lower limit of the data matrix, defaults to -1
+    :param high: the upper limit of the data matrix, defaults to 1
+
+    :return: the data matrix and a response array
+    """
+    x = gen_x_unif(num_samp, num_dim, low=low, high=high)
+    coeffs = gen_coeffs(num_dim)
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp,))
+    if (num_dim == 1):
+        kappa = 1
+    else:
+        kappa = 0
+    
+    y = np.matmul(a=x, b=coeffs) + kappa*noise*gauss_noise
+    if indep:
+        x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
     return x, y
