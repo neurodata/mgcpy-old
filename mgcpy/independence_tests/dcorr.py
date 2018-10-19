@@ -73,14 +73,6 @@ class DCorr(IndependenceTest):
 
         return correlation
 
-    '''
-    def compute_distance_matrix(self):
-        # obtain the pairwise distance matrix for X and Y
-        dist_mtx_X = squareform(pdist(self.data_matrix_X, metric=self.metric))
-        dist_mtx_Y = squareform(pdist(self.data_matrix_Y, metric=self.metric))
-        return (dist_mtx_X, dist_mtx_Y)
-    '''
-
     def compute_global_covariance(self, dist_mtx_X, dist_mtx_Y):
         '''
         Compute the global covariance using distance matrix A and B
