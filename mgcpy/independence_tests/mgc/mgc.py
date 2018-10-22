@@ -1,3 +1,4 @@
+import time
 import numpy as np
 
 from mgcpy.independence_tests.mgc.threshold_smooth import threshold_local_correlations, smooth_significant_local_correlations
@@ -89,7 +90,7 @@ class MGC(IndependenceTest):
 
         independence_test_metadata = {"local_correlation_matrix": local_correlation_matrix,
                                       "optimal_scale": optimal_scale}
-        return mgc_statistic, independence_test_metadata
+        return float('%.7f' % (mgc_statistic)), independence_test_metadata
 
     def p_value(self, replication_factor=1000):
         """
@@ -118,6 +119,8 @@ class MGC(IndependenceTest):
         >>> mgc = MGC(X, Y, None)
         >>> p_value, metadata = mgc.p_value(replication_factor = 100)
         """
+        np.random.seed(int(time.time()))
+
         mgc_statistic, independence_test_metadata = self.test_statistic()
         local_correlation_matrix = independence_test_metadata["local_correlation_matrix"]
 

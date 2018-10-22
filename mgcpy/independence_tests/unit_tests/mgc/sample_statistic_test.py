@@ -46,7 +46,6 @@ def test_mgc_sample_non_linear():
 
     mgc_2 = MGC(X2, Y2, None)
     mgc_statistic_res_2, independence_test_metadata_2 = mgc_2.test_statistic()
-    mgc_2.p_value()
 
     assert np.allclose(mgc_statistic_2, mgc_statistic_res_2)
     assert np.allclose(optimal_scale_2, independence_test_metadata_2["optimal_scale"])
