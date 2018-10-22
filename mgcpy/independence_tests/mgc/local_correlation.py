@@ -53,13 +53,11 @@ def local_covariance(distance_matrix_A, distance_matrix_B, ranked_distance_matri
             expected_X[k] += a
             expected_Y[l] += b
 
-    for k in range(n_X - 1):
-        covariance_X_Y[k+1, 0] += covariance_X_Y[k, 0]  # caveat when porting from R (0 to n-1)
-        expected_X[k+1] += expected_X[k]
+    covariance_X_Y[:, 0] = np.cumsum(covariance_X_Y[:, 0])
+    expected_X = np.cumsum(expected_X)
 
-    for l in range(n_Y - 1):
-        covariance_X_Y[0, l+1] += covariance_X_Y[0, l]
-        expected_Y[l+1] += expected_Y[l]
+    covariance_X_Y[0, :] = np.cumsum(covariance_X_Y[0, :])
+    expected_Y = np.cumsum(expected_Y)
 
     for k in range(n_X - 1):
         for l in range(n_Y - 1):
