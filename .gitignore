@@ -1,3 +1,6 @@
+# Mac
+.DS_Store
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -19,6 +22,7 @@ lib64/
 parts/
 sdist/
 var/
+prof/
 wheels/
 *.egg-info/
 .installed.cfg
@@ -108,4 +112,3 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
-
