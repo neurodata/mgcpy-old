@@ -53,13 +53,11 @@ def local_covariance(distance_matrix_A, distance_matrix_B, ranked_distance_matri
             expected_X[k] += a
             expected_Y[l] += b
 
-    for k in range(n_X - 1):
-        covariance_X_Y[k+1, 0] += covariance_X_Y[k, 0]  # caveat when porting from R (0 to n-1)
-        expected_X[k+1] += expected_X[k]
+    covariance_X_Y[:, 0] = np.cumsum(covariance_X_Y[:, 0])
+    expected_X = np.cumsum(expected_X)
 
-    for l in range(n_Y - 1):
-        covariance_X_Y[0, l+1] += covariance_X_Y[0, l]
-        expected_Y[l+1] += expected_Y[l]
+    covariance_X_Y[0, :] = np.cumsum(covariance_X_Y[0, :])
+    expected_Y = np.cumsum(expected_Y)
 
     for k in range(n_X - 1):
         for l in range(n_Y - 1):
@@ -79,7 +77,7 @@ def local_correlations(matrix_A, matrix_B, base_global_correlation="mgc"):
     :param matrix_A: is interpreted as either:
         - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
         - a [n*d] data matrix, a square matrix with n samples in d dimensions
-    :type matrix_B: 2D numpy.array
+    :type matrix_A: 2D numpy.array
 
     :param matrix_B: is interpreted as either:
         - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR

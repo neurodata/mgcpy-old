@@ -7,7 +7,14 @@
 
 `mgcpy` is a Python package containing tools for multiscale graph correlation and other statistical tests, that is capable of dealing with high dimensional and multivariate data.
 
-## Install from Github
+## Installation Guide:
+
+### Install from pip
+```
+pip3 install mgcpy
+```
+
+### Install from Github
 ```
 git clone https://github.com/NeuroDataDesign/mgcpy
 cd mgcpy
