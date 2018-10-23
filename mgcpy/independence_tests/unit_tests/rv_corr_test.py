@@ -20,7 +20,7 @@ def test_local_corr():
     rvcorr2 = RVCorr(X, Y, compute_distance_matrix, option=1)
     test_stat1 = rvcorr.test_statistic()[0]
     test_stat2 = rvcorr2.test_statistic()[0]
-    assert test_stat1 == 0.8599712492789462
-    assert test_stat2 == 0.8908357207078161
+    assert np.round(test_stat1, decimals=2) == 0.86
+    assert np.round(test_stat2, decimals=2) == 0.89
     
 test_local_corr()
