@@ -12,10 +12,15 @@ def compute_distance_matrix(data_matrix_X, data_matrix_Y):
     return (dist_mtx_X, dist_mtx_Y)
 
 def test_local_corr():
-    rvcorr = RVCorr()
-    a = np.array([1, 4, 6, 5, 1, 9, 12, 3])
-    b = np.arange(8)
-    rvcorr = RVCorr(a, b, compute_distance_matrix)
-    rvcorr2 = RVCorr(a, b, compute_distance_matrix, option=1)
-    assert rvcorr.test_statistic() == 1
-    assert rvcorr2.test_statistic() == 1
+    X = np.array([1.1728, 2.4941, 2.4101, 0.1814, 1.1978, 1.5806, 1.2504, 
+                  1.9706, 1.8839, 0.8760])[:, np.newaxis]
+    Y = np.array([3.2311, 12.1113, 11.1350, 1.1989, 3.3127, 4.8580, 3.4917, 
+                  7.1748, 6.5792, 2.4012])[:, np.newaxis]
+    rvcorr = RVCorr(X, Y, compute_distance_matrix)
+    rvcorr2 = RVCorr(X, Y, compute_distance_matrix, option=1)
+    test_stat1 = rvcorr.test_statistic()[0]
+    test_stat2 = rvcorr2.test_statistic()[0]
+    assert test_stat1 == 0.8599712492789462
+    assert test_stat2 == 0.8908357207078161
+    
+test_local_corr()

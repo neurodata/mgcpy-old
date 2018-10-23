@@ -22,10 +22,11 @@ class RVCorr(IndependenceTest):
     """
     
     def __init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix, 
-                 option=0):
+                 option=0, is_distance_mtx=False):
         IndependenceTest.__init__(self, data_matrix_X, data_matrix_Y, 
                                   compute_distance_matrix)
         self.option = option
+        self.is_distance_mtx = is_distance_mtx
         
     def test_statistic(self):
         """
@@ -37,22 +38,22 @@ class RVCorr(IndependenceTest):
         
         # if no data matrix is given, use the data matrices given at initialization
         if self.data_matrix_X is None and self.data_matrix_Y is None:
-            data_matrix_X = self.data_matrix_X
-            data_matrix_Y = self.data_matrix_Y
+            self.data_matrix_X = self.data_matrix_X
+            self.data_matrix_Y = self.data_matrix_Y
 
         # if the matrices given are already distance matrices, skip computing distance matrices
         if self.is_distance_mtx:
-            dist_mtx_X = data_matrix_X
-            dist_mtx_Y = data_matrix_Y
+            dist_mtx_X = self.data_matrix_X
+            dist_mtx_Y = self.data_matrix_Y
         else:
             dist_mtx_X, dist_mtx_Y = \
-            self.compute_distance_matrix(data_matrix_X=data_matrix_X, 
-                                         data_matrix_Y=data_matrix_Y)
+            self.compute_distance_matrix(data_matrix_X=self.data_matrix_X, 
+                                         data_matrix_Y=self.data_matrix_Y)
         
-        mat1 = self.data_matrix_X - mb.repmat(np.mean(self.data_matrix_X, 1), 
-                                              self.data_matrix_X.shape[0], 1)
-        mat2 = self.data_matrix_Y - mb.repmat(np.mean(self.data_matrix_Y, 1), 
-                                              self.data_matrix_Y.shape[0], 1)
+        mat1 = dist_mtx_X - mb.repmat(np.mean(dist_mtx_X, axis=0), 
+                                              dist_mtx_X.shape[0], 1)
+        mat2 = dist_mtx_Y - mb.repmat(np.mean(dist_mtx_Y, axis=0), 
+                                              dist_mtx_Y.shape[0], 1)
         
         covar = np.matmul(a=mat1.T, b=mat2)
         varX = np.matmul(a=mat1.T, b=mat1)
@@ -64,8 +65,8 @@ class RVCorr(IndependenceTest):
             corr = np.divide(covar, np.sqrt(np.trace(np.matmul(varX, varX))
                                             * np.trace(np.matmul(varY, varY))))
         else:
-            covar = np.sum(np.power(svds(covar, self.option), 2))
-            corr = np.divide(covar, np.sqrt(np.sum(np.power(svds(varX, self.option), 2)) 
-                * np.sum(np.power(svds(varY, self.option), 2))))
+            covar = np.sum(np.power(svds(covar, self.option)[1], 2))
+            corr = np.divide(covar, np.sqrt(np.sum(np.power(svds(varX, self.option)[1], 2)) 
+                * np.sum(np.power(svds(varY, self.option)[1], 2))))
         
-        return corr
+        return [corr, covar]
