@@ -56,7 +56,7 @@ def threshold_local_correlations(local_correlation_matrix, sample_size):
         significant_connected_region, _ = scipy.ndimage.measurements.label(
             significant_connected_region)
         _, label_counts = np.unique(significant_connected_region, return_counts=True)
-        max_label = np.argmax(label_counts) + 1
+        max_label = np.argmax(label_counts[1:]) + 1  # skip the first element in label_counts, as it is count(zeros)
         significant_connected_region = significant_connected_region == max_label
     else:
         significant_connected_region = np.array([[False]])
