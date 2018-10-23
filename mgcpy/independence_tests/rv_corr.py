@@ -35,6 +35,20 @@ class RVCorr(IndependenceTest):
                  of ``mat1`` and ``mat2``
         """
         
+        # if no data matrix is given, use the data matrices given at initialization
+        if self.data_matrix_X is None and self.data_matrix_Y is None:
+            data_matrix_X = self.data_matrix_X
+            data_matrix_Y = self.data_matrix_Y
+
+        # if the matrices given are already distance matrices, skip computing distance matrices
+        if self.is_distance_mtx:
+            dist_mtx_X = data_matrix_X
+            dist_mtx_Y = data_matrix_Y
+        else:
+            dist_mtx_X, dist_mtx_Y = \
+            self.compute_distance_matrix(data_matrix_X=data_matrix_X, 
+                                         data_matrix_Y=data_matrix_Y)
+        
         mat1 = self.data_matrix_X - mb.repmat(np.mean(self.data_matrix_X, 1), 
                                               self.data_matrix_X.shape[0], 1)
         mat2 = self.data_matrix_Y - mb.repmat(np.mean(self.data_matrix_Y, 1), 

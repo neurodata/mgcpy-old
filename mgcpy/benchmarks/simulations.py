@@ -369,8 +369,3 @@ def root_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, n_root=4):
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     
     return x, y
-
-import matplotlib.pyplot as plt
-returns = root_sim(100, 1, noise=0)
-plt.plot(returns[0], returns[1], 'bo')
-plt.axis('off')
