@@ -23,19 +23,9 @@ class RVCorr(IndependenceTest):
     
     def __init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix, 
                  option=0):
-        IndependenceTest.__init__(data_matrix_X, data_matrix_Y, 
+        IndependenceTest.__init__(self, data_matrix_X, data_matrix_Y, 
                                   compute_distance_matrix)
         self.option = option
-    
-    def _center_matrix(mat):
-        """
-        Centers the desired matrix by subtracting the means.
-        
-        :param mat: a distance matrix
-        
-        :return: The centered distance matrix
-        """
-        return mat - mb.repmat(np.mean(mat, 1), mat.shape[0], 1)
         
     def test_statistic(self):
         """
@@ -45,8 +35,10 @@ class RVCorr(IndependenceTest):
                  of ``mat1`` and ``mat2``
         """
         
-        mat1 = self._center_matrix(self.data_matrix_X)
-        mat2 = self._center_matrix(self.data_matrix_Y)
+        mat1 = self.data_matrix_X - mb.repmat(np.mean(self.data_matrix_X, 1), 
+                                              self.data_matrix_X.shape[0], 1)
+        mat2 = self.data_matrix_Y - mb.repmat(np.mean(self.data_matrix_Y, 1), 
+                                              self.data_matrix_Y.shape[0], 1)
         
         covar = np.matmul(a=mat1.T, b=mat2)
         varX = np.matmul(a=mat1.T, b=mat1)
