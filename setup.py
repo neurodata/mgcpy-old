@@ -18,7 +18,7 @@ URL = 'https://github.com/NeuroDataDesign/mgcpy'
 MINIMUM_PYTHON_VERSION = 3, 4  # Minimum of Python 3.4
 
 REQUIRED_PACKAGES = ["numpy>=1.14.5", "scipy>=1.1.0", "pytest>=3.8.0", "flake8>=3.5.0", "pytest-cov>=2.6.0", "python-coveralls>=2.9.1"]
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 
 
 def check_python_version():
