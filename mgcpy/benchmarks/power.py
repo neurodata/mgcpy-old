@@ -28,8 +28,6 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
     for rep in range(repeats):
         # generate new samples for each iteration
         data_matrix_X, data_matrix_Y = sample_generator(num_samples, num_dimensions, noise=0)
-        # to make the data format conformed
-        data_matrix_Y = data_matrix_Y[:, np.newaxis]
         # permutation test
         permuted_y = np.random.permutation(data_matrix_Y)
         test_stats_null[rep] = independence_test.test_statistic(data_matrix_X=data_matrix_X, data_matrix_Y=permuted_y)
