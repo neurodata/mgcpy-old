@@ -9,7 +9,7 @@
 
 ## Installation Guide:
 
-### Install from pip
+### Install from PyPi
 ```
 pip3 install mgcpy
 ```
