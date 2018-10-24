@@ -12,6 +12,7 @@ def compute_distance_matrix(data_matrix_X, data_matrix_Y):
 
 
 def test_dcorr():
+    print('here')
     # test the special case when one of the dataset has zero variance
     X = np.array([1, 1, 1])[:, np.newaxis]
     Y = np.array([1, 2, 3])[:, np.newaxis]

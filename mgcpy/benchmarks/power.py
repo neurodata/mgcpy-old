@@ -42,26 +42,3 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
     # the null is rejected) is the empirical power
     empirical_power = np.where(test_stats_alternative >= cutoff)[0].shape[0] / repeats
     return empirical_power
-
-    '''
-        if the correlation test is mcorr, we can leverage the t-test
-        instead of having to estimate the null distribution
-        # deal with this case later
-        if num_samples < 4:
-            print('Not enough samples')
-            return None
-        v = num_samples*(num_samples-3)/2
-        # the boundary of the rejection regions, reject null if the test statistic is more extreme
-        negative_cutoff, positive_cutoff = t.interval(1-alpha/2, df=v-1)
-        # count the number of time the test rejects the null hypothesis
-        count_reject_null = 0
-        for rep in range(repeats):
-            # generate new samples for each iteration
-            data_matrix_X, data_matrix_Y = sample_generator(num_samples, num_dimensions)
-            # to make the data format conformed
-            data_matrix_Y = data_matrix_Y[:, np.newaxis]
-            T, df = self.mcorr_T(data_matrix_X, data_matrix_Y)
-            if T <= negative_cutoff or T >= positive_cutoff:
-                count_reject_null += 1
-        return count_reject_null / repeats
-    '''
