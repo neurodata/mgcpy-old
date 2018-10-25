@@ -19,6 +19,8 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
     :type: int
     :param alpha: the type I error level
     :type: float
+    :return empirical_power: the estimated power
+    :type: float
     '''
 
     # test statistics under the null, used to estimate the cutoff value under the null distribution
