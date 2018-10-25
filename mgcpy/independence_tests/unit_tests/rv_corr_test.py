@@ -1,7 +1,6 @@
 import numpy as np
-from scipy.spatial.distance import pdist, squareform
-
 from mgcpy.independence_tests.rv_corr import RVCorr
+from scipy.spatial.distance import pdist, squareform
 
 
 def compute_distance_matrix(data_matrix_X, data_matrix_Y):
@@ -20,5 +19,6 @@ def test_local_corr():
     rvcorr2 = RVCorr(X, Y, compute_distance_matrix, option=1)
     test_stat1 = rvcorr.test_statistic()[0]
     test_stat2 = rvcorr2.test_statistic()[0]
+
     assert np.round(test_stat1, decimals=2) == 0.86
     assert np.round(test_stat2, decimals=2) == 0.89
