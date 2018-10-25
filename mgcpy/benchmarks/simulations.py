@@ -258,13 +258,14 @@ def spiral_sim(num_samp, num_dim, noise=0.4, low=0, high=5):
     :return: the data matrix and a response array
     """
     uniform_dist = gen_x_unif(num_samp, num_dim=1, low=low, high=high)
-    the_x = np.array(np.cos(np.pi * uniform_dist)).reshape(num_samp, 1)
+    the_x = np.array(np.cos(np.pi * uniform_dist))
     y = uniform_dist * np.sin(np.pi * uniform_dist)
     x = np.zeros(shape=(num_samp, num_dim))
 
     if num_dim > 1:
         for i in range(num_dim - 1):
-            x[:, i] = np.squeeze((y * np.power(the_x, i)))
+            the_x = the_x.reshape(num_samp, 1)
+            x[:, i] = np.squeeze((y * np.power(the_x, i+1)))
     x[:, num_dim-1] = np.squeeze(uniform_dist * the_x)
 
     gauss_noise = np.random.normal(loc=0, scale=1, size=(x.shape[0], 1))
