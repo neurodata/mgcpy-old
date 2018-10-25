@@ -497,14 +497,15 @@ def circle_sim(num_samp, num_dim, noise=0.4, low=-1, high=1, radius=1):
                                                  mean=np.zeros(num_dim),
                                                  size=num_samp))
 
-    ry = np.ones((num_samp, 1))
+    ry = np.ones((num_samp, num_dim))
     x[:, 0] = np.cos(z[:, 0] * np.pi)
     for i in range(num_dim - 1):
         x[:, i+1] = x[:, i] * np.cos(z[:, i+1] * np.pi)
         x[:, i] = x[:, i] * np.sin(z[:, i+1] * np.pi)
     x = rx * x + noise*rx*gauss_noise
 
-    y = ry * np.sin(z[:, 0].reshape((num_samp, 1)) * np.pi)
+    y = ry * np.sin(z[:, 0].reshape((num_samp, num_dim))
+                    * np.pi) + noise*ry*gauss_noise
 
     return x, y
 
