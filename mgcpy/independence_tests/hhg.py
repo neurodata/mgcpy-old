@@ -5,9 +5,9 @@ from scipy.sparse.linalg import svds
 from scipy.spatial import distance_matrix
 
 
-class RVCorr(IndependenceTest):
+class HHG(IndependenceTest):
     """
-    Calculates the RV or CCA correlation statistic.
+    Calculates the HHG correlation statistic.
 
     :param data_matrix_X: an input distance matrix
     :param data_matrix_Y: an input distance matrix
@@ -23,7 +23,7 @@ class RVCorr(IndependenceTest):
 
     def test_statistic(self):
         """
-        Calculates all the local correlation coefficients.
+        Calculates the HHG test statistic
 
         :return: The local correlation ``corr`` and local covariance ``covar``
                  of the input data matricies
@@ -44,23 +44,23 @@ class RVCorr(IndependenceTest):
         else:
             dist_mtx_Y = self.data_matrix_Y
 
-        mat1 = dist_mtx_X - mb.repmat(np.mean(dist_mtx_X, axis=0),
-                                      dist_mtx_X.shape[0], 1)
-        mat2 = dist_mtx_Y - mb.repmat(np.mean(dist_mtx_Y, axis=0),
-                                      dist_mtx_Y.shape[0], 1)
+        n = dist_mtx_X.shape[0]
+        S = np.zeros((n, n))
 
-        covar = np.matmul(a=mat1.T, b=mat2)
-        varX = np.matmul(a=mat1.T, b=mat1)
-        varY = np.matmul(a=mat2.T, b=mat2)
+        for i in range(n):
+            for j in range(n):
+                if i != j:
+                    tmp1 = dist_mtx_X[i, :] <= dist_mtx_X[i, j]
+                    tmp2 = dist_mtx_Y[i, :] <= dist_mtx_Y[i, j]
+                    t11 = np.sum(tmp1 * tmp2) - 2
+                    t12 = np.sum(tmp1 * (1-tmp2))
+                    t21 = np.sum((1-tmp1) * tmp2)
+                    t22 = np.sum((1-tmp1) * (1-tmp2))
+                    denom = (t11+t12) * (t21+t22) * (t11+t21) * (t12+t22)
+                    if denom > 0:
+                        S[i, j] = (n-2) * \
+                            np.power((t12*t21 - t11*t22), 2) / denom
 
-        self.option = np.minimum(np.abs(self.option), mat1.shape[1])
-        if (self.option):
-            covar = np.trace(np.matmul(covar, covar.T))
-            corr = np.divide(covar, np.sqrt(np.trace(np.matmul(varX, varX))
-                                            * np.trace(np.matmul(varY, varY))))
-        else:
-            covar = np.sum(np.power(svds(covar, self.option)[1], 2))
-            corr = np.divide(covar, np.sqrt(np.sum(np.power(svds(varX, self.option)[1], 2))
-                                            * np.sum(np.power(svds(varY, self.option)[1], 2))))
+        corr = np.sum(S)
 
-        return corr, {"covariance": covar}
+        return corr
