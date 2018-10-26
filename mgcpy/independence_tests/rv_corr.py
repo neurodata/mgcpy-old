@@ -1,56 +1,62 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-
 import numpy as np
+from mgcpy.independence_tests.abstract_class import IndependenceTest
 from numpy import matlib as mb
 from scipy.sparse.linalg import svds
 from scipy.spatial import distance_matrix
 
 
-def rv_corr(mat1_data, mat2_data, option=0):
+class RVCorr(IndependenceTest):
     """
-    Main function that calculates all the local correlation coefficients.
+    Calculates the pearsons/Cca/rv correlation statistic.
 
-    :param mat1: a n-dimensional distance matrix
-    :param mat2: a n-dimensional distance matrix
-    :param option: a number that specifies which global correlation to use,
-                   including 'mcor','dcor','mantel', defaults to 0
-    :param n_dim: number of dimensions of original data set, defaults to 1
-
-    :return: The local correlation ``corr`` and local covaraince ``covar`` of
-             ``mat1`` and ``mat2``
+    :param data_matrix_X: an input distance matrix
+    :param data_matrix_Y: an input distance matrix
+    :param compute_distance_matrix: a function to compute the pairwise distance matrix
+    :param option: a boolean indicating either that the test will be Pearson's correlation or 
     """
-    mat1_data[np.isnan(mat1_data)] = 0
-    mat2_data[np.isnan(mat2_data)] = 0
 
-    if ((mat1_data.shape[0] != mat1_data.shape[1]) \
-         or (np.allclose(mat1_data.T, mat1_data))):
-        mat1 = distance_matrix(mat1_data, mat1_data)
+    def __init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix, option=False):
+        IndependenceTest.__init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
+        self.option = option
 
-    if ((mat2_data.shape[0] != mat2_data.shape[1]) \
-         or (np.allclose(mat2_data.T, mat2_data))):
-        mat2 = distance_matrix(mat2_data, mat2_data)
+    def test_statistic(self):
+        """
+        Calculates all the local correlation coefficients.
 
-    sizeX = mat1.shape[0]
-    sizeY = mat1.shape[1]
+        :return: The local correlation ``corr`` and local covariance ``covar``
+                 of the input data matricies
+        """
 
-    mat1 = mat1 - mb.repmat(np.mean(mat1, 1), sizeX, 1)
-    mat2 = mat2 - mb.repmat(np.mean(mat2, 1), sizeX, 1)
+        row_X, columns_X = self.data_matrix_X.shape[0], self.data_matrix_X.shape[1]
+        row_Y, columns_Y = self.data_matrix_Y.shape[0], self.data_matrix_Y.shape[1]
 
-    covar = mat1.T * mat2
-    varX = mat1.T * mat1
-    varY = mat2.T * mat2
+        # use the matrix shape and diagonal elements to determine if the given data is a distance matrix or not
+        if row_X != columns_X or sum(self.data_matrix_X.diagonal()**2) > 0:
+            dist_mtx_X = distance_matrix(self.data_matrix_X, self.data_matrix_X)
+        else:
+            dist_mtx_X = self.data_matrix_X
+        if row_Y != columns_Y or sum(self.data_matrix_Y.diagonal()**2) > 0:
+            dist_mtx_Y = distance_matrix(self.data_matrix_Y, self.data_matrix_Y)
+        else:
+            dist_mtx_Y = self.data_matrix_Y
 
-    option = np.minimum(np.abs(option), sizeY)
-    if (option == 0):
-        covar = np.trace(covar * covar.T)
-        corr = np.divide(covar, np.sqrt(np.trace(varX * varX)
-                                        * np.trace(varY * varY)))
-    else:
-        covar = np.sum(np.power(svds(covar, option), 2))
-        corr = np.divide(covar, np.sqrt(np.sum(np.power(svds(varX, option), 2))
-                                        * np.sum(np.power(svds(varY, option), 2
-                                                          ))))
+        mat1 = dist_mtx_X - mb.repmat(np.mean(dist_mtx_X, axis=0),
+                                      dist_mtx_X.shape[0], 1)
+        mat2 = dist_mtx_Y - mb.repmat(np.mean(dist_mtx_Y, axis=0),
+                                      dist_mtx_Y.shape[0], 1)
 
-    return corr, covar
+        covar = np.matmul(a=mat1.T, b=mat2)
+        varX = np.matmul(a=mat1.T, b=mat1)
+        varY = np.matmul(a=mat2.T, b=mat2)
+
+        self.option = np.minimum(np.abs(self.option), mat1.shape[1])
+        if (self.option == 0):
+            covar = np.trace(np.matmul(covar, covar.T))
+            corr = np.divide(covar, np.sqrt(np.trace(np.matmul(varX, varX))
+                                            * np.trace(np.matmul(varY, varY))))
+        else:
+            covar = np.sum(np.power(svds(covar, self.option)[1], 2))
+            corr = np.divide(covar, np.sqrt(np.sum(np.power(svds(varX, self.option)[1], 2))
+                                            * np.sum(np.power(svds(varY, self.option)[1], 2))))
+
+        return corr, {"covariance": covar}

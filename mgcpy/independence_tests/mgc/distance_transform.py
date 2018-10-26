@@ -6,6 +6,11 @@ import numpy as np
 import scipy.stats
 
 
+def min_rank_data(data):
+    u, v = np.unique(data, return_inverse=True)
+    return (np.cumsum(np.concatenate(([0], np.bincount(v)))))[v] + 1
+
+
 def rank_distance_matrix(distance_matrix):
     """"
     Sorts the entries within each column in ascending order
@@ -23,8 +28,9 @@ def rank_distance_matrix(distance_matrix):
     ranked_distance_matrix = np.zeros(distance_matrix.shape)
     for i in range(n_rows):
         column = distance_matrix[:, i]
-        ranked_column = np.array(scipy.stats.rankdata(column, "min"))
-        sorted_unique_ranked_column = sorted(list(set(ranked_column)))
+        # ranked_column = scipy.stats.rankdata(column, "min")
+        ranked_column = min_rank_data(column)
+        sorted_unique_ranked_column = sorted(set(ranked_column))
         if (len(ranked_column) != len(sorted_unique_ranked_column)):
             for j, rank in enumerate(sorted_unique_ranked_column):
                 ranked_column[ranked_column == rank] = j + 1
