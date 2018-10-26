@@ -4,12 +4,10 @@ from mdmrfunctions import *
 class MDMR(IndependenceTest):
     def __init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix):
                 '''
-        :param data_matrix_X: is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
+        :param data_matrix_X: is interpreted as:
             - a [n*d] data matrix, a square matrix with n samples in d dimensions
         :type data_matrix_X: 2D numpy.array
         :param data_matrix_Y: is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
             - a [n*d] data matrix, a square matrix with n samples in d dimensions
         :type data_matrix_Y: 2D numpy.array
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
