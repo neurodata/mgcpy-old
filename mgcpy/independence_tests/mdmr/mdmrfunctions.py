@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Sep 19 19:46:26 2018
+Created on Thu Oct 25 16:09:14 2018
 
 @author: sunda
 """
@@ -70,7 +70,7 @@ def gen_H2_perms(X, columns, permutation_indexes):
 
 def gen_IH_perms(X, columns, permutation_indexes):
     permutations, observations = permutation_indexes.shape
-    I            = np.eye(observations, observations)
+    I = np.eye(observations, observations)
     
     IH_permutations = np.zeros((observations ** 2, permutations))
     for i in range(permutations):
@@ -96,53 +96,3 @@ def fperms_to_pvals(F_perms):
         j        = (F_perms[:, i] >= F_perms[0, i]).sum().astype('float')
         pvals[i] = j / permutations
     return pvals
-
-def mdmr(D, X, permutations = 100):
-
-    columns = X.shape[1]
-    check_rank(X)
-
-    subjects = X.shape[0]
-    if subjects != np.sqrt(D.shape[0]):
-        raise Exception("# of subjects incompatible between X and D")
-    
-    X = np.hstack((np.ones((X.shape[0], 1)), X))
-    results = np.zeros((columns,3))
-    for col in range(1, columns+1):
-        col = copy.copy(col)
-    #    columns += 1
-    
-        Gs = gower_center_many(D)
-    
-        df_among = float(col)
-        df_resid = float(subjects - X.shape[1])
-    
-        permutation_indexes = np.zeros((permutations + 1, subjects), dtype=np.int)
-        permutation_indexes[0, :] = range(subjects)
-        for i in range(1, permutations + 1):
-            permutation_indexes[i,:] = np.random.permutation(subjects)
-    
-        H2perms = gen_H2_perms(X, col, permutation_indexes)
-        IHperms = gen_IH_perms(X, col, permutation_indexes)
-    
-        F_perms = calc_ftest(H2perms, IHperms, Gs,
-                            df_among, df_resid)
-    
-        p_vals = fperms_to_pvals(F_perms)
-        results[col-1,0] = col
-        results[col-1,1] = F_perms[0, :]
-        results[col-1,2] = p_vals
-    
-    return results
-
-
-
-
-#x = scpio.loadmat('x.mat')['x']
-#D = scp.spatial.distance.pdist(x, 'euclidean')
-#D = scp.spatial.distance.squareform(D)
-#D = D.reshape((10000,1))
-#print(D.shape)
-#print(x.shape)
-#columns = 100
-#mdmr(D,x,columns, 5)
