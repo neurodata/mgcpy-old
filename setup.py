@@ -5,6 +5,7 @@ import sys
 from setuptools import setup, find_packages
 from setuptools.command.install import install
 from subprocess import check_output, call
+from Cython.Build import cythonize
 from sys import platform
 
 
@@ -50,5 +51,6 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7'
     ],
+    ext_modules=cythonize("mgcpy/independence_tests/mgc/local_cov.pyx"),
     packages=find_packages()
 )

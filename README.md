@@ -19,8 +19,9 @@ pip3 install mgcpy
 git clone https://github.com/NeuroDataDesign/mgcpy
 cd mgcpy
 python3 setup.py install
+python3 setup.py build_ext --inplace  # for cython
 ```
-- `sudo python3 setup.py install`, if required
+- `sudo`, if required
 
 ## MGC Algorithm's Flow
 ![MGCPY Flow](MGCPY.png)

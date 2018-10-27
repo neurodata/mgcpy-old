@@ -7,6 +7,7 @@ from scipy.spatial import distance_matrix
 import warnings
 
 from mgcpy.independence_tests.mgc.distance_transform import transform_distance_matrix
+from mgcpy.independence_tests.mgc.local_cov import local_covariance_cython
 
 
 def local_covariance(distance_matrix_A, distance_matrix_B, ranked_distance_matrix_A, ranked_distance_matrix_B):
@@ -114,14 +115,14 @@ def local_correlations(matrix_A, matrix_B, base_global_correlation="mgc"):
     transformed_result = transform_distance_matrix(matrix_A, matrix_B, base_global_correlation)
 
     # compute all local covariances
-    local_covariance_matrix = local_covariance(
+    local_covariance_matrix = local_covariance_cython(
         transformed_result["centered_distance_matrix_A"],
         transformed_result["centered_distance_matrix_B"].T,
         transformed_result["ranked_distance_matrix_A"],
         transformed_result["ranked_distance_matrix_B"].T)
 
     # compute local variances for data A
-    local_variance_A = local_covariance(
+    local_variance_A = local_covariance_cython(
         transformed_result["centered_distance_matrix_A"],
         transformed_result["centered_distance_matrix_A"].T,
         transformed_result["ranked_distance_matrix_A"],
@@ -129,7 +130,7 @@ def local_correlations(matrix_A, matrix_B, base_global_correlation="mgc"):
     local_variance_A = local_variance_A.diagonal()
 
     # compute local variances for data B
-    local_variance_B = local_covariance(
+    local_variance_B = local_covariance_cython(
         transformed_result["centered_distance_matrix_B"],
         transformed_result["centered_distance_matrix_B"].T,
         transformed_result["ranked_distance_matrix_B"],
