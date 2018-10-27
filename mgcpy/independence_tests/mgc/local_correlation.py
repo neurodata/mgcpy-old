@@ -111,8 +111,7 @@ def local_correlations(matrix_A, matrix_B, base_global_correlation="mgc"):
     if matrix_B.shape[0] != matrix_B.shape[1] or sum(matrix_B.diagonal()**2) > 0:
         matrix_B = distance_matrix(matrix_B, matrix_B)
 
-    transformed_result = transform_distance_matrix(
-        matrix_A, matrix_B, base_global_correlation)
+    transformed_result = transform_distance_matrix(matrix_A, matrix_B, base_global_correlation)
 
     # compute all local covariances
     local_covariance_matrix = local_covariance(
@@ -127,6 +126,7 @@ def local_correlations(matrix_A, matrix_B, base_global_correlation="mgc"):
         transformed_result["centered_distance_matrix_A"].T,
         transformed_result["ranked_distance_matrix_A"],
         transformed_result["ranked_distance_matrix_A"].T)
+    local_variance_A = local_variance_A.diagonal()
 
     # compute local variances for data B
     local_variance_B = local_covariance(
@@ -134,26 +134,19 @@ def local_correlations(matrix_A, matrix_B, base_global_correlation="mgc"):
         transformed_result["centered_distance_matrix_B"].T,
         transformed_result["ranked_distance_matrix_B"],
         transformed_result["ranked_distance_matrix_B"].T)
-
-    local_variance_A = local_variance_A.diagonal()
     local_variance_B = local_variance_B.diagonal()
 
     warnings.filterwarnings("ignore")
     # normalizing the covariances yields the local family of correlations
     local_correlation_matrix = local_covariance_matrix / \
         np.sqrt(local_variance_A.reshape(-1, 1) @ local_variance_B.reshape(-1, 1).T).real  # 2 caveats when porting from R (np.sqrt and reshape)
-
     # avoid computational issues that may cause a few local correlations to be negligebly larger than 1
     local_correlation_matrix[local_correlation_matrix > 1] = 1
     warnings.filterwarnings("default")
 
     # set any local correlation to 0 if any corresponding local variance is less than or equal to 0
-    for k in range(len(local_variance_A)):
-        if local_variance_A[k] <= 0:
-            local_correlation_matrix[k, :] = 0
-    for l in range(len(local_variance_B)):
-        if local_variance_B[l] <= 0:
-            local_correlation_matrix[:, l] = 0
+    local_correlation_matrix[local_variance_A <= 0, :] = 0
+    local_correlation_matrix[:, local_variance_B <= 0] = 0
 
     return {"local_correlation_matrix": local_correlation_matrix,
             "local_variance_A": local_variance_A,
