@@ -2,36 +2,36 @@ import numpy as np
 from scipy.spatial import distance
 
 
-def dist_transform(A, B, corr_type):
+def dist_transform(dist_mtx_X, dist_mtx_Y, corr_type):
     '''Transform the distance matrices in a specified way
 
-    :param A, B: n*n distance matrix
+    :param dist_mtx_X, B: n*n distance matrix
     :param corr_type: a string indicating which global correlation to build upon, e.g. 'dcorr'
     :return: C, D: the transformed matrices
     '''
 
-    C = dist_center(A, corr_type)
-    D = dist_center(B, corr_type)
+    transformed_dist_mtx_X = dist_center(dist_mtx_X, corr_type)
+    transformed_dist_mtx_Y = dist_center(dist_mtx_Y, corr_type)
 
-    return (C, D)
+    return (transformed_dist_mtx_X, transformed_dist_mtx_Y)
 
 
-def dist_center(A, corr_type):
+def dist_center(dist_mtx_X, corr_type):
     '''Center the distance matrix as specified by the correlation test
     that uses it
 
-    :param A: an n*n distance matrix to be centered
+    :param dist_mtx_X: an n*n distance matrix to be centered
     :param corr_type: a string specifying which centering scheme to use, e.g. 'dcorr'
     :return: C: the centered matrix
     '''
-    # the dimension of A
-    n = A.shape[0]
+    # the dimension of dist_mtx_X
+    n = dist_mtx_X.shape[0]
 
     # the centering scheme makes the difference among dcorr, mcorr
     # and mantel
 
-    # unbiased dcorr transform
-    if corr_type == 'dcorr':
+    # unbiased centering, used to compute mcorr statistic
+    if corr_type == 'mcorr':
         '''
         all the means are not divided by n exactly so that the transform is unbiased
         the mean taken over the rows
@@ -39,28 +39,36 @@ def dist_center(A, corr_type):
         the same column has the same row mean
         can be directly subtract off later
         '''
-        row_mean = np.tile(np.sum(A, axis=0)/(n-2), (n, 1))
         # the mean taken over the columns
         # convert into matrix so that entries in the same row has the same column mean
-        col_mean = np.tile(np.sum(A, axis=1)[:, np.newaxis]/(n-2), (1, n))
+        row_mean = np.tile(np.sum(dist_mtx_X, axis=1)[:, np.newaxis]/(n-2), (1, n))
+        col_mean = np.tile(np.sum(dist_mtx_X, axis=0)/(n-2), (n, 1))
         # mean of all the entries
-        grand_mean = np.sum(A)/(n-1)/(n-2)
-        # the quantity which we adjust A with
+        grand_mean = np.sum(dist_mtx_X)/(n-1)/(n-2)
+        # the quantity which we adjust dist_mtx_X with
+        adjustment = row_mean + col_mean - grand_mean
+
+    # biased centering, used to compute dcorr statistic
+    elif corr_type == 'dcorr':
+        row_mean = np.tile(np.sum(dist_mtx_X, axis=1)[:, np.newaxis]/n, (1, n))
+        col_mean = np.tile(np.sum(dist_mtx_X, axis=0)/n, (n, 1))
+        # the mean taken over the columns
+        # convert into matrix so that entries in the same row has the same column mean
+        # mean of all the entries
+        grand_mean = np.sum(dist_mtx_X)/np.square(n)
         adjustment = row_mean + col_mean - grand_mean
 
     # mantel transform
     elif corr_type == 'mantel':
         # mean of all the entries (scaled differently than in dcorr)
-        adjustment = np.sum(A)/n/(n-1)
-
-    # "default mgc transform" used in fastmgc
-    elif corr_type == 'mcorr':
-        adjustment = np.tile(np.sum(A, axis=0)/(n-1), (n, 1))
+        adjustment = np.sum(dist_mtx_X)/n/(n-1)
 
     # the centered matrix
-    C = A - adjustment
-    # the diagonal entries should always be zero
-    for j in range(n):
-        C[j, j] = 0
+    centered_mtx_X = dist_mtx_X - adjustment
 
-    return C
+    if corr_type == 'mcorr':
+        # the diagonal entries should always be zero
+        for j in range(n):
+            centered_mtx_X[j, j] = 0
+
+    return centered_mtx_X

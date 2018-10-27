@@ -258,13 +258,14 @@ def spiral_sim(num_samp, num_dim, noise=0.4, low=0, high=5):
     :return: the data matrix and a response array
     """
     uniform_dist = gen_x_unif(num_samp, num_dim=1, low=low, high=high)
-    the_x = np.array(np.cos(np.pi * uniform_dist)).reshape(num_samp, 1)
+    the_x = np.array(np.cos(np.pi * uniform_dist))
     y = uniform_dist * np.sin(np.pi * uniform_dist)
     x = np.zeros(shape=(num_samp, num_dim))
 
     if num_dim > 1:
         for i in range(num_dim - 1):
-            x[:, i] = np.squeeze((y * np.power(the_x, i)))
+            the_x = the_x.reshape(num_samp, 1)
+            x[:, i] = np.squeeze((y * np.power(the_x, i+1)))
     x[:, num_dim-1] = np.squeeze(uniform_dist * the_x)
 
     gauss_noise = np.random.normal(loc=0, scale=1, size=(x.shape[0], 1))
@@ -287,10 +288,10 @@ def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
     binom_dist = np.random.binomial(1, p=bern_prob, size=(num_samp, 1))
     sig = np.diag(np.ones(shape=num_dim) * num_dim)
     gauss_noise1 = (np.random.multivariate_normal(
-                                                  cov=sig,
-                                                  mean=np.zeros(num_dim),
-                                                  size=num_samp
-                                                  ))
+        cov=sig,
+        mean=np.zeros(num_dim),
+        size=num_samp
+    ))
     x = (np.array(np.random.binomial(1, size=num_samp * num_dim,
                                      p=bern_prob)).reshape(num_samp, num_dim)
          + noise*gauss_noise1)
@@ -307,7 +308,7 @@ def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
     return x, y
 
 
-def log_sim(num_samp, num_dim, noise=1, indep=False, base=2):
+def log_sim(num_samp, num_dim, noise=3, indep=False, base=2):
     """
     Function for generating a logarithmic simulation.
 
@@ -337,7 +338,7 @@ def log_sim(num_samp, num_dim, noise=1, indep=False, base=2):
     return x, y
 
 
-def root_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, n_root=4):
+def root_sim(num_samp, num_dim, noise=0.25, indep=False, low=-1, high=1, n_root=4):
     """
     Function for generating an nth root simulation.
 
@@ -360,8 +361,195 @@ def root_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, n_root=4):
         kappa = 0
 
     y = (np.power(np.abs(np.matmul(a=x, b=coeffs.reshape(num_dim, 1))), 1/n_root)
-         + kappa*noise*gauss_noise/n_root)
+         + kappa*noise*gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
+
+    return x, y
+
+
+def sin_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=4*np.pi):
+    """
+    Function for generating a sinusoid simulation.
+
+    Note: For producing 4*pi and 16*pi simulations, change the ``period`` to the respective value.
+
+    :param num_samp: number of samples for the simulation
+    :param num_dim: number of dimensions for the simulation
+    :param noise: noise level of the simulation, defaults to 1
+    :param indep: whether to sample x and y independently, defaults to false
+    :param low: the lower limit of the data matrix, defaults to -1
+    :param high: the upper limit of the data matrix, defaults to 1
+    :param period: the period of the sine wave, defaults to 4*pi
+
+    :return: the data matrix and a response array
+    """
+    x = gen_x_unif(num_samp, num_dim, low=low, high=high)
+    if num_dim > 1:
+        sig = np.diag(np.ones(shape=(num_dim)))
+        v = (np.random.multivariate_normal(cov=sig, mean=np.zeros(num_dim),
+                                           size=num_samp))
+        x = x + 0.02*num_dim*v
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
+    if (num_dim == 1):
+        kappa = 1
+    else:
+        kappa = 0
+
+    y = np.sin(x*period) + kappa*noise*gauss_noise
+    if indep:
+        x = gen_x_unif(num_samp, num_dim, low=low, high=high)
+        if num_dim > 1:
+            sig = np.diag(np.ones(shape=(num_dim)))
+            v = (np.random.multivariate_normal(cov=sig, mean=np.zeros(num_dim),
+                                               size=num_samp))
+            x = x + 0.02*num_dim*v
+
+    return x, y
+
+
+def square_sim(num_samp, num_dim, noise=0.05, indep=False, low=-1, high=1, period=-np.pi/8):
+    """
+    Function for generating a square or diamond simulation.
+
+    Note: For producing square or diamond simulations, change the ``period`` to -pi/8 or -pi/4.
+
+    :param num_samp: number of samples for the simulation
+    :param num_dim: number of dimensions for the simulation
+    :param noise: noise level of the simulation, defaults to 0.05
+    :param indep: whether to sample x and y independently, defaults to false
+    :param low: the lower limit of the data matrix, defaults to -1
+    :param high: the upper limit of the data matrix, defaults to 1
+    :param period: the period of the sine and cosine square equation, defaults to 4*pi
+
+    :return: the data matrix and a response array
+    """
+    u = gen_x_unif(num_samp, num_dim, low=low, high=high)
+    v = gen_x_unif(num_samp, num_dim, low=low, high=high)
+    sig = np.diag(np.ones(shape=(num_dim)))
+    gauss_noise = (np.random.multivariate_normal(cov=sig,
+                                                 mean=np.zeros(num_dim),
+                                                 size=num_samp))
+    x = u*np.cos(period) + v*np.sin(period) + noise*gauss_noise
+
+    y = -u*np.sin(period) + v*np.cos(period)
+    if indep:
+        u = gen_x_unif(num_samp, num_dim, low=low, high=high)
+        v = gen_x_unif(num_samp, num_dim, low=low, high=high)
+        sig = np.diag(np.ones(shape=(num_dim)))
+        gauss_noise = (np.random.multivariate_normal(cov=sig,
+                                                     mean=np.zeros(
+                                                         num_dim),
+                                                     size=num_samp))
+        x = u*np.cos(period) + v*np.sin(period) + noise*gauss_noise
+
+    return x, y
+
+
+def two_parab_sim(num_samp, num_dim, noise=2, low=-1, high=1, prob=0.5):
+    """
+    Function for generating a two parabola simulation.
+
+    :param num_samp: number of samples for the simulation
+    :param num_dim: number of dimensions for the simulation
+    :param noise: noise level of the simulation, defaults to 2
+    :param low: the lower limit of the data matrix, defaults to -1
+    :param high: the upper limit of the data matrix, defaults to 1
+    :param prob: the binomial probability, defaults to 0.5
+
+    :return: the data matrix and a response array
+    """
+    x = gen_x_unif(num_samp, num_dim, low=low, high=high)
+    coeffs = gen_coeffs(num_dim)
+    u = np.random.binomial(1, p=prob, size=(num_samp, 1))
+    gauss_noise = gen_x_unif(num_samp, num_dim, low=0, high=1)
+    if (num_dim == 1):
+        kappa = 1
+    else:
+        kappa = 0
+
+    y = (np.power(np.matmul(x, coeffs.reshape(num_dim, 1)), 2) +
+         noise*kappa*gauss_noise) * (u - 0.5)
+
+    return x, y
+
+
+def circle_sim(num_samp, num_dim, noise=0.4, low=-1, high=1, radius=1):
+    """
+    Function for generating a circle or ellipse simulation.
+
+    Note: For producing circle or ellipse simulations, change the ``r`` to 1 or 5.
+
+    :param num_samp: number of samples for the simulation
+    :param num_dim: number of dimensions for the simulation
+    :param noise: noise level of the simulation, defaults to 0.4
+    :param low: the lower limit of the data matrix, defaults to -1
+    :param high: the upper limit of the data matrix, defaults to 1
+    :param radius: the radius of the circle or ellipse, defaults to 1
+
+    :return: the data matrix and a response array
+    """
+    x = gen_x_unif(num_samp, num_dim, low=low, high=high)
+    rx = radius * np.ones((num_samp, num_dim))
+    z = gen_x_unif(num_samp, num_dim, low=low, high=high)
+    sig = np.diag(np.ones(shape=(num_dim)))
+    gauss_noise = (np.random.multivariate_normal(cov=sig,
+                                                 mean=np.zeros(num_dim),
+                                                 size=num_samp))
+
+    ry = np.ones((num_samp, 1))
+    x[:, 0] = np.cos(z[:, 0] * np.pi)
+    for i in range(num_dim - 1):
+        x[:, i+1] = x[:, i] * np.cos(z[:, i+1] * np.pi)
+        x[:, i] = x[:, i] * np.sin(z[:, i+1] * np.pi)
+    x = rx * x + noise*rx*gauss_noise
+
+    y = ry * np.sin(z[:, 0].reshape((num_samp, 1)) * np.pi)
+
+    return x, y
+
+
+def multi_noise_sim(num_samp, num_dim):
+    """
+    Function for generating a multiplicative noise simulation.
+
+    :param num_samp: number of samples for the simulation
+    :param num_dim: number of dimensions for the simulation
+
+    :return: the data matrix and a response array
+    """
+    sig = np.diag(np.ones(shape=(num_dim)))
+    u = np.random.multivariate_normal(
+        cov=sig, mean=np.zeros(num_dim), size=num_samp)
+    x = np.random.multivariate_normal(
+        cov=sig, mean=np.zeros(num_dim), size=num_samp)
+
+    y = u * x
+
+    return x, y
+
+
+def multi_indep_sim(num_samp, num_dim, prob=0.5, sep1=3, sep2=2):
+    """
+    Function for generating a multimodal independence simulation.
+
+    :param num_samp: number of samples for the simulation
+    :param num_dim: number of dimensions for the simulation
+    :param prob: the binomial probability, defaults to 0.5
+    :param sep1: determines the size and separation of clusters, defaults to 3
+    :param sep2: determines the size and separation of clusters, defaults to 2
+
+    :return: the data matrix and a response array
+    """
+    sig = np.diag(np.ones(shape=(num_dim)))
+    u = np.random.multivariate_normal(
+        cov=sig, mean=np.zeros(num_dim), size=num_samp)
+    v = np.random.multivariate_normal(
+        cov=sig, mean=np.zeros(num_dim), size=num_samp)
+    u_2 = np.random.binomial(1, p=prob, size=(num_samp, 1))
+    v_2 = np.random.binomial(1, p=prob, size=(num_samp, 1))
+
+    x = u/sep1 + sep2*u_2 - 1
+    y = v/sep1 + sep2*v_2 - 1
 
     return x, y
