@@ -15,6 +15,9 @@ class DCorr(IndependenceTest):
         :param data_matrix_Y: [n*q], n: number of examples, q: dimension of each example
         :type: 2D numpy array
 
+        :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
+        :type: FunctionType or callable()
+
         :param corr_type: the type of global correlation to use, can be 'dcorr', 'mcorr', 'mantel'
         :type: str
 
