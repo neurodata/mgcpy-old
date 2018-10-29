@@ -12,33 +12,44 @@ class RVCorr(IndependenceTest):
     :param data_matrix_X: an input distance matrix
     :param data_matrix_Y: an input distance matrix
     :param compute_distance_matrix: a function to compute the pairwise distance matrix
-    :param option: a boolean indicating either that the test will be Pearson's correlation or 
+    :param option: a boolean indicating either that the test will be Pearson's correlation or
     """
 
     def __init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix, option=False):
         IndependenceTest.__init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
         self.option = option
 
-    def test_statistic(self):
+    def test_statistic(self, data_matrix_X=None, data_matrix_Y=None):
         """
         Calculates all the local correlation coefficients.
+
+        :param data_matrix_X: optional data matrix (default to class attributes)
+        :type: 2D numpy array
+
+        :param data_matrix_Y: optional data matrix (default to class attributes)
+        :type: 2D numpy array
 
         :return: The local correlation ``corr`` and local covariance ``covar``
                  of the input data matricies
         """
 
-        row_X, columns_X = self.data_matrix_X.shape[0], self.data_matrix_X.shape[1]
-        row_Y, columns_Y = self.data_matrix_Y.shape[0], self.data_matrix_Y.shape[1]
+        if data_matrix_X is None:
+            data_matrix_X = self.data_matrix_X
+        if data_matrix_Y is None:
+            data_matrix_Y = self.data_matrix_Y
+
+        row_X, columns_X = data_matrix_X.shape[0], data_matrix_X.shape[1]
+        row_Y, columns_Y = data_matrix_Y.shape[0], data_matrix_Y.shape[1]
 
         # use the matrix shape and diagonal elements to determine if the given data is a distance matrix or not
-        if row_X != columns_X or sum(self.data_matrix_X.diagonal()**2) > 0:
-            dist_mtx_X = distance_matrix(self.data_matrix_X, self.data_matrix_X)
+        if row_X != columns_X or sum(data_matrix_X.diagonal()**2) > 0:
+            dist_mtx_X = distance_matrix(data_matrix_X, data_matrix_X)
         else:
-            dist_mtx_X = self.data_matrix_X
-        if row_Y != columns_Y or sum(self.data_matrix_Y.diagonal()**2) > 0:
-            dist_mtx_Y = distance_matrix(self.data_matrix_Y, self.data_matrix_Y)
+            dist_mtx_X = data_matrix_X
+        if row_Y != columns_Y or sum(data_matrix_Y.diagonal()**2) > 0:
+            dist_mtx_Y = distance_matrix(data_matrix_Y, data_matrix_Y)
         else:
-            dist_mtx_Y = self.data_matrix_Y
+            dist_mtx_Y = data_matrix_Y
 
         mat1 = dist_mtx_X - mb.repmat(np.mean(dist_mtx_X, axis=0),
                                       dist_mtx_X.shape[0], 1)

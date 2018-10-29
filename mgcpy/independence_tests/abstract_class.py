@@ -25,10 +25,15 @@ class IndependenceTest(ABC):
         super().__init__()
 
     @abstractmethod
-    def test_statistic(self):
+    def test_statistic(self, data_matrix_X, data_matrix_Y):
         """
-        Abstract method to compute the test statistic,
-        given `self.data_matrix_X` and `self.data_matrix_Y`.
+        Abstract method to compute the test statistic given two data matrices
+
+        :param data_matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
+        :type data_matrix_X: 2D `numpy.array`
+
+        :param data_matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
+        :type data_matrix_Y: 2D `numpy.array`
 
         :return: returns a list of two items, that contains:
             - :test_statistic: the test statistic computed using the respective independence test

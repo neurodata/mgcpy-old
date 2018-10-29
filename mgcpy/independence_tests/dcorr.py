@@ -36,14 +36,17 @@ class DCorr(IndependenceTest):
         then perform distance transformation using dist_transform()
         calculate correlation by computing all global covariance and variance using global_cov(A, B)
 
-        :param data_matrix_X: optional data matrix
+        :param data_matrix_X: optional data matrix (default to class attributes)
         :type: 2D numpy array
 
-        :param data_matrix_Y: optional data matrix
+        :param data_matrix_Y: optional data matrix (default to class attributes)
         :type: 2D numpy array
 
-        :return: the value of the correlation test statistic
-        :rtype: float
+        :return: returns a list of two items, that contains:
+            - :test_statistic: the test statistic computed using the respective independence test
+            - :independence_test_metadata: (optional) metadata other than the test_statistic,
+                                           that the independence tests computes in the process
+        :rtype: float, dict
         '''
         # if no data matrix is given, use the data matrices given at initialization
         if data_matrix_X is None and data_matrix_Y is None:
@@ -70,11 +73,14 @@ class DCorr(IndependenceTest):
         else:
             correlation = covariance/np.real(np.sqrt(variance_X*variance_Y))
 
+        # store the variance of X, variance of Y and the covariace as metadata
+        independence_test_metadata = {'variance_X': variance_X, 'variance_Y': variance_Y, 'covariance': covariance}
+
         # use absolute value for mantel coefficients
         if self.corr_type == 'mantel':
-            return np.abs(correlation)
+            return np.abs(correlation), independence_test_metadata
 
-        return correlation
+        return correlation, independence_test_metadata
 
     def compute_global_covariance(self, dist_mtx_X, dist_mtx_Y):
         '''
@@ -98,7 +104,7 @@ class DCorr(IndependenceTest):
         :return: test statistic of t-test for mcorr
         :rtype: np.float
         '''
-        test_stat = self.test_statistic(data_matrix_X=data_matrix_X, data_matrix_Y=data_matrix_Y)
+        test_stat, _ = self.test_statistic(data_matrix_X=data_matrix_X, data_matrix_Y=data_matrix_Y)
 
         n = data_matrix_X.shape[0]
         if n < 4:
@@ -124,7 +130,7 @@ class DCorr(IndependenceTest):
         :return: float representing the p-value
         '''
         # calculte the test statistic with the given data
-        test_stat = self.test_statistic()
+        test_stat, _ = self.test_statistic()
         if self.corr_type == 'mcorr':
             '''
             for the unbiased centering scheme used to compute mcorr test statistic
@@ -145,6 +151,6 @@ class DCorr(IndependenceTest):
             test_stats_null = np.zeros(repeats)
             for rep in range(repeats):
                 permuted_y = np.random.permutation(self.data_matrix_Y)
-                test_stats_null[rep] = self.test_statistic(data_matrix_X=self.data_matrix_X, data_matrix_Y=permuted_y)
+                test_stats_null[rep], _ = self.test_statistic(data_matrix_X=self.data_matrix_X, data_matrix_Y=permuted_y)
             # p-value is the probability of observing more extreme test statistic under the null
             return np.where(test_stats_null >= test_stat)[0].shape[0] / repeats
