@@ -93,5 +93,7 @@ class RVCorr(IndependenceTest):
             covar = np.sum(np.power(svds(covar, self.option)[1], 2))
             corr = np.divide(covar, np.sqrt(np.sum(np.power(svds(varX, self.option)[1], 2))
                                             * np.sum(np.power(svds(varY, self.option)[1], 2))))
-
-        return corr, {"covariance": covar}
+        
+        independence_test_metadata = {"covariance": covar}
+        
+        return corr, independence_test_metadata
