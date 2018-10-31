@@ -9,6 +9,7 @@ branches:
   - development
 
 install:
+  - pip install -r requirements.txt
   - python3 setup.py install
   - python3 setup.py build_ext --inplace  # for cython
 
