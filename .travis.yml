@@ -14,7 +14,7 @@ install:
   - python3 setup.py build_ext --inplace  # for cython
 
 script:
-  pytest
+  py.test --cov=mgcpy
 
 after_success:
   - coveralls
