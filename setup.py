@@ -19,7 +19,7 @@ AUTHOR_EMAIL = 'spalani2@jhu.edu'
 URL = 'https://github.com/NeuroDataDesign/mgcpy'
 MINIMUM_PYTHON_VERSION = 3, 4  # Minimum of Python 3.4
 
-REQUIRED_PACKAGES = ["numpy>=1.14.5", "scipy>=1.1.0", "pytest>=3.8.0", "Cython==0.29", "flake8>=3.5.0"]
+REQUIRED_PACKAGES = ["numpy>=1.14.5", "scipy>=1.1.0", "pytest>=3.8.0", "Cython==0.29", "flake8>=3.5.0", "pytest-cov>=2.6.0"]
 VERSION = '0.0.2'
 
 
