@@ -448,7 +448,7 @@ def square_sim(num_samp, num_dim, noise=0.05, indep=False, low=-1, high=1, perio
 
 def two_parab_sim(num_samp, num_dim, noise=2, low=-1, high=1, prob=0.5):
     """
-    Function for generating a two parabola simulation.
+    Function for generating a two parabolas simulation.
 
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
@@ -478,7 +478,7 @@ def circle_sim(num_samp, num_dim, noise=0.4, low=-1, high=1, radius=1):
     """
     Function for generating a circle or ellipse simulation.
 
-    Note: For producing circle or ellipse simulations, change the ``r`` to 1 or 5.
+    Note: For producing circle or ellipse simulations, change the ``radius`` to 1 or 5.
 
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
@@ -498,14 +498,13 @@ def circle_sim(num_samp, num_dim, noise=0.4, low=-1, high=1, radius=1):
                                                  size=num_samp))
 
     ry = np.ones((num_samp, num_dim))
-    x[:, 0] = np.cos(z[:, 0] * np.pi)
+    x[:, 0] = np.cos(z[:, 0].reshape((num_samp)) * np.pi)
     for i in range(num_dim - 1):
-        x[:, i+1] = x[:, i] * np.cos(z[:, i+1] * np.pi)
-        x[:, i] = x[:, i] * np.sin(z[:, i+1] * np.pi)
+        x[:, i+1] = (x[:, i].reshape((num_samp)) * np.cos(z[:, i+1].reshape((num_samp)) * np.pi))
+        x[:, i] = (x[:, i].reshape((num_samp)) * np.sin(z[:, i+1].reshape((num_samp)) * np.pi))
     x = rx * x + noise*rx*gauss_noise
 
-    y = ry * np.sin(z[:, 0].reshape((num_samp, num_dim))
-                    * np.pi) + noise*ry*gauss_noise
+    y = ry * np.sin(z[:, 0].reshape((num_samp, 1)) * np.pi) + noise*ry*gauss_noise
 
     return x, y
 
