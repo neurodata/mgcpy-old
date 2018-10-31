@@ -1,5 +1,8 @@
 import numpy as np
+cimport numpy as np
 
+DTYPE = np.float
+ctypedef np.int_t DTYPE_t
 
 cpdef local_covariance(distance_matrix_A, distance_matrix_B, ranked_distance_matrix_A, ranked_distance_matrix_B):
     """
@@ -27,9 +30,9 @@ cpdef local_covariance(distance_matrix_A, distance_matrix_B, ranked_distance_mat
     cdef int n = distance_matrix_A.shape[0]
     cdef int n_X = np.max(ranked_distance_matrix_A) + 1
     cdef int n_Y = np.max(ranked_distance_matrix_B) + 1
-    covariance_X_Y = np.zeros((n_X, n_Y))
-    expected_X = np.zeros(n_X)
-    expected_Y = np.zeros(n_Y)
+    cdef np.ndarray covariance_X_Y = np.zeros((n_X, n_Y), dtype=DTYPE)
+    cdef np.ndarray expected_X = np.zeros(n_X, dtype=DTYPE)
+    cdef np.ndarray expected_Y = np.zeros(n_Y, dtype=DTYPE)
 
     # summing up the the element-wise product of A and B based on the ranks,
     # yields the local family of covariances

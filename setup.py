@@ -7,6 +7,7 @@ from setuptools.command.install import install
 from subprocess import check_output, call
 from Cython.Build import cythonize
 from sys import platform
+import numpy
 
 
 PACKAGE_NAME = 'mgcpy'
@@ -52,5 +53,7 @@ setup(
         'Programming Language :: Python :: 3.7'
     ],
     ext_modules=cythonize("mgcpy/independence_tests/mgc/local_covariance.pyx"),
+    include_dirs=[numpy.get_include()],
     packages=find_packages()
+
 )
