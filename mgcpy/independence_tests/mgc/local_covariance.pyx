@@ -1,7 +1,7 @@
 import numpy as np
 
 
-cpdef local_covariance_cython(distance_matrix_A, distance_matrix_B, ranked_distance_matrix_A, ranked_distance_matrix_B):
+cpdef local_covariance(distance_matrix_A, distance_matrix_B, ranked_distance_matrix_A, ranked_distance_matrix_B):
     """
     Computes all local covariances simultaneously in O(n^2).
 
