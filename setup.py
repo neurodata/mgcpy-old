@@ -52,7 +52,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7'
     ],
-    ext_modules=cythonize("mgcpy/independence_tests/mgc/local_covariance.pyx"),
+    ext_modules=cythonize("mgcpy/independence_tests/mgc/local_correlation.pyx"),
     include_dirs=[numpy.get_include()],
     packages=find_packages()
 
