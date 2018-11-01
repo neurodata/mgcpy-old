@@ -1,6 +1,4 @@
-import matplotlib.pyplot as plt
 import numpy as np
-from mgcpy.benchmarks.simulations import *
 from mgcpy.independence_tests.rv_corr import RVCorr
 from scipy.spatial.distance import pdist, squareform
 
