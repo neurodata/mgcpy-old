@@ -5,8 +5,8 @@ from mgcpy.independence_tests.mgc.local_correlation import local_correlations
 
 
 def test_local_correlations():
-    X = np.array([[2, 1, 100], [4, 2, 10], [8, 3, 10]])
-    Y = np.array([[30, 20, 10], [5, 10, 20], [8, 16, 32]])
+    X = np.array([[2, 1, 100], [4, 2, 10], [8, 3, 10]], dtype=np.float)
+    Y = np.array([[30, 20, 10], [5, 10, 20], [8, 16, 32]], dtype=np.float)
 
     local_correlation_matrix = np.array([[0, 0, 0.0000000],
                                          [0, 1, 1.0000000],
