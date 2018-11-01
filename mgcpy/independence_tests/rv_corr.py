@@ -89,7 +89,6 @@ class RVCorr(IndependenceTest):
         varX = np.matmul(a=mat1.T, b=mat1)
         varY = np.matmul(a=mat2.T, b=mat2)
 
-        self.option = np.minimum(np.abs(self.option), mat1.shape[1])
         if (self.which_test == 'pearson') and ((row_X == 1 or columns_X == 1) and (row_Y == 1 or columns_Y == 1)):
             covar = np.trace(np.matmul(covar, covar.T))
             corr = pearsonr(data_matrix_X, data_matrix_Y)
@@ -98,9 +97,9 @@ class RVCorr(IndependenceTest):
             corr = np.divide(covar, np.sqrt(np.trace(np.matmul(varX, varX))
                                             * np.trace(np.matmul(varY, varY))))
         else:
-            covar = np.sum(np.power(svds(covar, self.option)[1], 2))
-            corr = np.divide(covar, np.sqrt(np.sum(np.power(svds(varX, self.option)[1], 2))
-                                            * np.sum(np.power(svds(varY, self.option)[1], 2))))
+            covar = np.sum(np.power(svds(covar, 1)[1], 2))
+            corr = np.divide(covar, np.sqrt(np.sum(np.power(svds(varX, 1)[1], 2))
+                                            * np.sum(np.power(svds(varY, 1)[1], 2))))
 
         independence_test_metadata = {"covariance": covar}
 
