@@ -49,7 +49,7 @@ def gower_center_many(Ys):
 def gen_h(x, columns, permutations):
     return hatify(x[permutations][:, np.array(columns)])
 
-def gen_H2_perms(X, columns, permutation_indexes):
+def gen_H2_perms_single(X, columns, permutation_indexes):
     permutations, observations = permutation_indexes.shape
     variables = X.shape[1]
     
@@ -68,7 +68,7 @@ def gen_H2_perms(X, columns, permutation_indexes):
     
     return H2_permutations
 
-def gen_IH_perms(X, columns, permutation_indexes):
+def gen_IH_perms_single(X, columns, permutation_indexes):
     permutations, observations = permutation_indexes.shape
     I = np.eye(observations, observations)
     
@@ -79,6 +79,32 @@ def gen_IH_perms(X, columns, permutation_indexes):
         cols_X = cols_X.reshape((fix,1))
         IH = I - hatify(cols_X)
 #        IH = I - hatify(X[permutation_indexes[i, :]])
+        IH_permutations[:,i] = IH.flatten()
+    
+    return IH_permutations
+
+def gen_H2_perms(X, columns, permutation_indexes):
+    permutations, observations = permutation_indexes.shape
+    variables = X.shape[1]
+    
+    H2_permutations = np.zeros((observations ** 2, permutations))
+    for i in range(permutations):
+        perm_X = X[permutation_indexes[i, :]]
+        cols_X = perm_X[:, columns]
+        H = hatify(cols_X)
+        other_columns = [i for i in range(variables) if i not in columns]
+        H2 = H - hatify(X[:, other_columns])
+        H2_permutations[:, i] = H2.flatten()
+    
+    return H2_permutations
+
+def gen_IH_perms(X, columns, permutation_indexes):
+    permutations, observations = permutation_indexes.shape
+    I            = np.eye(observations, observations)
+    
+    IH_permutations = np.zeros((observations ** 2, permutations))
+    for i in range(permutations):
+        IH = I - hatify(X[permutation_indexes[i, :]][:, columns])
         IH_permutations[:,i] = IH.flatten()
     
     return IH_permutations
