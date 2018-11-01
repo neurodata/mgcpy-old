@@ -1,4 +1,6 @@
+import matplotlib.pyplot as plt
 import numpy as np
+from mgcpy.benchmarks.simulations import *
 from mgcpy.independence_tests.rv_corr import RVCorr
 from scipy.spatial.distance import pdist, squareform
 
@@ -16,7 +18,7 @@ def test_local_corr():
     Y = np.array([3.2311, 12.1113, 11.1350, 1.1989, 3.3127, 4.8580, 3.4917,
                   7.1748, 6.5792, 2.4012])[:, np.newaxis]
     rvcorr = RVCorr(X, Y, compute_distance_matrix)
-    rvcorr2 = RVCorr(X, Y, compute_distance_matrix, option=1)
+    rvcorr2 = RVCorr(X, Y, compute_distance_matrix, which_test='cca')
     test_stat1 = rvcorr.test_statistic()[0]
     test_stat2 = rvcorr2.test_statistic()[0]
 

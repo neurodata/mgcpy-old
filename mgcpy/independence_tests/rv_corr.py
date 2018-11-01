@@ -29,7 +29,7 @@ class RVCorr(IndependenceTest):
             self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
         self.which_test = which_test
 
-    def test_statistic(self, data_matrix_X, data_matrix_Y):
+    def test_statistic(self, data_matrix_X=None, data_matrix_Y=None):
         """
         Computes the Pearson/RV/CCa correlation measure between two datasets.
         - Default computes linear correlation for RV

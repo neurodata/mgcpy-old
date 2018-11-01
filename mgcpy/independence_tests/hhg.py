@@ -22,7 +22,7 @@ class HHG(IndependenceTest):
         IndependenceTest.__init__(
             self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
 
-    def test_statistic(self, data_matrix_X, data_matrix_Y):
+    def test_statistic(self, data_matrix_X=None, data_matrix_Y=None):
         """
         Computes the HHG correlation measure between two datasets.
 
