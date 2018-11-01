@@ -3,12 +3,12 @@
 """
 
 import numpy as np
-import scipy.stats
 
 
-def min_rank_data(data):
+def dense_rank_data(data):
+    # Equivalent to scipy.stats.rankdata(x, "dense"), but faster!
     u, v = np.unique(data, return_inverse=True)
-    return (np.cumsum(np.concatenate(([0], np.bincount(v)))))[v] + 1
+    return v + 1
 
 
 def rank_distance_matrix(distance_matrix):
@@ -24,18 +24,8 @@ def rank_distance_matrix(distance_matrix):
     :return: column-wise ranked matrix of ``distance_matrix``
     :rtype: 2D numpy.array
     """
-    n_rows = distance_matrix.shape[0]
-    ranked_distance_matrix = np.zeros(distance_matrix.shape)
-    for i in range(n_rows):
-        column = distance_matrix[:, i]
-        # ranked_column = scipy.stats.rankdata(column, "min")
-        ranked_column = min_rank_data(column)
-        sorted_unique_ranked_column = sorted(set(ranked_column))
-        if (len(ranked_column) != len(sorted_unique_ranked_column)):
-            for j, rank in enumerate(sorted_unique_ranked_column):
-                ranked_column[ranked_column == rank] = j + 1
-        ranked_distance_matrix[:, i] = ranked_column
-    return ranked_distance_matrix
+    # faster than np.apply_along_axis
+    return np.hstack([dense_rank_data(distance_matrix[:, i]).reshape(-1, 1) for i in range(distance_matrix.shape[0])])
 
 
 def center_distance_matrix(distance_matrix, base_global_correlation="mgc", is_ranked=True):
