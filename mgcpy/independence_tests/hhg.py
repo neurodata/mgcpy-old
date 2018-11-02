@@ -85,7 +85,9 @@ class HHG(IndependenceTest):
                             np.power((t12*t21 - t11*t22), 2) / denom
         corr = np.sum(S)
 
-        return corr
+        # no metadata for HHG
+        metadata = {}
+        return corr, metadata
 
     def p_value(self, replication_factor=1000):
         """
