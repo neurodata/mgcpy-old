@@ -84,17 +84,10 @@ class RVCorr(IndependenceTest):
                                       dist_mtx_X.shape[0], 1)
         mat2 = dist_mtx_Y - mb.repmat(np.mean(dist_mtx_Y, axis=0),
                                       dist_mtx_Y.shape[0], 1)
-        '''
+
         covar = np.matmul(a=mat1.T, b=mat2)
         varX = np.matmul(a=mat1.T, b=mat1)
         varY = np.matmul(a=mat2.T, b=mat2)
-        '''
-        covar = np.dot(mat1.T, mat2)
-        varX = np.dot(mat1.T, mat1)
-        varY = np.dot(mat2.T, mat2)
-        print('cov: {}'.format(covar))
-        print('varX: {}'.format(varX))
-        print('varY: {}'.format(varY))
 
         if (self.which_test == 'pearson') and ((row_X == 1 or columns_X == 1) and (row_Y == 1 or columns_Y == 1)):
             covar = np.trace(np.matmul(covar, covar.T))
