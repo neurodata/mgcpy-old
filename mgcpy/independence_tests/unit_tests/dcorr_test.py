@@ -16,7 +16,7 @@ def test_dcorr():
     X = np.array([1, 1, 1])[:, np.newaxis]
     Y = np.array([1, 2, 3])[:, np.newaxis]
     mcorr = DCorr(data_matrix_X=X, data_matrix_Y=Y, compute_distance_matrix=compute_distance_matrix, corr_type='mcorr')
-    assert np.allclose(mcorr.test_statistic(), 0)
+    assert np.allclose(mcorr.test_statistic()[0], 0)
 
     # small simulated example of quadratic dependency: quad_sim(10, 2, noise=0, indep=False)
     X = np.array(
@@ -48,9 +48,9 @@ def test_dcorr():
     mantel = DCorr(data_matrix_X=X, data_matrix_Y=Y, compute_distance_matrix=compute_distance_matrix, corr_type='mantel')
 
     # test statistic
-    assert np.allclose(mcorr.test_statistic(), 0.3117760199455171)
-    assert np.allclose(dcorr.test_statistic(), 0.4454977629359435)
-    assert np.allclose(mantel.test_statistic(), 0.2725479362090295)
+    assert np.allclose(mcorr.test_statistic()[0], 0.3117760199455171)
+    assert np.allclose(dcorr.test_statistic()[0], 0.4454977629359435)
+    assert np.allclose(mantel.test_statistic()[0], 0.2725479362090295)
 
     # test p value
     assert np.allclose(mcorr.p_value(), 0.03207910931266045)
