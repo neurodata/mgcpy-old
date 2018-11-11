@@ -2,7 +2,6 @@
     MGCPY Sample Statistic
 """
 
-import math
 import numpy as np
 import scipy.ndimage
 import scipy.stats
@@ -33,19 +32,19 @@ def threshold_local_correlations(local_correlation_matrix, sample_size):
     # non-paratemetric threshold
     # set option = 1 to compute a non-parametric and data-adaptive threshold
     # (using the negative local correlation)
-    option = 0
-    if option == 1:
-        np_threshold = local_correlation_matrix
-
-        # all negative correlations
-        np_threshold = np_threshold[np_threshold < 0]
-
-        # the standard deviation of negative correlations
-        np_threshold = 5 * np.sqrt(np.sum(np_threshold ** 2) / len(np_threshold))
-
-        # use the max of paratemetric and non-parametric thresholds
-        if not math.isnan(np_threshold) and np_threshold > threshold:
-            threshold = np_threshold
+    # option = 0
+    # if option == 1:
+    #     np_threshold = local_correlation_matrix
+    #
+    #     # all negative correlations
+    #     np_threshold = np_threshold[np_threshold < 0]
+    #
+    #     # the standard deviation of negative correlations
+    #     np_threshold = 5 * np.sqrt(np.sum(np_threshold ** 2) / len(np_threshold))
+    #
+    #     # use the max of paratemetric and non-parametric thresholds
+    #     if not np.isnan(np_threshold) and np_threshold > threshold:
+    #         threshold = np_threshold
 
     # take the max of threshold and local correlation at the maximal scale
     threshold = max(threshold, local_correlation_matrix[m - 1][n - 1])
