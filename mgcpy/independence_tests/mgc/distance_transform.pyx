@@ -1,3 +1,6 @@
+# cython: linetrace=True
+# distutils: define_macros=CYTHON_TRACE_NOGIL=1
+
 """
     MGCPY Distance Transform
 """
@@ -29,9 +32,7 @@ cpdef rank_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix):
     return np.hstack([dense_rank_data(distance_matrix[:, i]).reshape(-1, 1) for i in range(distance_matrix.shape[0])])
 
 
-cpdef center_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix,
-                             str base_global_correlation="mgc",
-                             is_ranked=True):
+cpdef center_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix, str base_global_correlation="mgc", is_ranked=True):
     """
     Appropriately transform distance matrices by centering them, based on the
     specified global correlation to build on
@@ -86,8 +87,7 @@ cpdef center_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix,
             "ranked_distance_matrix": ranked_distance_matrix}
 
 
-cpdef transform_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix_A,
-                                np.ndarray[np.float_t, ndim=2] distance_matrix_B,
+cpdef transform_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix_A, np.ndarray[np.float_t, ndim=2] distance_matrix_B,
                                 str base_global_correlation="mgc", is_ranked=True):
     """
     Transforms the distance matrices appropriately, with column-wise ranking if needed.
