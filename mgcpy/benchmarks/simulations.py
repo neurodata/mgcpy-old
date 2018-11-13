@@ -136,7 +136,7 @@ def joint_sim(num_samp, num_dim, noise=0.5):
     :return: the data matrix and a response array
     """
     gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
-    if (num_dim == 1):
+    if (num_dim > 1):
         kappa = 1
     else:
         kappa = 0
@@ -169,7 +169,7 @@ def step_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     coeffs = gen_coeffs(num_dim)
     gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
-    if (num_dim == 1):
+    if (num_dim > 1):
         kappa = 1
     else:
         kappa = 0
@@ -256,6 +256,10 @@ def spiral_sim(num_samp, num_dim, noise=0.4, low=0, high=5):
 
     :return: the data matrix and a response array
     """
+    if num_dim > 1:
+        kappa = 1
+    else:
+        kappa = 0
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     rx = gen_x_unif(num_samp, num_dim, low=low, high=high)
     ry = rx
@@ -272,7 +276,7 @@ def spiral_sim(num_samp, num_dim, noise=0.4, low=0, high=5):
         x[:, i] = (x[:, i].reshape((num_samp)) * np.sin(z[:, i+1].reshape((num_samp)) * np.pi))
     x = rx * x
 
-    y = ry * np.sin(z[:, 0].reshape((num_samp, 1)) * np.pi) + noise*ry*gauss_noise
+    y = ry * np.sin(z[:, 0].reshape((num_samp, 1)) * np.pi) + kappa*noise*ry*gauss_noise
 
     return x, y
 
@@ -288,6 +292,10 @@ def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
 
     :return: the data matrix and a response array
     """
+    if num_dim > 1:
+        kappa = 1
+    else:
+        kappa = 0
     binom_dist = np.random.binomial(1, p=bern_prob, size=(num_samp, 1))
     sig = np.diag(np.ones(shape=num_dim) * num_dim)
     gauss_noise1 = (np.random.multivariate_normal(
@@ -306,7 +314,7 @@ def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
     gauss_noise2 = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
     for i in range(num_samp):
         y[i] = (np.dot((2*binom_dist[i]-1) * coeffs.T, x[i, :])
-                + noise*gauss_noise2[i])
+                + kappa*noise*gauss_noise2[i])
 
     return x, y
 
@@ -388,7 +396,7 @@ def sin_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=4*np
     :return: the data matrix and a response array
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
-    if num_dim > 1:
+    if num_dim > 1 or noise > 0:
         sig = np.diag(np.ones(shape=(num_dim)))
         v = (np.random.multivariate_normal(cov=sig, mean=np.zeros(num_dim),
                                            size=num_samp))
@@ -449,7 +457,6 @@ def square_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=-
     return x, y
 
 
-
 def two_parab_sim(num_samp, num_dim, noise=2, low=-1, high=1, prob=0.5):
     """
     Function for generating a two parabolas simulation.
@@ -493,6 +500,10 @@ def circle_sim(num_samp, num_dim, noise=0.4, low=-1, high=1, radius=1):
 
     :return: the data matrix and a response array
     """
+    if num_dim > 1:
+        kappa = 1
+    else:
+        kappa = 0
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
     rx = radius * np.ones((num_samp, num_dim))
     z = gen_x_unif(num_samp, num_dim, low=low, high=high)
