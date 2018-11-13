@@ -7,15 +7,11 @@ from scipy.stats import kendalltau, spearmanr
 class KendallSpearman(IndependenceTest):
     def __init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix, which_test='kendall'):
         """
-        :param data_matrix_X: is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
-        :type data_matrix_X: 2D numpy.array
+        :param data_matrix_X: a [n*1] data matrix, a square matrix with n samples in 1 dimension
+        :type data_matrix_X: 1D numpy.array
 
-        :param data_matrix_Y: is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
-        :type data_matrix_Y: 2D numpy.array
+        :param data_matrix_Y: a [n*1] data matrix, a square matrix with n samples in 1 dimension
+        :type data_matrix_Y: 1D numpy.array
 
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
         :type compute_distance_matrix: FunctionType or callable()
@@ -32,15 +28,11 @@ class KendallSpearman(IndependenceTest):
         Computes the Spearman's rho or Kendall's tau measure between two datasets.
         - Implments scipy.stats's implementation for both
 
-        :param data_matrix_X: (optional, default picked from class attr) is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
-        :type data_matrix_X: 2D numpy.array
+        :param data_matrix_X: (optional, default picked from class attr) a [n*1] data matrix, a square matrix with n samples in 1 dimension
+        :type data_matrix_X: 1D numpy.array
 
-        :param data_matrix_Y: (optional, default picked from class attr) is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
-        :type data_matrix_Y: 2D numpy.array
+        :param data_matrix_Y: (optional, default picked from class attr) a [n*1] data matrix, a square matrix with n samples in 1 dimension
+        :type data_matrix_Y: 1D numpy.array
 
         :return: returns the sample test statistic
 
@@ -59,6 +51,8 @@ class KendallSpearman(IndependenceTest):
             data_matrix_X = self.data_matrix_X
         if data_matrix_Y is None:
             data_matrix_Y = self.data_matrix_Y
+        assert data_matrix_X.shape[1] == 1, "Data matrix should be (n, 1) shape"
+        assert data_matrix_Y.shape[1] == 1, "Data matrix should be (n, 1) shape"
 
         if self.which_test == 'kendall':
             test_stat, p_value = kendalltau(data_matrix_X, data_matrix_Y)
