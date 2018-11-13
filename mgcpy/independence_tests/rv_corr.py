@@ -2,7 +2,6 @@ import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 from numpy import matlib as mb
 from scipy.sparse.linalg import svds
-from scipy.spatial import distance_matrix
 from scipy.stats import pearsonr
 
 
@@ -70,36 +69,31 @@ class RVCorr(IndependenceTest):
         row_X, columns_X = data_matrix_X.shape[0], data_matrix_X.shape[1]
         row_Y, columns_Y = data_matrix_Y.shape[0], data_matrix_Y.shape[1]
 
-        # use the matrix shape and diagonal elements to determine if the given data is a distance matrix or not
-        if row_X != columns_X or sum(data_matrix_X.diagonal()**2) > 0:
-            dist_mtx_X = distance_matrix(data_matrix_X, data_matrix_X)
-        else:
-            dist_mtx_X = data_matrix_X
-        if row_Y != columns_Y or sum(data_matrix_Y.diagonal()**2) > 0:
-            dist_mtx_Y = distance_matrix(data_matrix_Y, data_matrix_Y)
-        else:
-            dist_mtx_Y = data_matrix_Y
+        mat1 = data_matrix_X - mb.repmat(np.mean(data_matrix_X, axis=0),
+                                      data_matrix_X.shape[0], 1)
+        mat2 = data_matrix_Y - mb.repmat(np.mean(data_matrix_Y, axis=0),
+                                      data_matrix_Y.shape[0], 1)
 
-        mat1 = dist_mtx_X - mb.repmat(np.mean(dist_mtx_X, axis=0),
-                                      dist_mtx_X.shape[0], 1)
-        mat2 = dist_mtx_Y - mb.repmat(np.mean(dist_mtx_Y, axis=0),
-                                      dist_mtx_Y.shape[0], 1)
-
-        covar = np.matmul(a=mat1.T, b=mat2)
-        varX = np.matmul(a=mat1.T, b=mat1)
-        varY = np.matmul(a=mat2.T, b=mat2)
+        covar = np.dot(mat1.T, mat2)
+        varX = np.dot(mat1.T, mat1)
+        varY = np.dot(mat2.T, mat2)
 
         if (self.which_test == 'pearson') and ((row_X == 1 or columns_X == 1) and (row_Y == 1 or columns_Y == 1)):
-            covar = np.trace(np.matmul(covar, covar.T))
-            corr = pearsonr(data_matrix_X, data_matrix_Y)
+            corr, covar = pearsonr(data_matrix_X, data_matrix_Y)
+            corr, covar = corr[0], covar[0]
         elif (self.which_test == 'rv'):
-            covar = np.trace(np.matmul(covar, covar.T))
-            corr = np.divide(covar, np.sqrt(np.trace(np.matmul(varX, varX))
-                                            * np.trace(np.matmul(varY, varY))))
+            covar = np.trace(np.dot(covar, covar.T))
+            corr = np.divide(covar, np.sqrt(np.trace(np.dot(varX, varX))
+                                            * np.trace(np.dot(varY, varY))))
         else:
-            covar = np.sum(np.power(svds(covar, 1)[1], 2))
-            corr = np.divide(covar, np.sqrt(np.sum(np.power(svds(varX, 1)[1], 2))
-                                            * np.sum(np.power(svds(varY, 1)[1], 2))))
+            if varX.size == 1 or varY.size == 1 or covar.size == 1:
+                covar = np.sum(np.power(covar, 2))
+                corr = np.divide(covar, np.sqrt(np.sum(np.power(varX, 2))
+                                                * np.sum(np.power(varY, 2))))
+            else:
+                covar = np.sum(np.power(svds(covar, 1)[1], 2))
+                corr = np.divide(covar, np.sqrt(np.sum(np.power(svds(varX, 1)[1], 2))
+                                                * np.sum(np.power(svds(varY, 1)[1], 2))))
 
         independence_test_metadata = {"covariance": covar}
 
