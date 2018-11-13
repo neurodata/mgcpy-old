@@ -3,7 +3,7 @@ import math
 from mgcpy.independence_tests.dcorr import DCorr
 
 
-def power(independence_test, sample_generator, num_samples=100, num_dimensions=1, noise=0.0, repeats=1000, alpha=.05):
+def power(independence_test, sample_generator, num_samples=100, num_dimensions=1, noise=0.0, repeats=1000, alpha=.05, simulation_type=''):
     '''
     Estimate power
 
@@ -41,7 +41,17 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
     test_stats_alternative = np.zeros(repeats)
     for rep in range(repeats):
         # generate new samples for each iteration
-        data_matrix_X, data_matrix_Y = sample_generator(num_samples, num_dimensions, noise)
+        if simulation_type == 'sine_16pi':
+            data_matrix_X, data_matrix_Y = sample_generator(num_samples, num_dimensions, noise, period=np.pi*16)
+        elif simulation_type == 'multi_noise' or simulation_type == 'multi_indept':
+            data_matrix_X, data_matrix_Y = sample_generator(num_samples, num_dimensions)
+        elif simulation_type == 'ellipse':
+            data_matrix_X, data_matrix_Y = sample_generator(num_samples, num_dimensions, radius=5)
+        elif simulation_type == 'diamond':
+            data_matrix_X, data_matrix_Y = sample_generator(num_samples, num_dimensions, noise, period=-np.pi/8)
+        else:
+            data_matrix_X, data_matrix_Y = sample_generator(num_samples, num_dimensions, noise)
+
         # permutation test
         permuted_y = np.random.permutation(data_matrix_Y)
         test_stats_null[rep], _ = independence_test.test_statistic(data_matrix_X=data_matrix_X, data_matrix_Y=permuted_y)

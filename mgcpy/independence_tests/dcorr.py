@@ -7,6 +7,7 @@ from mgcpy.independence_tests.abstract_class import IndependenceTest
 
 
 class DCorr(IndependenceTest):
+
     def __init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix, corr_type='mcorr', is_distance_mtx=False):
         '''
         :param data_matrix_X: [n*p], n: number of examples, p: dimension of each example
@@ -27,6 +28,9 @@ class DCorr(IndependenceTest):
         IndependenceTest.__init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
         self.corr_type = corr_type
         self.is_distance_mtx = is_distance_mtx
+
+    def get_name(self):
+        return self.corr_type
 
     def test_statistic(self, data_matrix_X=None, data_matrix_Y=None):
         '''
