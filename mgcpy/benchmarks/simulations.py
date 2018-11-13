@@ -53,7 +53,7 @@ def linear_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     else:
         kappa = 0
 
-    y = (np.matmul(a=x, b=coeffs) + kappa*noise*gauss_noise)
+    y = (np.dot(a=x, b=coeffs) + kappa*noise*gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
 
@@ -81,7 +81,7 @@ def exp_sim(num_samp, num_dim, noise=10, indep=False, low=0, high=3):
     else:
         kappa = 0
 
-    y = (np.exp(np.matmul(a=x, b=coeffs)) + kappa*noise*gauss_noise)
+    y = (np.exp(np.dot(a=x, b=coeffs)) + kappa*noise*gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
 
@@ -114,7 +114,7 @@ def cub_sim(num_samp, num_dim, noise=80, indep=False, low=-1, high=1,
     else:
         kappa = 0
 
-    x_coeffs = np.matmul(a=x, b=coeffs)
+    x_coeffs = np.dot(a=x, b=coeffs)
     y = ((cub_coeff[2] * (x_coeffs-scale)**3)
          + (cub_coeff[1] * (x_coeffs-scale)**2)
          + (cub_coeff[0] * (x_coeffs-scale))
@@ -141,7 +141,7 @@ def joint_sim(num_samp, num_dim, noise=0.5):
     else:
         kappa = 0
     rho = 1 / (2*num_dim)
-    sig = np.diag(np.ones(shape=(2*num_dim)) * (2*num_dim))
+    sig = np.diag(np.ones(shape=(2*num_dim)))
     sig[num_dim: (2*num_dim), 0: num_dim] = rho
     sig[0: num_dim, num_dim: (2*num_dim)] = rho
 
@@ -174,9 +174,9 @@ def step_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     else:
         kappa = 0
 
-    x_coeff = np.matmul(a=x, b=coeffs)
+    x_coeff = np.dot(a=x, b=coeffs)
     x_coeff_temp = x_coeff.copy()
-    x_coeff_temp[x_coeff < 0] = 0
+    x_coeff_temp[x_coeff <= 0] = 0
     x_coeff_temp[x_coeff > 0] = 1
     y = (x_coeff_temp + kappa*noise*gauss_noise)
     if indep:
@@ -206,7 +206,7 @@ def quad_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     else:
         kappa = 0
 
-    y = ((np.matmul(a=x, b=coeffs)**2) + kappa*noise*gauss_noise)
+    y = ((np.dot(a=x, b=coeffs)**2) + kappa*noise*gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
 
@@ -236,8 +236,7 @@ def w_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
         kappa = 0
     gauss_noise = np.random.normal(loc=0, scale=1, size=(x.shape[0], 1))
 
-    y = (4 * ((np.matmul(a=x, b=coeffs)**2 - 0.5)**2
-              + np.matmul(a=u, b=coeffs)/500)
+    y = (4 * ((np.dot(a=x, b=coeffs)**2 - 0.5)**2 + np.dot(a=u, b=coeffs)/500)
          + kappa*noise*gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
@@ -257,19 +256,23 @@ def spiral_sim(num_samp, num_dim, noise=0.4, low=0, high=5):
 
     :return: the data matrix and a response array
     """
-    uniform_dist = gen_x_unif(num_samp, num_dim=1, low=low, high=high)
-    the_x = np.array(np.cos(np.pi * uniform_dist))
-    y = uniform_dist * np.sin(np.pi * uniform_dist)
-    x = np.zeros(shape=(num_samp, num_dim))
+    x = gen_x_unif(num_samp, num_dim, low=low, high=high)
+    rx = gen_x_unif(num_samp, num_dim, low=low, high=high)
+    ry = rx
+    z = rx
+    sig = np.diag(np.ones(shape=(num_dim)))
+    gauss_noise = (np.random.multivariate_normal(cov=sig,
+                                                 mean=np.zeros(num_dim),
+                                                 size=num_samp))
 
-    if num_dim > 1:
-        for i in range(num_dim - 1):
-            the_x = the_x.reshape(num_samp, 1)
-            x[:, i] = np.squeeze((y * np.power(the_x, i+1)))
-    x[:, num_dim-1] = np.squeeze(uniform_dist * the_x)
+    ry = np.ones((num_samp, num_dim))
+    x[:, 0] = np.cos(z[:, 0].reshape((num_samp)) * np.pi)
+    for i in range(num_dim - 1):
+        x[:, i+1] = (x[:, i].reshape((num_samp)) * np.cos(z[:, i+1].reshape((num_samp)) * np.pi))
+        x[:, i] = (x[:, i].reshape((num_samp)) * np.sin(z[:, i+1].reshape((num_samp)) * np.pi))
+    x = rx * x
 
-    gauss_noise = np.random.normal(loc=0, scale=1, size=(x.shape[0], 1))
-    y = y + noise*num_dim*gauss_noise
+    y = ry * np.sin(z[:, 0].reshape((num_samp, 1)) * np.pi) + noise*ry*gauss_noise
 
     return x, y
 
@@ -302,7 +305,7 @@ def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
 
     gauss_noise2 = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
     for i in range(num_samp):
-        y[i] = (np.matmul((2*binom_dist[i]-1) * coeffs.T, x[i, :])
+        y[i] = (np.dot((2*binom_dist[i]-1) * coeffs.T, x[i, :])
                 + noise*gauss_noise2[i])
 
     return x, y
@@ -360,7 +363,7 @@ def root_sim(num_samp, num_dim, noise=0.25, indep=False, low=-1, high=1, n_root=
     else:
         kappa = 0
 
-    y = (np.power(np.abs(np.matmul(a=x, b=coeffs.reshape(num_dim, 1))), 1/n_root)
+    y = (np.power(np.abs(np.dot(a=x, b=coeffs.reshape(num_dim, 1))), 1/n_root)
          + kappa*noise*gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
@@ -408,7 +411,7 @@ def sin_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=4*np
     return x, y
 
 
-def square_sim(num_samp, num_dim, noise=0.05, indep=False, low=-1, high=1, period=-np.pi/8):
+def square_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=-np.pi/8):
     """
     Function for generating a square or diamond simulation.
 
@@ -430,7 +433,7 @@ def square_sim(num_samp, num_dim, noise=0.05, indep=False, low=-1, high=1, perio
     gauss_noise = (np.random.multivariate_normal(cov=sig,
                                                  mean=np.zeros(num_dim),
                                                  size=num_samp))
-    x = u*np.cos(period) + v*np.sin(period) + noise*gauss_noise
+    x = u*np.cos(period) + v*np.sin(period) + 0.05*num_dim*gauss_noise
 
     y = -u*np.sin(period) + v*np.cos(period)
     if indep:
@@ -441,9 +444,10 @@ def square_sim(num_samp, num_dim, noise=0.05, indep=False, low=-1, high=1, perio
                                                      mean=np.zeros(
                                                          num_dim),
                                                      size=num_samp))
-        x = u*np.cos(period) + v*np.sin(period) + noise*gauss_noise
+        x = u*np.cos(period) + v*np.sin(period) + 0.05*num_dim*gauss_noise
 
     return x, y
+
 
 
 def two_parab_sim(num_samp, num_dim, noise=2, low=-1, high=1, prob=0.5):
@@ -468,7 +472,7 @@ def two_parab_sim(num_samp, num_dim, noise=2, low=-1, high=1, prob=0.5):
     else:
         kappa = 0
 
-    y = (np.power(np.matmul(x, coeffs.reshape(num_dim, 1)), 2) +
+    y = (np.power(np.dot(x, coeffs.reshape(num_dim, 1)), 2) +
          noise*kappa*gauss_noise) * (u - 0.5)
 
     return x, y
@@ -504,7 +508,7 @@ def circle_sim(num_samp, num_dim, noise=0.4, low=-1, high=1, radius=1):
         x[:, i] = (x[:, i].reshape((num_samp)) * np.sin(z[:, i+1].reshape((num_samp)) * np.pi))
     x = rx * x + noise*rx*gauss_noise
 
-    y = ry * np.sin(z[:, 0].reshape((num_samp, 1)) * np.pi) + noise*ry*gauss_noise
+    y = ry * np.sin(z[:, 0].reshape((num_samp, 1)) * np.pi)
 
     return x, y
 
