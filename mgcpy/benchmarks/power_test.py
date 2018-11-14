@@ -34,3 +34,10 @@ def test_power():
     pearson = RVCorr(data_matrix_X=np.nan, data_matrix_Y=np.nan, compute_distance_matrix=compute_distance_matrix, which_test='pearson')
     pearson_power = power(pearson, ubern_sim, num_samples=100, num_dimensions=1)
     assert np.allclose(pearson_power, 0.05688, atol=0.05)
+
+    # power for different simulations
+    assert np.allclose(power(mcorr, sin_sim, simulation_type='sine_16pi'), 0.07307, atol=0.05)
+    assert np.allclose(power(mcorr, multi_noise_sim, simulation_type='multi_noise'), 0.83968, atol=0.1)
+    assert np.allclose(power(mcorr, multi_indept, simulation_type='multi_indept'), 0.05048, atol=0.05)
+    assert np.allclose(power(mcorr, circle_sim, simulation_type='ellipse'), 0.8105, atol=0.1)
+    assert np.allclose(power(mcorr, square_sim, simulation_type='diamond'), 0.19534, atol=0.1)
