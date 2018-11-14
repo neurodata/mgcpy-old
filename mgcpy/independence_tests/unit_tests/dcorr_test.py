@@ -47,6 +47,11 @@ def test_dcorr():
     dcorr = DCorr(data_matrix_X=X, data_matrix_Y=Y, compute_distance_matrix=compute_distance_matrix, corr_type='dcorr')
     mantel = DCorr(data_matrix_X=X, data_matrix_Y=Y, compute_distance_matrix=compute_distance_matrix, corr_type='mantel')
 
+    # test get_name
+    assert mcorr.get_name() == 'mcorr'
+    assert dcorr.get_name() == 'dcorr'
+    assert mantel.get_name() == 'mantel'
+
     # test statistic
     assert np.allclose(mcorr.test_statistic()[0], 0.3117760199455171)
     assert np.allclose(dcorr.test_statistic()[0], 0.4454977629359435)
