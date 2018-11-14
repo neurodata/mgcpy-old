@@ -23,8 +23,6 @@ def test_local_corr():
     assert np.round(test_stat2, decimals=2) == 0.95
     assert np.round(test_stat3, decimals=2) == 0.90
 
-    del X, Y, rvcorr, rvcorr2, rvcorr3, test_stat1, test_stat2, test_stat3
-
     # Against linear simulations
     np.random.seed(0)
     X, Y = sims.linear_sim(100, 1)
@@ -40,6 +38,20 @@ def test_local_corr():
     assert np.round(test_stat1, decimals=2) == 0.24
     assert np.round(test_stat2, decimals=2) == 0.49
     assert np.round(test_stat3, decimals=2) == 0.24
+    
+    X, Y = sims.linear_sim(100, 1, noise=0)
+    #savemat('distance matrix data', {'X' : X, 'Y' : Y})
+    rvcorr = RVCorr(X, Y, None)
+    rvcorr2 = RVCorr(X, Y, None, 'pearson')
+    rvcorr3 = RVCorr(X, Y, None, 'cca')
+
+    test_stat1 = rvcorr.test_statistic()[0]
+    test_stat2 = rvcorr2.test_statistic()[0]
+    test_stat3 = rvcorr3.test_statistic()[0]
+
+    assert np.round(test_stat1, decimals=2) == 1.00
+    assert np.round(test_stat2, decimals=2) == 1.00
+    assert np.round(test_stat3, decimals=2) == 1.00
 
 
 test_local_corr()

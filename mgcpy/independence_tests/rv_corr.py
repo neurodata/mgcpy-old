@@ -80,7 +80,6 @@ class RVCorr(IndependenceTest):
 
         if (self.which_test == 'pearson') and ((row_X == 1 or columns_X == 1) and (row_Y == 1 or columns_Y == 1)):
             corr, covar = pearsonr(data_matrix_X, data_matrix_Y)
-            corr, covar = corr[0], covar[0]
         elif (self.which_test == 'rv'):
             covar = np.trace(np.dot(covar, covar.T))
             corr = np.divide(covar, np.sqrt(np.trace(np.dot(varX, varX))
