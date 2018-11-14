@@ -25,6 +25,14 @@ class IndependenceTest(ABC):
         super().__init__()
 
     @abstractmethod
+    def get_name(self):
+        '''
+        :return: the name of the independence test
+        :rtype: string
+        '''
+        pass
+
+    @abstractmethod
     def test_statistic(self, data_matrix_X, data_matrix_Y):
         """
         Abstract method to compute the test statistic given two data matrices

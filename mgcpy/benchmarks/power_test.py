@@ -2,8 +2,9 @@ import pytest
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
 from mgcpy.independence_tests.dcorr import DCorr
-from mgcpy.benchmarks.simulations import w_sim
+from mgcpy.benchmarks.simulations import w_sim, ubern_sim
 from mgcpy.benchmarks.power import power
+from mgcpy.independence_tests.rv_corr import RVCorr
 
 
 def compute_distance_matrix(data_matrix_X, data_matrix_Y):
@@ -28,3 +29,8 @@ def test_power():
     mantel = DCorr(data_matrix_X=np.nan, data_matrix_Y=np.nan, compute_distance_matrix=compute_distance_matrix, corr_type='mantel')
     mantel_power = power(mantel, w_sim, num_samples=100, num_dimensions=3)
     assert np.allclose(mantel_power, 0.993, atol=0.1)
+
+    # power of pearson
+    pearson = RVCorr(data_matrix_X=np.nan, data_matrix_Y=np.nan, compute_distance_matrix=compute_distance_matrix, which_test='pearson')
+    pearson_power = power(pearson, ubern_sim, num_samples=100, num_dimensions=1)
+    assert np.allclose(pearson_power, 0.05688, atol=0.05)

@@ -28,6 +28,13 @@ class RVCorr(IndependenceTest):
             self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
         self.which_test = which_test
 
+    def get_name(self):
+        '''
+        :return: the name of the independence test
+        :rtype: string
+        '''
+        return self.which_test
+
     def test_statistic(self, data_matrix_X=None, data_matrix_Y=None):
         """
         Computes the Pearson/RV/CCa correlation measure between two datasets.
@@ -80,7 +87,16 @@ class RVCorr(IndependenceTest):
 
         if (self.which_test == 'pearson') and ((row_X == 1 or columns_X == 1) and (row_Y == 1 or columns_Y == 1)):
             corr, covar = pearsonr(data_matrix_X, data_matrix_Y)
-            corr, covar = corr[0], covar[0]
+            '''
+            if correlation coefficient is either 1 or -1, the p-value returned by
+            pearsonr is a float, not an array of float. In other cases, it returns
+            an array of a single float.
+
+            if abs(corr) == 1:
+                corr = corr[0]
+            else:
+                corr, covar = corr[0], covar[0]
+            '''
         elif (self.which_test == 'rv'):
             covar = np.trace(np.dot(covar, covar.T))
             corr = np.divide(covar, np.sqrt(np.trace(np.dot(varX, varX))

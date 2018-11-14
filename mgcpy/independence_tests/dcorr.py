@@ -30,6 +30,10 @@ class DCorr(IndependenceTest):
         self.is_distance_mtx = is_distance_mtx
 
     def get_name(self):
+        '''
+        :return: the name of the independence test
+        :rtype: string
+        '''
         return self.corr_type
 
     def test_statistic(self, data_matrix_X=None, data_matrix_Y=None):

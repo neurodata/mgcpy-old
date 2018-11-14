@@ -31,6 +31,13 @@ class MGC(IndependenceTest):
         IndependenceTest.__init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
         self.base_global_correlation = base_global_correlation
 
+    def get_name(self):
+        '''
+        :return: the name of the independence test
+        :rtype: string
+        '''
+        return 'mgc'
+
     def test_statistic(self, data_matrix_X=None, data_matrix_Y=None):
         """
         Computes the MGC measure between two datasets.
