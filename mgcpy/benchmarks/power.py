@@ -44,6 +44,8 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
     test_stats_alternative = np.zeros(repeats)
     for rep in range(repeats):
         # generate new samples for each iteration
+        # the if-else block below is for simulations that have a different argument list
+        # than the general case
         if simulation_type == 'sine_16pi':
             data_matrix_X, data_matrix_Y = sample_generator(num_samples, num_dimensions, noise=noise, period=np.pi*16)
         elif simulation_type == 'multi_noise' or simulation_type == 'multi_indept':
