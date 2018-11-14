@@ -38,7 +38,7 @@ def test_local_corr():
     assert np.round(test_stat1, decimals=2) == 0.24
     assert np.round(test_stat2, decimals=2) == 0.49
     assert np.round(test_stat3, decimals=2) == 0.24
-    
+
     X, Y = sims.linear_sim(100, 1, noise=0)
     #savemat('distance matrix data', {'X' : X, 'Y' : Y})
     rvcorr = RVCorr(X, Y, None)
