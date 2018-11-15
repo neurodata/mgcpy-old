@@ -26,6 +26,12 @@ python3 setup.py install
 ## MGC Algorithm's Flow
 ![MGCPY Flow](MGCPY.png)
 
+## Setting up the development environment:
+- Install [docker](https://docs.docker.com/install/)
+- Build the docker image, `docker build -t mgcpy-dev:latest .`
+  - This takes 10 to 15 mins to build
+- Launch the container to go into the mgcpy dev env, `docker run -it --rm --name mgcpy-dev-env mgcpy-dev`
+
 ## License
 
 This project is covered under the **Apache 2.0 License**.
