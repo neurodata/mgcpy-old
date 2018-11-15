@@ -55,7 +55,8 @@ def threshold_local_correlations(local_correlation_matrix, sample_size):
         significant_connected_region, _ = scipy.ndimage.measurements.label(
             significant_connected_region)
         _, label_counts = np.unique(significant_connected_region, return_counts=True)
-        max_label = np.argmax(label_counts[1:]) + 1  # skip the first element in label_counts, as it is count(zeros)
+        # skip the first element in label_counts, as it is count(zeros)
+        max_label = np.argmax(label_counts[1:]) + 1
         significant_connected_region = significant_connected_region == max_label
     else:
         significant_connected_region = np.array([[False]])
@@ -85,24 +86,27 @@ def smooth_significant_local_correlations(significant_connected_region, local_co
     # default sample mgc to local corr at max scale
     mgc_statistic = local_correlation_matrix[m - 1][n - 1]
     optimal_scale = [m, n]  # default the optimal scale to max scale
+    # optimal_scale = [0, 0]  # default the optimal scale to 0
 
     if np.linalg.norm(significant_connected_region) != 0:
 
         # proceed only when the connected region's area is sufficiently large
+        # if np.sum(significant_connected_region) >= min(m, n):
         if np.sum(significant_connected_region) >= 2 * min(m, n):
             max_local_correlation = np.max(local_correlation_matrix[significant_connected_region])
 
             # find all scales within significant_connected_region that maximize the local correlation
-            max_local_correlation_index = np.where(
+            max_local_correlation_indices = np.where(
                 (local_correlation_matrix >= max_local_correlation) & significant_connected_region)
-
-            # adding 1s to match R indexing
-            k = max_local_correlation_index[0][0] + 1
-            l = max_local_correlation_index[1][0] + 1
 
             if max_local_correlation >= mgc_statistic:
                 mgc_statistic = max_local_correlation
-                optimal_scale = [k, l]
+
+                k, l = max_local_correlation_indices
+                one_d_indices = k * n + l  # 2D to 1D indexing
+                k = np.max(one_d_indices) // n
+                l = np.max(one_d_indices) % n
+                optimal_scale = [k+1, l+1]  # adding 1s to match R indexing
 
     return {"mgc_statistic": mgc_statistic,
             "optimal_scale": optimal_scale}
