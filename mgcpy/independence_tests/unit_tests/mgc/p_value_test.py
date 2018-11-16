@@ -1,10 +1,9 @@
-import pytest
 import numpy as np
-
+import pytest
 from mgcpy.independence_tests.mgc.mgc import MGC
 
 
-def test_mgc_sample_linear():
+def test_mgc_test_linear():
     # linear (mgc.sims.linear(50, 1, 0.1))
     X = np.array([0.45233912,  0.41776082,  0.08992314, -0.68255391, -0.65492209,  0.24839759, -0.87725133,  0.32595345, -0.08646498, -0.16638085,  0.26394850,  0.72925148,  0.26028888, -0.59854218, -0.80068479, -0.69199885,  0.14915159,  0.37115868,  0.96039213,  0.27498675, -0.01372958, -0.89370963,  0.78395670, -0.42157105, -0.13893970,
                   0.50943310, -0.12623322, -0.20255325,  0.18437355, -0.02945578,  0.78082317,  0.39372362, -0.37730187, -0.17078540,  0.70129955,  0.83651364,  0.73375401, -0.34883304,  0.15323405,  0.51493599, -0.24317493,  0.83948953,  0.77216592,  0.90045095, -0.53736592, -0.88430486,  0.31447365,  0.66595322, -0.15917153, -0.38190466]).reshape(-1, 1)
@@ -18,7 +17,7 @@ def test_mgc_sample_linear():
     assert np.allclose(p_value, p_value_res, rtol=0.1)
 
 
-def test_mgc_sample_non_linear():
+def test_mgc_test_non_linear():
     # spiral data (mgc.sims.spiral(50, 1, 0.5))
     X1 = np.array([-0.915363905,  2.134736725,  1.591825890, -0.947720469, -0.629203447,  0.157367412, -3.009624669,  0.342083914,  0.126834696,  2.009228424,  0.137638139, -4.168139174,  1.854371040,  1.696600346, -2.454855196,  1.770009913, -0.080973938,  1.985722698,  0.671279564,  1.521294941, -0.905490998, -1.043388333,  0.006493876,  4.007326886,  1.755316427, -
                    0.905436337,  0.497332481,  0.819071238,  3.561837453,  3.713293152,  0.487967353,  1.233385955, -2.985033861,  0.146394829, -2.231330093, -0.138580101, -2.390685794, -2.798259311,  0.647199716, -0.626705094, -0.254107788,  2.017131291, -2.871050739, -0.369874190,  0.198565130,  2.021387946, -2.877629992, -1.855015175, -0.201316471,  3.886001079]).reshape(-1, 1)
@@ -30,3 +29,48 @@ def test_mgc_sample_non_linear():
     mgc_1 = MGC(X1, Y1, None)
     p_value_res_1, _ = mgc_1.p_value()
     assert np.allclose(p_value_1, p_value_res_1, rtol=0.1)
+
+
+def load_results(file_name, results_dir="./mgcpy/independence_tests/unit_tests/mgc/data/"):
+    mgc_results = np.genfromtxt(results_dir + file_name, delimiter=',')[1:]
+
+    pMGC = mgc_results[:, 0][0]
+    statMGC = mgc_results[:, 1][0]
+    pLocalCorr = mgc_results[:, 2:52]
+    localCorr = mgc_results[:, 52:102]
+    optimalScale = mgc_results[:, 102:104][0]
+
+    return (pMGC, statMGC, pLocalCorr, localCorr, optimalScale)
+
+
+def test_mgc_test_all():
+    data_dir = "./mgcpy/independence_tests/unit_tests/mgc/data/"
+    simulations = ["linear_sim", "exp_sim", "cub_sim", "joint_sim", "step_sim",
+                   "quad_sim", "w_sim", "spiral_sim", "ubern_sim", "log_sim", "root_sim",
+                   "sin_sim", "sin_sim_16", "square_sim", "two_parab_sim", "circle_sim",
+                   "ellipsis_sim", "square_sim_", "multi_noise_sim", "multi_indep_sim"]
+
+    print("\nSimulations being used to test MGC: ")
+    for simulation in simulations:
+        print(simulation)
+
+        X = np.genfromtxt(data_dir + simulation + "_x.csv", delimiter=',').reshape(-1, 1)
+        Y = np.genfromtxt(data_dir + simulation + "_y.csv", delimiter=',').reshape(-1, 1)
+
+        if simulation == "step_sim":
+            mgc_results = np.genfromtxt(data_dir + simulation + "_res.csv", delimiter=',')[1:]
+            pMGC = mgc_results[:, 0][0]
+            statMGC = mgc_results[:, 1][0]
+            # pLocalCorr = mgc_results[:, 2:4]
+            localCorr = mgc_results[:, 4:6]
+            optimalScale = mgc_results[:, 6:8][0]
+        else:
+            pMGC, statMGC, _, localCorr, optimalScale = load_results(simulation + "_res.csv")
+
+        mgc = MGC(X, Y, None)
+        p_value, metadata = mgc.p_value()
+
+        assert np.allclose(statMGC, metadata["test_statistic"])
+        assert np.allclose(localCorr, metadata["local_correlation_matrix"])
+        assert np.allclose(optimalScale, metadata["optimal_scale"])
+        assert np.allclose(pMGC, p_value, atol=0.1)
