@@ -1,7 +1,7 @@
 import mgcpy.benchmarks.simulations as sims
 import numpy as np
-from scipy.spatial.distance import pdist, squareform
 from mgcpy.independence_tests.hhg import HHG
+from scipy.spatial.distance import pdist, squareform
 
 
 def compute_distance_matrix(data_matrix_X, data_matrix_Y):
@@ -27,7 +27,7 @@ def test_hhg():
     X, Y = sims.linear_sim(100, 1)
     hhg = HHG(X, Y, compute_distance_matrix)
     test_stat = hhg.test_statistic()
- 
+
     assert np.round(test_stat, decimals=2) == 28986.52
 
     X, Y = sims.linear_sim(100, 1, noise=0)
@@ -35,3 +35,6 @@ def test_hhg():
     test_stat = hhg.test_statistic()
 
     assert np.round(test_stat, decimals=2) == 950600.00
+
+
+test_hhg()
