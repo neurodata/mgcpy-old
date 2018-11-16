@@ -2,8 +2,6 @@ import mgcpy.benchmarks.simulations as sims
 import numpy as np
 from mgcpy.independence_tests.rv_corr import RVCorr
 
-#from scipy.io import savemat
-
 
 def test_local_corr():
     # Against a randomly defined data set
@@ -26,7 +24,6 @@ def test_local_corr():
     # Against linear simulations
     np.random.seed(0)
     X, Y = sims.linear_sim(100, 1)
-    #savemat('distance matrix data', {'X' : X, 'Y' : Y})
     rvcorr = RVCorr(X, Y, None)
     rvcorr2 = RVCorr(X, Y, None, 'pearson')
     rvcorr3 = RVCorr(X, Y, None, 'cca')
@@ -40,7 +37,6 @@ def test_local_corr():
     assert np.round(test_stat3, decimals=2) == 0.24
 
     X, Y = sims.linear_sim(100, 1, noise=0)
-    #savemat('distance matrix data', {'X' : X, 'Y' : Y})
     rvcorr = RVCorr(X, Y, None)
     rvcorr2 = RVCorr(X, Y, None, 'pearson')
     rvcorr3 = RVCorr(X, Y, None, 'cca')

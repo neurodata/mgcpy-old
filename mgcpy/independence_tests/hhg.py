@@ -1,6 +1,5 @@
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
-from scipy.spatial import distance_matrix
 
 
 class HHG(IndependenceTest):
@@ -58,13 +57,11 @@ class HHG(IndependenceTest):
         row_Y, columns_Y = data_matrix_Y.shape[0], data_matrix_Y.shape[1]
 
         # use the matrix shape and diagonal elements to determine if the given data is a distance matrix or not
-        if row_X != columns_X or sum(data_matrix_X.diagonal()**2) > 0:
-            dist_mtx_X = distance_matrix(data_matrix_X, data_matrix_X)
+        if (row_X != columns_X or sum(data_matrix_X.diagonal()**2) > 0) and \
+        (row_Y != columns_Y or sum(data_matrix_Y.diagonal()**2) > 0):
+            dist_mtx_X, dist_mtx_Y = self.compute_distance_matrix(data_matrix_X, data_matrix_Y)
         else:
             dist_mtx_X = data_matrix_X
-        if row_Y != columns_Y or sum(data_matrix_Y.diagonal()**2) > 0:
-            dist_mtx_Y = distance_matrix(data_matrix_Y, data_matrix_Y)
-        else:
             dist_mtx_Y = data_matrix_Y
 
         n = dist_mtx_X.shape[0]
@@ -87,12 +84,12 @@ class HHG(IndependenceTest):
 
         return corr
     
-    def p_value(self, replication_factor=1000):
+    def p_value(self, replication_factor=100):
         """
         Tests independence between two datasets using HHG and permutation test.
 
         :param replication_factor: specifies the number of replications to use for
-                                   the permutation test. Defaults to 1000.
+                                   the permutation test. Defaults to 100.
         :type replication_factor: int
 
         :return: P-value of HHG
