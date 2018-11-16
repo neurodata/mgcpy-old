@@ -5,9 +5,8 @@ Created on Thu Oct 25 16:09:14 2018
 @author: sunda
 """
 import numpy as np
-import scipy.io as scpio
-import scipy as scp
-import copy
+import scipy.spatial as scp
+
 DTYPE = np.float64
 ITYPE = np.int32
 
@@ -16,6 +15,10 @@ def check_rank(X):
     rank = np.linalg.matrix_rank(X)
     if rank < k:
         raise Exception("matrix is rank deficient (rank %i vs cols %i)" % (rank, k))
+
+def compute_distance_matrix(X, disttype):
+    D = scp.distance.pdist(X, disttype)
+    return D
         
 def hatify(X):
     Q1, _ = np.linalg.qr(X)
@@ -39,7 +42,7 @@ def gower_center_many(Ys):
     Gs           = np.zeros_like(Ys)
     
     for i in range(tests):
-        print(type(observations))
+#        print(type(observations))
         D        = Ys[:, i].reshape(observations, observations)
         Gs[:, i] = gower_center(D).flatten()
     

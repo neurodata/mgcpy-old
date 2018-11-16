@@ -1,9 +1,12 @@
 from mgcpy.independence_tests.abstract_class import IndependenceTest
-from mdmrfunctions import *
+
+import copy
+from mgcpy.independence_tests.mdmr.mdmrfunctions import *
+#from mdmrfunctions import *
 
 class MDMR(IndependenceTest):
     def __init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix):
-                '''
+        '''
         :param data_matrix_X: is interpreted as:
             - a [n*d] data matrix, a square matrix with n samples in d dimensions
         :type data_matrix_X: 2D numpy.array
@@ -15,11 +18,13 @@ class MDMR(IndependenceTest):
         '''
         IndependenceTest.__init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
     
+    def get_name(self):
+        return "MDMR"
     
-    def test_statistic(self, data_matrix_X=None, data_matrix_Y=None, permutations = 1000, individual = 0):
+    def test_statistic(self, data_matrix_X=None, data_matrix_Y=None, permutations = 1000, individual = 0, disttype = 'cityblock'):
         """
         Computes MDMR between two datasets.
-        - It first takes the distance matrix of Y
+        - It first takes the distance matrix of Y (by )
         - Next it regresses X into a portion due to Y and a portion due to residual for each variable of X
         - The p-value is for the null hypothesis that the variable of X is not correlated with Y's distance matrix
         :param data_matrix_X: (optional, default picked from class attr) is interpreted as:
@@ -35,11 +40,14 @@ class MDMR(IndependenceTest):
         with individual = 1, returns the above as well as an array with the 
         variable of X in the first column, the test statistic in the 2nd, and the permutation p-value in the 3rd
         """
+        if data_matrix_X is None and data_matrix_Y is None:
+            data_matrix_X = self.data_matrix_X
+            data_matrix_Y = self.data_matrix_Y
         X = data_matrix_X
         Y = data_matrix_Y
         
-        D = scp.spatial.distance.pdist(Y, 'cityblock')
-        D = scp.spatial.distance.squareform(D)
+        D = self.compute_distance_matrix(Y, disttype)
+        D = scp.distance.squareform(D)
         a = D.shape[0]**2
         D = D.reshape((a,1))
         
