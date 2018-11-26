@@ -1,17 +1,21 @@
+# cython: linetrace=True
+# distutils: define_macros=CYTHON_TRACE_NOGIL=1
+
 """
     MGCPY Distance Transform
 """
 
 import numpy as np
+cimport numpy as np
 
 
-def dense_rank_data(data):
+cpdef dense_rank_data(np.ndarray[np.float_t, ndim=1] data):
     # Equivalent to scipy.stats.rankdata(x, "dense"), but faster!
     u, v = np.unique(data, return_inverse=True)
     return v + 1
 
 
-def rank_distance_matrix(distance_matrix):
+cpdef rank_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix):
     """"
     Sorts the entries within each column in ascending order
 
@@ -28,7 +32,7 @@ def rank_distance_matrix(distance_matrix):
     return np.hstack([dense_rank_data(distance_matrix[:, i]).reshape(-1, 1) for i in range(distance_matrix.shape[0])])
 
 
-def center_distance_matrix(distance_matrix, base_global_correlation="mgc", is_ranked=True):
+cpdef center_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix, str base_global_correlation="mgc", is_ranked=True):
     """
     Appropriately transform distance matrices by centering them, based on the
     specified global correlation to build on
@@ -50,17 +54,17 @@ def center_distance_matrix(distance_matrix, base_global_correlation="mgc", is_ra
         - :centered_distance_matrix: a [n*n] centered distance matrix
         - :ranked_distance_matrix: a [n*n] column-ranked distance matrix
     """
-    n = distance_matrix.shape[0]
-    ranked_distance_matrix = np.zeros(distance_matrix.shape)
+    cdef int n = distance_matrix.shape[0]
+    cdef np.ndarray ranked_distance_matrix = np.zeros((<object> distance_matrix).shape)
 
     if is_ranked:
         ranked_distance_matrix = rank_distance_matrix(distance_matrix)
 
     if base_global_correlation == "rank":
-        distance_matrix = ranked_distance_matrix
+        distance_matrix = ranked_distance_matrix.astype(np.float)
 
     # 'mgc' distance transform (col-wise mean) - default
-    expected_distance_matrix = np.repeat(
+    cdef np.ndarray expected_distance_matrix = np.repeat(
         ((distance_matrix.mean(axis=0) * n) / (n-1)), n).reshape(-1, n).T
 
     # unbiased version of dcor distance transform (col-wise mean + row-wise mean - mean)
@@ -72,9 +76,9 @@ def center_distance_matrix(distance_matrix, base_global_correlation="mgc", is_ra
 
     # mantel distance transform
     elif base_global_correlation == "mantel":
-        expected_distance_matrix = distance_matrix.sum() / (n * (n-1))
+        expected_distance_matrix = np.array(distance_matrix.sum() / (n * (n-1)))
 
-    centered_distance_matrix = distance_matrix - expected_distance_matrix
+    cdef np.ndarray centered_distance_matrix = distance_matrix - expected_distance_matrix
 
     # the diagonal entries are always excluded
     np.fill_diagonal(centered_distance_matrix, 0)
@@ -83,7 +87,8 @@ def center_distance_matrix(distance_matrix, base_global_correlation="mgc", is_ra
             "ranked_distance_matrix": ranked_distance_matrix}
 
 
-def transform_distance_matrix(distance_matrix_A, distance_matrix_B, base_global_correlation="mgc", is_ranked=True):
+cpdef transform_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix_A, np.ndarray[np.float_t, ndim=2] distance_matrix_B,
+                                str base_global_correlation="mgc", is_ranked=True):
     """
     Transforms the distance matrices appropriately, with column-wise ranking if needed.
 
