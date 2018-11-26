@@ -23,6 +23,13 @@ class KendallSpearman(IndependenceTest):
             self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
         self.which_test = which_test
 
+    def get_name(self):
+        '''
+        :return: the name of the independence test
+        :rtype: string
+        '''
+        return self.which_test
+
     def test_statistic(self, data_matrix_X=None, data_matrix_Y=None):
         """
         Computes the Spearman's rho or Kendall's tau measure between two datasets.

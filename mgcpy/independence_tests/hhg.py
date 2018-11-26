@@ -22,6 +22,13 @@ class HHG(IndependenceTest):
         IndependenceTest.__init__(
             self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
 
+    def get_name(self):
+        '''
+        :return: the name of the independence test
+        :rtype: string
+        '''
+        return 'hhg'
+
     def test_statistic(self, data_matrix_X=None, data_matrix_Y=None):
         """
         Computes the HHG correlation measure between two datasets.
@@ -85,8 +92,10 @@ class HHG(IndependenceTest):
                             np.power((t12*t21 - t11*t22), 2) / denom
         corr = np.sum(S)
 
-        return corr
-    
+        # no metadata for HHG
+        metadata = {}
+        return corr, metadata
+
     def p_value(self, replication_factor=1000):
         """
         Tests independence between two datasets using HHG and permutation test.
@@ -114,6 +123,6 @@ class HHG(IndependenceTest):
         for rep in range(replication_factor):
             permuted_y = np.random.permutation(self.data_matrix_Y)
             test_stats_null[rep] = self.test_statistic(data_matrix_X=self.data_matrix_X, data_matrix_Y=permuted_y)
-        
+
         # p-value is the probability of observing more extreme test statistic under the null
         return np.where(test_stats_null >= test_stat)[0].shape[0] / replication_factor
