@@ -5,10 +5,10 @@ import numpy as np
 
 def test_mdmr():
     #load data from csv files
-    csv1 = np.genfromtxt('data/X_mdmr.csv', delimiter=",")
+    csv1 = np.genfromtxt('./mgcpy/independence_tests/unit_tests/mdmr/data/X_mdmr.csv', delimiter=",")
     X = csv1
     
-    csv1 = np.genfromtxt('data/Y_mdmr.csv', delimiter=",")
+    csv1 = np.genfromtxt('./mgcpy/independence_tests/unit_tests/mdmr/data/Y_mdmr.csv', delimiter=",")
     Y = csv1
     
     mdmr = MDMR(csv1, csv2, compute_distance_matrix)
