@@ -1,6 +1,7 @@
 import numpy as np
 import math
 from mgcpy.independence_tests.dcorr import DCorr
+import scipy.io
 
 
 def power(independence_test, sample_generator, num_samples=100, num_dimensions=1, noise=0.0, repeats=1000, alpha=.05, simulation_type=''):
@@ -57,6 +58,37 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
         else:
             data_matrix_X, data_matrix_Y = sample_generator(num_samples, num_dimensions, noise=noise)
 
+        # permutation test
+        permuted_y = np.random.permutation(data_matrix_Y)
+        test_stats_null[rep], _ = independence_test.test_statistic(data_matrix_X=data_matrix_X, data_matrix_Y=permuted_y)
+        test_stats_alternative[rep], _ = independence_test.test_statistic(data_matrix_X=data_matrix_X, data_matrix_Y=data_matrix_Y)
+
+        # if the test is pearson, use absolute value of the test statistic
+        # so the more extreme test statistic is still in a one-sided interval
+        if independence_test.get_name() == 'pearson':
+            test_stats_null[rep] = abs(test_stats_null[rep])
+            test_stats_alternative[rep] = abs(test_stats_alternative[rep])
+
+    # the cutoff is determined so that 1-alpha of the test statistics under the null distribution
+    # is less than the cutoff
+    cutoff = np.sort(test_stats_null)[math.ceil(repeats*(1-alpha))]
+    # the proportion of test statistics under the alternative which is no less than the cutoff (in which case
+    # the null is rejected) is the empirical power
+    empirical_power = np.where(test_stats_alternative >= cutoff)[0].shape[0] / repeats
+    return empirical_power
+
+
+def power_given_data(independence_test, simulation_type, num_samples=100, num_dimensions=1, repeats=1000, alpha=.05):
+    # test statistics under the null, used to estimate the cutoff value under the null distribution
+    test_stats_null = np.zeros(repeats)
+    # test statistic under the alternative
+    test_stats_alternative = np.zeros(repeats)
+    file_name_prefix = '../mgcpy/benchmarks/sample_data_power_dimensions/type_{}_dim_{}'.format(simulation_type, num_dimensions)
+    all_matrix_X = scipy.io.loadmat(file_name_prefix + '_X.mat')['X']
+    all_matrix_Y = scipy.io.loadmat(file_name_prefix + '_Y.mat')['Y']
+    for rep in range(repeats):
+        data_matrix_X = all_matrix_X[:, :, rep]
+        data_matrix_Y = all_matrix_Y[:, :, rep]
         # permutation test
         permuted_y = np.random.permutation(data_matrix_Y)
         test_stats_null[rep], _ = independence_test.test_statistic(data_matrix_X=data_matrix_X, data_matrix_Y=permuted_y)
