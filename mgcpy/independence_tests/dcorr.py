@@ -1,9 +1,10 @@
+import math
+
 import numpy as np
+from mgcpy.independence_tests.abstract_class import IndependenceTest
+from mgcpy.utils.dist_transform import dist_transform
 from scipy.spatial.distance import pdist, squareform
 from scipy.stats import t
-import math
-from mgcpy.utils.dist_transform import dist_transform
-from mgcpy.independence_tests.abstract_class import IndependenceTest
 
 
 class DCorr(IndependenceTest):

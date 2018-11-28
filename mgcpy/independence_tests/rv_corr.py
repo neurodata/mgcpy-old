@@ -46,7 +46,7 @@ class RVCorr(IndependenceTest):
             - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                  that the independence tests computes in the process
         :rtype: float, dict
-        
+
         **Example:**
         >>> import numpy as np
         >>> from mgcpy.independence_tests.rv_corr import RVCorr
@@ -94,7 +94,7 @@ class RVCorr(IndependenceTest):
         self.test_statistic_metadata_ = {"covariance": covar}
 
         return self.test_stat_, self.test_statistic_metadata_
-    
+
     def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
         """
         Tests independence between two datasets using the independence test.
@@ -114,7 +114,7 @@ class RVCorr(IndependenceTest):
             - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                  that the independence tests computes in the process
         :rtype: float, dict
-        
+
         **Example:**
         >>> import numpy as np
         >>> from mgcpy.independence_tests.rv_corr import RVCorr
@@ -132,5 +132,5 @@ class RVCorr(IndependenceTest):
             matrix_Y = self.matrix_Y
         self.p_value_ = self.test_statistic(matrix_X, matrix_Y)
         self.p_value_metadata_ = {}
-        
+
         return self.p_value_, self.p_value_metadata_

@@ -84,7 +84,7 @@ class KendallSpearman(IndependenceTest):
             - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                  that the independence tests computes in the process
         :rtype: float, dict
-        
+
         **Example:**
         >>> import numpy as np
         >>> from mgcpy.independence_tests.kendall_spearman import KendallSpearman

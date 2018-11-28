@@ -37,7 +37,7 @@ class HHG(IndependenceTest):
             - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                  that the independence tests computes in the process
         :rtype: float, dict
-        
+
         **Example:**
         >>> import numpy as np
         >>> from mgcpy.independence_tests.hhg import HHG
@@ -92,7 +92,7 @@ class HHG(IndependenceTest):
     def p_value(self, data_matrix_X=None, data_matrix_Y=None, replication_factor=1000):
         """
         Tests independence between two datasets using HHG and permutation test.
-        
+
         :param matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
         :type matrix_X: 2D `numpy.array`
 
@@ -108,7 +108,7 @@ class HHG(IndependenceTest):
             - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                  that the independence tests computes in the process
         :rtype: float, dict
-        
+
         **Example:**
         >>> import numpy as np
         >>> from mgcpy.independence_tests.hhg import HHG

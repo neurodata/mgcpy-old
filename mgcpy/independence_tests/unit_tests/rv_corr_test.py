@@ -15,9 +15,9 @@ def test_local_corr():
     rvcorr2 = RVCorr(None, 'pearson')
     rvcorr3 = RVCorr(None, 'cca')
 
-    test_stat1 = rvcorr.test_statistic()[0]
-    test_stat2 = rvcorr2.test_statistic()[0]
-    test_stat3 = rvcorr3.test_statistic()[0]
+    test_stat1 = rvcorr.test_statistic(X, Y)[0]
+    test_stat2 = rvcorr2.test_statistic(X, Y)[0]
+    test_stat3 = rvcorr3.test_statistic(X, Y)[0]
 
     assert np.round(test_stat1, decimals=2) == 0.90
     assert np.round(test_stat2, decimals=2) == 0.95
