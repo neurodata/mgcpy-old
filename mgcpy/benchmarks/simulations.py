@@ -147,8 +147,12 @@ def joint_sim(num_samp, num_dim, noise=0.5):
 
     samp = (np.random.multivariate_normal(cov=sig, mean=np.zeros(2*num_dim),
                                           size=num_samp))
-    y = samp[:, num_dim: (2*num_dim)] + kappa*noise*gauss_noise
-    x = samp[:, 0:num_dim]
+    if num_dim == 1:
+        y = samp[:, (num_dim):(2*num_dim)] + kappa*noise*gauss_noise
+        x = samp[:, 0:num_dim]
+    else:      
+        y = samp[:, (num_dim+1):(2*num_dim)] + kappa*noise*gauss_noise
+        x = samp[:, 0:num_dim]
 
     return x, y
 
