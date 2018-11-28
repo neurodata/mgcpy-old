@@ -7,6 +7,7 @@
 [![DOI](https://zenodo.org/badge/147731955.svg)](https://zenodo.org/badge/latestdoi/147731955)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
+<a href="https://codeclimate.com/github/NeuroDataDesign/mgcpy/maintainability"><img src="https://api.codeclimate.com/v1/badges/979888a65926b3f27971/maintainability" /></a>
 
 `mgcpy` is a Python package containing tools for multiscale graph correlation and other statistical tests, that is capable of dealing with high dimensional and multivariate data.
 
