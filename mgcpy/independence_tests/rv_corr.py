@@ -24,7 +24,7 @@ class RVCorr(IndependenceTest):
         '''
         return self.which_test
 
-    def test_statistic(self, data_matrix_X=None, data_matrix_Y=None):
+    def test_statistic(self, matrix_X=None, matrix_Y=None):
         """
         Computes the Pearson/RV/CCa correlation measure between two datasets.
         - Default computes linear correlation for RV
@@ -42,9 +42,9 @@ class RVCorr(IndependenceTest):
         :type replication_factor: int
 
         :return: returns a list of two items, that contains:
-            - :p_value_: P-value
-            - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
-                                 that the independence tests computes in the process
+            - :test_statistic_: test statistic
+            - :test_statistic_metadata_: (optional) a ``dict`` of metadata other than the p_value,
+                                         that the independence tests computes in the process
         :rtype: float, dict
 
         **Example:**
@@ -58,25 +58,20 @@ class RVCorr(IndependenceTest):
         >>> rvcorr = RVCorr()
         >>> rvcorr_test_stat = rvcorr.test_statistic(X, Y)
         """
-        if data_matrix_X is None:
-            data_matrix_X = self.data_matrix_X
-        if data_matrix_Y is None:
-            data_matrix_Y = self.data_matrix_Y
+        row_X, columns_X = matrix_X.shape[0], matrix_X.shape[1]
+        row_Y, columns_Y = matrix_Y.shape[0], matrix_Y.shape[1]
 
-        row_X, columns_X = data_matrix_X.shape[0], data_matrix_X.shape[1]
-        row_Y, columns_Y = data_matrix_Y.shape[0], data_matrix_Y.shape[1]
-
-        mat1 = data_matrix_X - mb.repmat(np.mean(data_matrix_X, axis=0),
-                                         data_matrix_X.shape[0], 1)
-        mat2 = data_matrix_Y - mb.repmat(np.mean(data_matrix_Y, axis=0),
-                                         data_matrix_Y.shape[0], 1)
+        mat1 = matrix_X - mb.repmat(np.mean(matrix_X, axis=0),
+                                         matrix_X.shape[0], 1)
+        mat2 = matrix_Y - mb.repmat(np.mean(matrix_Y, axis=0),
+                                         matrix_Y.shape[0], 1)
 
         covar = np.dot(mat1.T, mat2)
         varX = np.dot(mat1.T, mat1)
         varY = np.dot(mat2.T, mat2)
 
         if (self.which_test == 'pearson') and ((row_X == 1 or columns_X == 1) and (row_Y == 1 or columns_Y == 1)):
-            corr, covar = pearsonr(data_matrix_X, data_matrix_Y)
+            corr, covar = pearsonr(matrix_X, matrix_Y)
         elif (self.which_test == 'rv'):
             covar = np.trace(np.dot(covar, covar.T))
             corr = np.divide(covar, np.sqrt(np.trace(np.dot(varX, varX))
@@ -90,10 +85,10 @@ class RVCorr(IndependenceTest):
                 covar = np.sum(np.power(svds(covar, 1)[1], 2))
                 corr = np.divide(covar, np.sqrt(np.sum(np.power(svds(varX, 1)[1], 2))
                                                 * np.sum(np.power(svds(varY, 1)[1], 2))))
-        self.test_stat_ = corr
+        self.test_statistic_ = corr
         self.test_statistic_metadata_ = {"covariance": covar}
 
-        return self.test_stat_, self.test_statistic_metadata_
+        return self.test_statistic_, self.test_statistic_metadata_
 
     def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
         """

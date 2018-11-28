@@ -33,7 +33,7 @@ class KendallSpearman(IndependenceTest):
         :type matrix_Y: 1D numpy.array
 
         :return: returns a list of two items, that contains:
-            - :test_stat_: P-value
+            - :test_stat_: test statistic
             - :test_statistic_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                          that the independence tests computes in the process
         :rtype: float, dict
@@ -57,13 +57,13 @@ class KendallSpearman(IndependenceTest):
         assert matrix_Y.shape[1] == 1, "Data matrix should be (n, 1) shape"
 
         if self.which_test == 'kendall':
-            self.test_stat_ = kendalltau(matrix_X, matrix_Y)[0]
+            self.test_statistic_ = kendalltau(matrix_X, matrix_Y)[0]
         else:
-            self.test_stat_ = spearmanr(matrix_X, matrix_Y)[0]
+            self.test_statistic_ = spearmanr(matrix_X, matrix_Y)[0]
 
         self.test_statistic_metadata_ = {}
 
-        return self.test_stat_, self.test_statistic_metadata_
+        return self.test_statistic_, self.test_statistic_metadata_
 
     def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
         """
