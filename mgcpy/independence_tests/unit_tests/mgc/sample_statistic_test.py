@@ -1,6 +1,5 @@
-import pytest
 import numpy as np
-
+import pytest
 from mgcpy.independence_tests.mgc.mgc import MGC
 
 
@@ -13,8 +12,8 @@ def test_mgc_sample_linear():
     mgc_statistic = 0.4389398
     optimal_scale = [10, 10]
 
-    mgc = MGC(X, Y, None)
-    mgc_statistic_res, independence_test_metadata = mgc.test_statistic()
+    mgc = MGC()
+    mgc_statistic_res, independence_test_metadata = mgc.test_statistic(X, Y)
 
     assert mgc.get_name() == 'mgc'
     assert np.allclose(mgc_statistic, mgc_statistic_res)
@@ -22,6 +21,8 @@ def test_mgc_sample_linear():
 
 
 def test_mgc_sample_non_linear():
+    mgc = MGC()
+
     # spiral data
     X1 = np.array([1.19076532, -4.89949601, -1.04671781, -0.78870398, -4.96541929, -3.47913731, 0.61608779, -1.04636872, 0.01792450, -2.99958358, 1.99093892, 2.02476848, -1.00291164, 3.84247195, -0.97867784, 0.06643890, -2.04553564, 3.95870375, -2.60045257, -1.04668339, -0.92919140, -2.94754180, -0.48332416, 1.26781216, 0.13068389,
                    0.17426063, 1.51532887, -0.65853037, 1.83957953, -2.47333005, 0.13855163, -3.51847437, -4.94476873, -0.99116531, 0.94505361, 0.02117659, -0.98862767, -1.04662608, -0.47863973, -4.95602679, -2.44573834, -0.57811752, 3.35735796, -2.77334193, -2.66310047, 0.12282333, 1.84287144, 3.17489424, 1.69930914, 3.24924651]).reshape(-1, 1)
@@ -31,8 +32,7 @@ def test_mgc_sample_non_linear():
     mgc_statistic_1 = 0.1991505
     optimal_scale_1 = [2, 6]
 
-    mgc_1 = MGC(X1, Y1, None)
-    mgc_statistic_res_1, independence_test_metadata_1 = mgc_1.test_statistic()
+    mgc_statistic_res_1, independence_test_metadata_1 = mgc.test_statistic(X1, Y1)
 
     assert np.allclose(mgc_statistic_1, mgc_statistic_res_1)
     assert np.allclose(optimal_scale_1, independence_test_metadata_1["optimal_scale"])
@@ -45,8 +45,7 @@ def test_mgc_sample_non_linear():
     mgc_statistic_2 = 0.2313806
     optimal_scale_2 = [3, 4]
 
-    mgc_2 = MGC(X2, Y2, None)
-    mgc_statistic_res_2, independence_test_metadata_2 = mgc_2.test_statistic()
+    mgc_statistic_res_2, independence_test_metadata_2 = mgc.test_statistic(X2, Y2)
 
     assert np.allclose(mgc_statistic_2, mgc_statistic_res_2)
     assert np.allclose(optimal_scale_2, independence_test_metadata_2["optimal_scale"])
