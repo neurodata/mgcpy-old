@@ -6,26 +6,15 @@ from scipy.stats import pearsonr
 
 
 class RVCorr(IndependenceTest):
-    def __init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix, which_test='rv'):
+    def __init__(self, compute_distance_matrix=None, which_test='rv'):
         """
-        :param data_matrix_X: is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
-        :type data_matrix_X: 2D numpy.array
-
-        :param data_matrix_Y: is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
-        :type data_matrix_Y: 2D numpy.array
-
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
         :type compute_distance_matrix: FunctionType or callable()
 
-        :param which_test: specifies which test to use, including 'rv','pearson','cca'.
+        :param which_test: specifies which test to use, including 'rv', 'pearson', and 'cca'.
         :type which_test: str
         """
-        IndependenceTest.__init__(
-            self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
+        IndependenceTest.__init__(self, compute_distance_matrix)
         self.which_test = which_test
 
     def get_name(self):
@@ -39,24 +28,25 @@ class RVCorr(IndependenceTest):
         """
         Computes the Pearson/RV/CCa correlation measure between two datasets.
         - Default computes linear correlation for RV
-        - Computes pearson's correlation for RV
+        - Computes pearson's correlation
         - Calculates local linear correlations for CCa
 
-        :param data_matrix_X: (optional, default picked from class attr) is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
-        :type data_matrix_X: 2D numpy.array
+        :param matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
+        :type matrix_X: 2D `numpy.array`
 
-        :param data_matrix_Y: (optional, default picked from class attr) is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
-        :type data_matrix_Y: 2D numpy.array
+        :param matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
+        :type matrix_Y: 2D `numpy.array`
+
+        :param replication_factor: specifies the number of replications to use for
+                                   the permutation test. Defaults to 1000.
+        :type replication_factor: int
 
         :return: returns a list of two items, that contains:
-            - :test_statistic: the sample test statistic
-            - :independence_test_metadata: a ``dict`` of metadata with the following key:
-                    - :covar: a 2D matrix of all covariances
-
+            - :p_value_: P-value
+            - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
+                                 that the independence tests computes in the process
+        :rtype: float, dict
+        
         **Example:**
         >>> import numpy as np
         >>> from mgcpy.independence_tests.rv_corr import RVCorr
@@ -65,8 +55,8 @@ class RVCorr(IndependenceTest):
                       0.51862516, -0.13480764, -0.54368083, -0.73812644, 0.54910974]).reshape(-1, 1)
         >>> Y = np.array([-1.31741173, -0.41634224, 2.24021815, 0.88317196, 2.00149312,
                       1.35857623, -0.06729464, 0.16168344, -0.61048226, 0.41711113]).reshape(-1, 1)
-        >>> rvcorr = RVCorr(X, Y, None)
-        >>> rvcorr_stat, rvcorr_covar = rvcorr.test_statistic()
+        >>> rvcorr = RVCorr()
+        >>> rvcorr_test_stat = rvcorr.test_statistic(X, Y)
         """
         if data_matrix_X is None:
             data_matrix_X = self.data_matrix_X
@@ -100,7 +90,47 @@ class RVCorr(IndependenceTest):
                 covar = np.sum(np.power(svds(covar, 1)[1], 2))
                 corr = np.divide(covar, np.sqrt(np.sum(np.power(svds(varX, 1)[1], 2))
                                                 * np.sum(np.power(svds(varY, 1)[1], 2))))
+        self.test_stat_ = corr
+        self.test_statistic_metadata_ = {"covariance": covar}
 
-        independence_test_metadata = {"covariance": covar}
+        return self.test_stat_, self.test_statistic_metadata_
+    
+    def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
+        """
+        Tests independence between two datasets using the independence test.
 
-        return corr, independence_test_metadata
+        :param matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
+        :type matrix_X: 2D `numpy.array`
+
+        :param matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
+        :type matrix_Y: 2D `numpy.array`
+
+        :param replication_factor: specifies the number of replications to use for
+                                   the permutation test. Defaults to 1000.
+        :type replication_factor: int
+
+        :return: returns a list of two items, that contains:
+            - :p_value_: P-value
+            - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
+                                 that the independence tests computes in the process
+        :rtype: float, dict
+        
+        **Example:**
+        >>> import numpy as np
+        >>> from mgcpy.independence_tests.rv_corr import RVCorr
+
+        >>> X = np.array([0.07487683, -0.18073412, 0.37266440, 0.06074847, 0.76899045,
+                      0.51862516, -0.13480764, -0.54368083, -0.73812644, 0.54910974]).reshape(-1, 1)
+        >>> Y = np.array([-1.31741173, -0.41634224, 2.24021815, 0.88317196, 2.00149312,
+                      1.35857623, -0.06729464, 0.16168344, -0.61048226, 0.41711113]).reshape(-1, 1)
+        >>> rvcorr = RVCorr()
+        >>> rvcorr_p_value = rvcorr.p_value(X, Y)
+        """
+        if matrix_X is None:
+            matrix_X = self.matrix_X
+        if matrix_Y is None:
+            matrix_Y = self.matrix_Y
+        self.p_value_ = self.test_statistic(matrix_X, matrix_Y)
+        self.p_value_metadata_ = {}
+        
+        return self.p_value_, self.p_value_metadata_

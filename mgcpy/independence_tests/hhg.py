@@ -4,23 +4,12 @@ from scipy.spatial import distance_matrix
 
 
 class HHG(IndependenceTest):
-    def __init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix):
+    def __init__(self, compute_distance_matrix=None):
         """
-        :param data_matrix_X: is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
-        :type data_matrix_X: 2D numpy.array
-
-        :param data_matrix_Y: is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
-        :type data_matrix_Y: 2D numpy.array
-
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
         :type compute_distance_matrix: FunctionType or callable()
         """
-        IndependenceTest.__init__(
-            self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
+        IndependenceTest.__init__(compute_distance_matrix)
 
     def get_name(self):
         '''
@@ -29,22 +18,26 @@ class HHG(IndependenceTest):
         '''
         return 'hhg'
 
-    def test_statistic(self, data_matrix_X=None, data_matrix_Y=None):
+    def test_statistic(self, data_matrix_X, data_matrix_Y):
         """
         Computes the HHG correlation measure between two datasets.
 
-        :param data_matrix_X: (optional, default picked from class attr) is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
-        :type data_matrix_X: 2D numpy.array
+        :param matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
+        :type matrix_X: 2D `numpy.array`
 
-        :param data_matrix_Y: (optional, default picked from class attr) is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
-        :type data_matrix_Y: 2D numpy.array
+        :param matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
+        :type matrix_Y: 2D `numpy.array`
 
-        :return: the sample test statistic
+        :param replication_factor: specifies the number of replications to use for
+                                   the permutation test. Defaults to 1000.
+        :type replication_factor: int
 
+        :return: returns a list of two items, that contains:
+            - :p_value_: P-value
+            - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
+                                 that the independence tests computes in the process
+        :rtype: float, dict
+        
         **Example:**
         >>> import numpy as np
         >>> from mgcpy.independence_tests.hhg import HHG
@@ -53,8 +46,8 @@ class HHG(IndependenceTest):
                       0.51862516, -0.13480764, -0.54368083, -0.73812644, 0.54910974]).reshape(-1, 1)
         >>> Y = np.array([-1.31741173, -0.41634224, 2.24021815, 0.88317196, 2.00149312,
                       1.35857623, -0.06729464, 0.16168344, -0.61048226, 0.41711113]).reshape(-1, 1)
-        >>> hhg = HHG(X, Y, None)
-        >>> hhg_stat = hhg.test_statistic()
+        >>> hhg = HHG()
+        >>> hhg_test_stat = hhg.test_statistic(X, Y)
         """
         if data_matrix_X is None:
             data_matrix_X = self.data_matrix_X
@@ -96,16 +89,26 @@ class HHG(IndependenceTest):
         metadata = {}
         return corr, metadata
 
-    def p_value(self, replication_factor=1000):
+    def p_value(self, data_matrix_X=None, data_matrix_Y=None, replication_factor=1000):
         """
         Tests independence between two datasets using HHG and permutation test.
+        
+        :param matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
+        :type matrix_X: 2D `numpy.array`
+
+        :param matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
+        :type matrix_Y: 2D `numpy.array`
 
         :param replication_factor: specifies the number of replications to use for
                                    the permutation test. Defaults to 1000.
         :type replication_factor: int
 
-        :return: P-value of HHG
-
+        :return: returns a list of two items, that contains:
+            - :p_value_: P-value
+            - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
+                                 that the independence tests computes in the process
+        :rtype: float, dict
+        
         **Example:**
         >>> import numpy as np
         >>> from mgcpy.independence_tests.hhg import HHG
@@ -114,8 +117,8 @@ class HHG(IndependenceTest):
                       0.51862516, -0.13480764, -0.54368083, -0.73812644, 0.54910974]).reshape(-1, 1)
         >>> Y = np.array([-1.31741173, -0.41634224, 2.24021815, 0.88317196, 2.00149312,
                       1.35857623, -0.06729464, 0.16168344, -0.61048226, 0.41711113]).reshape(-1, 1)
-        >>> hhg = HHG(X, Y, None)
-        >>> p_value = hhg.p_value(replication_factor = 100)
+        >>> hhg = HHG()
+        >>> hhg_p_value = hhg.p_value(X, Y)
         """
         test_stat = self.test_statistic()
         # estimate the null by a permutation test

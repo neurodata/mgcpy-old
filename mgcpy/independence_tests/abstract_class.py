@@ -47,8 +47,8 @@ class IndependenceTest(ABC):
         :type matrix_Y: 2D `numpy.array`
 
         :return: returns a list of two items, that contains:
-            - :test_statistic: the test statistic computed using the respective independence test
-            - :test_statistic_metadata: (optional) metadata other than the test_statistic,
+            - :test_statistic_: the test statistic computed using the respective independence test
+            - :test_statistic_metadata_: (optional) metadata other than the test_statistic,
                                         that the independence tests computes in the process
         :rtype: float, dict
         """
@@ -70,8 +70,8 @@ class IndependenceTest(ABC):
         :type replication_factor: int
 
         :return: returns a list of two items, that contains:
-            - :p_value: P-value
-            - :p_value_metadata: (optional) a ``dict`` of metadata other than the p_value,
+            - :p_value_: P-value
+            - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                  that the independence tests computes in the process
         """
         pass
