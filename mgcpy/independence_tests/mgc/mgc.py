@@ -1,4 +1,5 @@
 import time
+import warnings
 
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
@@ -152,6 +153,11 @@ class MGC(IndependenceTest):
                             "p_local_correlation_matrix": p_local_correlation_matrix,
                             "local_correlation_matrix": local_correlation_matrix,
                             "optimal_scale": independence_test_metadata["optimal_scale"]}
+
+        # The results are not statistically significant
+        if p_value > 0.05:
+            warnings.warn("The p-value is greater than 0.05, implying that the results are not statistically significant.\n" +
+                          "Use results such as test_statistic and optimal_scale, with caution!")
 
         self.p_value_ = p_value
         self.p_value_metadata_ = p_value_metadata

@@ -86,7 +86,6 @@ def smooth_significant_local_correlations(significant_connected_region, local_co
     # default sample mgc to local corr at max scale
     mgc_statistic = local_correlation_matrix[m - 1][n - 1]
     optimal_scale = [m, n]  # default the optimal scale to max scale
-    # optimal_scale = [0, 0]  # default the optimal scale to 0
 
     if np.linalg.norm(significant_connected_region) != 0:
 
