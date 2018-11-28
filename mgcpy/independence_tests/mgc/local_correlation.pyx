@@ -1,3 +1,6 @@
+# cython: linetrace=True
+# distutils: define_macros=CYTHON_TRACE_NOGIL=1
+
 import numpy as np
 cimport numpy as np
 from scipy.spatial import distance_matrix

@@ -97,7 +97,7 @@ class MGC(IndependenceTest):
 
         independence_test_metadata = {"local_correlation_matrix": local_correlation_matrix,
                                       "optimal_scale": optimal_scale}
-        return float('%.7f' % (mgc_statistic)), independence_test_metadata
+        return mgc_statistic, independence_test_metadata
 
     def p_value(self, replication_factor=1000):
         """

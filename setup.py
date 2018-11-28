@@ -19,7 +19,8 @@ AUTHOR_EMAIL = 'spalani2@jhu.edu'
 URL = 'https://github.com/NeuroDataDesign/mgcpy'
 MINIMUM_PYTHON_VERSION = 3, 4  # Minimum of Python 3.4
 
-REQUIRED_PACKAGES = ["numpy>=1.14.5", "scipy>=1.1.0", "pytest>=3.8.0", "Cython==0.29", "flake8>=3.5.0", "pycodestyle>=2.3.1", "pytest-cov>=2.6.0", "coveralls>=1.5.1"]
+REQUIRED_PACKAGES = ["numpy>=1.14.5", "scipy>=1.1.0", "pytest>=3.8.0", "pycodestyle>=2.3.1",
+                     "Cython==0.29", "flake8>=3.5.0", "pytest-cov>=2.6.0", "coveralls>=1.5.1"]
 VERSION = '0.0.3'
 
 
@@ -52,7 +53,8 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7'
     ],
-    ext_modules=cythonize("mgcpy/independence_tests/mgc/local_correlation.pyx"),
+    ext_modules=cythonize(["mgcpy/independence_tests/mgc/local_correlation.pyx",
+                           "mgcpy/independence_tests/mgc/distance_transform.pyx"]),
     include_dirs=[numpy.get_include()],
     packages=find_packages()
 
