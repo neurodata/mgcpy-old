@@ -5,7 +5,7 @@ from mgcpy.independence_tests.mdmr.mdmrfunctions import *
 #from mdmrfunctions import *
 
 class MDMR(IndependenceTest):
-    def __init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix):
+    def __init__(self, compute_distance_matrix):
         '''
         :param data_matrix_X: is interpreted as:
             - a [n*d] data matrix, a square matrix with n samples in d dimensions
@@ -16,12 +16,12 @@ class MDMR(IndependenceTest):
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
         :type compute_distance_matrix: FunctionType or callable()
         '''
-        IndependenceTest.__init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix)
+        IndependenceTest.__init__(self, compute_distance_matrix)
     
     def get_name(self):
         return "MDMR"
     
-    def test_statistic(self, data_matrix_X=None, data_matrix_Y=None, permutations = 1000, individual = 0, disttype = 'cityblock'):
+    def test_statistic(self, data_matrix_X, data_matrix_Y, permutations = 1000, individual = 0, disttype = 'cityblock'):
         """
         Computes MDMR between two datasets.
         - It first takes the distance matrix of Y (by )
@@ -40,9 +40,6 @@ class MDMR(IndependenceTest):
         with individual = 1, returns the above as well as an array with the 
         variable of X in the first column, the test statistic in the 2nd, and the permutation p-value in the 3rd
         """
-        if data_matrix_X is None and data_matrix_Y is None:
-            data_matrix_X = self.data_matrix_X
-            data_matrix_Y = self.data_matrix_Y
         X = data_matrix_X
         Y = data_matrix_Y
         
@@ -107,17 +104,17 @@ class MDMR(IndependenceTest):
                                     df_among, df_resid)
                 
                 p_vals = fperms_to_pvals(F_perms)
-                results[col-1,0] = col
+                results[col-1,0] = colg
                 results[col-1,1] = F_perms[0, :]
                 results[col-1,2] = p_vals
     
     
             return F_permtotal, pvaltotal, results
 
-    def p_value(self, data_matrix_X=None, data_matrix_Y=None, permutations = 1000, individual = 0, disttype = 'cityblock'):
+    def p_value(self, data_matrix_X, data_matrix_Y, permutations = 1000, individual = 0, disttype = 'cityblock'):
         """
         Computes the p-value of the pseudo-F test statistic.
         """
-        p_value = self.test_statistic()[1]
+        p_value = self.test_statistic(data_matrix_X, data_matrix_Y)[1]
         
         return p_value

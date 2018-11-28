@@ -5,20 +5,18 @@ import numpy as np
 
 def test_mdmr():
     #load data from csv files
-    csv1 = np.genfromtxt('./mgcpy/independence_tests/unit_tests/mdmr/data/X_mdmr.csv', delimiter=",")
-    X = csv1
+    X = np.genfromtxt('./mgcpy/independence_tests/unit_tests/mdmr/data/X_mdmr.csv', delimiter=",")
     
-    csv2 = np.genfromtxt('./mgcpy/independence_tests/unit_tests/mdmr/data/Y_mdmr.csv', delimiter=",")
-    Y = csv2
-    
-    mdmr = MDMR(csv1, csv2, compute_distance_matrix)
+    Y = np.genfromtxt('./mgcpy/independence_tests/unit_tests/mdmr/data/Y_mdmr.csv', delimiter=",")
+
+    mdmr = MDMR(compute_distance_matrix)
     
     #test get_name
     assert mdmr.get_name() == 'MDMR'
     
     #test statistic
-    assert np.allclose(mdmr.test_statistic()[0], 25.03876688)
+    assert np.allclose(mdmr.test_statistic(X, Y)[0], 25.03876688)
     
     #p-value
-    assert np.allclose(mdmr.test_statistic()[1], 0.000999)
+    assert np.allclose(mdmr.test_statistic(X, Y)[1], 0.000999)
     
