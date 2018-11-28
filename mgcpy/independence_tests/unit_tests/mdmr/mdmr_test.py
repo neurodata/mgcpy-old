@@ -8,8 +8,8 @@ def test_mdmr():
     csv1 = np.genfromtxt('./mgcpy/independence_tests/unit_tests/mdmr/data/X_mdmr.csv', delimiter=",")
     X = csv1
     
-    csv1 = np.genfromtxt('./mgcpy/independence_tests/unit_tests/mdmr/data/Y_mdmr.csv', delimiter=",")
-    Y = csv1
+    csv2 = np.genfromtxt('./mgcpy/independence_tests/unit_tests/mdmr/data/Y_mdmr.csv', delimiter=",")
+    Y = csv2
     
     mdmr = MDMR(csv1, csv2, compute_distance_matrix)
     
