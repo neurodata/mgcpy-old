@@ -15,11 +15,15 @@ class IndependenceTest(ABC):
 
     def __init__(self, compute_distance_matrix=None):
         self.test_statistic = None
+        self.test_statistic_metadata = None
         self.p_value = None
+        self.p_value_metadata = None
+
         if not compute_distance_matrix:
             def EUCLIDEAN_DISTANCE(x): return squareform(pdist(x, metric='euclidean'))
             compute_distance_matrix = EUCLIDEAN_DISTANCE
         self.compute_distance_matrix = compute_distance_matrix
+
         super().__init__()
 
     @abstractmethod
@@ -43,8 +47,8 @@ class IndependenceTest(ABC):
 
         :return: returns a list of two items, that contains:
             - :test_statistic: the test statistic computed using the respective independence test
-            - :independence_test_metadata: (optional) metadata other than the test_statistic,
-                                           that the independence tests computes in the process
+            - :test_statistic_metadata: (optional) metadata other than the test_statistic,
+                                        that the independence tests computes in the process
         :rtype: float, dict
         """
         pass
@@ -66,7 +70,7 @@ class IndependenceTest(ABC):
 
         :return: returns a list of two items, that contains:
             - :p_value: P-value of MGC
-            - :metadata: (optional) a ``dict`` of metadata other than the p_value,
-                         that the independence tests computes in the process
+            - :p_value_metadata: (optional) a ``dict`` of metadata other than the p_value,
+                                 that the independence tests computes in the process
         """
         pass
