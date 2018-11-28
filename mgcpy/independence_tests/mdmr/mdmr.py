@@ -113,3 +113,11 @@ class MDMR(IndependenceTest):
     
     
             return F_permtotal, pvaltotal, results
+
+    def p_value(self, data_matrix_X=None, data_matrix_Y=None, permutations = 1000, individual = 0, disttype = 'cityblock'):
+        """
+        Computes the p-value of the pseudo-F test statistic.
+        """
+        p_value = self.test_statistic()[1]
+        
+        return p_value
