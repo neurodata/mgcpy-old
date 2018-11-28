@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from scipy.spatial.distance import pdist, squareform
 
 
@@ -14,10 +15,10 @@ class IndependenceTest(ABC):
     """
 
     def __init__(self, compute_distance_matrix=None):
-        self.test_statistic = None
-        self.test_statistic_metadata = None
-        self.p_value = None
-        self.p_value_metadata = None
+        self.test_statistic_ = None
+        self.test_statistic_metadata_ = None
+        self.p_value_ = None
+        self.p_value_metadata_ = None
 
         if not compute_distance_matrix:
             def EUCLIDEAN_DISTANCE(x): return squareform(pdist(x, metric='euclidean'))
@@ -56,7 +57,7 @@ class IndependenceTest(ABC):
     @abstractmethod
     def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
         """
-        Tests independence between two datasets using MGC and permutation test.
+        Tests independence between two datasets using the independence test and permutation test.
 
         :param matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
         :type matrix_X: 2D `numpy.array`
@@ -69,7 +70,7 @@ class IndependenceTest(ABC):
         :type replication_factor: int
 
         :return: returns a list of two items, that contains:
-            - :p_value: P-value of MGC
+            - :p_value: P-value
             - :p_value_metadata: (optional) a ``dict`` of metadata other than the p_value,
                                  that the independence tests computes in the process
         """
