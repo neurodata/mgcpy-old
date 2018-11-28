@@ -35,15 +35,15 @@ class IndependenceTest(ABC):
         pass
 
     @abstractmethod
-    def test_statistic(self, data_matrix_X, data_matrix_Y):
+    def test_statistic(self, matrix_X, matrix_Y):
         """
         Abstract method to compute the test statistic given two data matrices
 
-        :param data_matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
-        :type data_matrix_X: 2D `numpy.array`
+        :param matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
+        :type matrix_X: 2D `numpy.array`
 
-        :param data_matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
-        :type data_matrix_Y: 2D `numpy.array`
+        :param matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
+        :type matrix_Y: 2D `numpy.array`
 
         :return: returns a list of two items, that contains:
             - :test_statistic: the test statistic computed using the respective independence test
@@ -54,15 +54,15 @@ class IndependenceTest(ABC):
         pass
 
     @abstractmethod
-    def p_value(self, data_matrix_X, data_matrix_Y, replication_factor=1000):
+    def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
         """
         Tests independence between two datasets using MGC and permutation test.
 
-        :param data_matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
-        :type data_matrix_X: 2D `numpy.array`
+        :param matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
+        :type matrix_X: 2D `numpy.array`
 
-        :param data_matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
-        :type data_matrix_Y: 2D `numpy.array`
+        :param matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
+        :type matrix_Y: 2D `numpy.array`
 
         :param replication_factor: specifies the number of replications to use for
                                    the permutation test. Defaults to 1000.
