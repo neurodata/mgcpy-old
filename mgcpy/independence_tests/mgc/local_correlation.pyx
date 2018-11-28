@@ -3,7 +3,7 @@
 
 import numpy as np
 cimport numpy as np
-from scipy.spatial import distance_matrix
+from scipy.spatial.distance import pdist, squareform
 import warnings
 
 from mgcpy.independence_tests.mgc.distance_transform import transform_distance_matrix
@@ -77,6 +77,7 @@ cpdef local_covariance(np.ndarray[np.float_t, ndim=2] distance_matrix_A,
 
 cpdef local_correlations(np.ndarray[np.float_t, ndim=2] matrix_A,
                          np.ndarray[np.float_t, ndim=2] matrix_B,
+                         distance_metric="euclidean",
                          base_global_correlation="mgc"):
         """
         Computes all the local correlation coefficients in O(n^2 log n)
@@ -90,6 +91,10 @@ cpdef local_correlations(np.ndarray[np.float_t, ndim=2] matrix_A,
             - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
             - a [n*d] data matrix, a square matrix with n samples in d dimensions
         :type matrix_B: 2D numpy.array
+
+        :param distance_metric: specifies the distance_metric to use for computing the distance_matrix,
+                                defaults to 'euclidean'
+        :type distance_metric: str
 
         :param base_global_correlation: specifies which global correlation to build up-on,
                                         including 'mgc','dcor','mantel', and 'rank'.
@@ -114,9 +119,9 @@ cpdef local_correlations(np.ndarray[np.float_t, ndim=2] matrix_A,
 
         # use the matrix shape and diagonal elements to determine if the given data is a distance matrix or not
         if matrix_A.shape[0] != matrix_A.shape[1] or sum(matrix_A.diagonal()**2) > 0:
-            matrix_A = distance_matrix(matrix_A, matrix_A)
+            matrix_A = squareform(pdist(matrix_A, metric=distance_metric))
         if matrix_B.shape[0] != matrix_B.shape[1] or sum(matrix_B.diagonal()**2) > 0:
-            matrix_B = distance_matrix(matrix_B, matrix_B)
+            matrix_B = squareform(pdist(matrix_B, metric=distance_metric))
 
         transformed_result = transform_distance_matrix(matrix_A, matrix_B, base_global_correlation)
 
