@@ -3,6 +3,9 @@ from abc import ABC, abstractmethod
 from scipy.spatial.distance import pdist, squareform
 
 
+def EUCLIDEAN_DISTANCE(x): return squareform(pdist(x, metric='euclidean'))
+
+
 class IndependenceTest(ABC):
     """
     IndependenceTest abstract class
@@ -21,7 +24,6 @@ class IndependenceTest(ABC):
         self.p_value_metadata_ = None
 
         if not compute_distance_matrix:
-            def EUCLIDEAN_DISTANCE(x): return squareform(pdist(x, metric='euclidean'))
             compute_distance_matrix = EUCLIDEAN_DISTANCE
         self.compute_distance_matrix = compute_distance_matrix
 

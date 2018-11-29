@@ -87,12 +87,12 @@ def power_given_data(independence_test, simulation_type, num_samples=100, num_di
     all_matrix_X = scipy.io.loadmat(file_name_prefix + '_X.mat')['X']
     all_matrix_Y = scipy.io.loadmat(file_name_prefix + '_Y.mat')['Y']
     for rep in range(repeats):
-        data_matrix_X = all_matrix_X[:, :, rep]
-        data_matrix_Y = all_matrix_Y[:, :, rep]
+        matrix_X = all_matrix_X[:, :, rep]
+        matrix_Y = all_matrix_Y[:, :, rep]
         # permutation test
-        permuted_y = np.random.permutation(data_matrix_Y)
-        test_stats_null[rep], _ = independence_test.test_statistic(data_matrix_X=data_matrix_X, data_matrix_Y=permuted_y)
-        test_stats_alternative[rep], _ = independence_test.test_statistic(data_matrix_X=data_matrix_X, data_matrix_Y=data_matrix_Y)
+        permuted_y = np.random.permutation(matrix_Y)
+        test_stats_null[rep], _ = independence_test.test_statistic(matrix_X, permuted_y)
+        test_stats_alternative[rep], _ = independence_test.test_statistic(matrix_X, matrix_Y)
 
         # if the test is pearson, use absolute value of the test statistic
         # so the more extreme test statistic is still in a one-sided interval
