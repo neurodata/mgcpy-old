@@ -78,12 +78,15 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
     return empirical_power
 
 
-def power_given_data(independence_test, simulation_type, num_samples=100, num_dimensions=1, repeats=1000, alpha=.05):
+def power_given_data(independence_test, simulation_type, data_type='dimension', num_samples=100, num_dimensions=1, repeats=1000, alpha=.05):
     # test statistics under the null, used to estimate the cutoff value under the null distribution
     test_stats_null = np.zeros(repeats)
     # test statistic under the alternative
     test_stats_alternative = np.zeros(repeats)
-    file_name_prefix = '../mgcpy/benchmarks/sample_data_power_dimensions/type_{}_dim_{}'.format(simulation_type, num_dimensions)
+    if data_type == 'dimension':
+        file_name_prefix = '../mgcpy/benchmarks/sample_data_power_dimensions/type_{}_dim_{}'.format(simulation_type, num_dimensions)
+    else:
+        file_name_prefix = '../mgcpy/benchmarks/sample_data_power_sample_sizes/type_{}_size_{}'.format(simulation_type, num_samples)
     all_matrix_X = scipy.io.loadmat(file_name_prefix + '_X.mat')['X']
     all_matrix_Y = scipy.io.loadmat(file_name_prefix + '_Y.mat')['Y']
     for rep in range(repeats):

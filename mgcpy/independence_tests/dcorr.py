@@ -5,6 +5,7 @@ from mgcpy.independence_tests.abstract_class import IndependenceTest
 from mgcpy.utils.dist_transform import dist_transform
 from scipy.spatial.distance import pdist, squareform
 from scipy.stats import t
+from mgcpy.independence_tests.mgc.distance_transform import transform_distance_matrix
 
 
 class DCorr(IndependenceTest):
@@ -18,6 +19,8 @@ class DCorr(IndependenceTest):
         :type: str
         '''
         IndependenceTest.__init__(self)
+        if which_test not in ['mcorr', 'dcorr', 'mantel']:
+            raise ValueError('which_test must be mcorr, dcorr, or mantel')
         self.which_test = which_test
 
     def get_name(self):
@@ -55,7 +58,11 @@ class DCorr(IndependenceTest):
             matrix_Y = self.compute_distance_matrix(matrix_Y)
 
         # perform distance transformation
-        transformed_dist_mtx_X, transformed_dist_mtx_Y = dist_transform(matrix_X, matrix_Y, self.which_test)
+        # transformed_dist_mtx_X, transformed_dist_mtx_Y = dist_transform(matrix_X, matrix_Y, self.which_test)
+        transformed_distance_matrices = transform_distance_matrix(matrix_X, matrix_Y, self.which_test)
+        transformed_dist_mtx_X = transformed_distance_matrices['centered_distance_matrix_A']
+        transformed_dist_mtx_Y = transformed_distance_matrices['centered_distance_matrix_B']
+
         # transformed_dist_mtx need not be symmetric
         covariance = self.compute_global_covariance(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_Y))
         variance_X = self.compute_global_covariance(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_X))
