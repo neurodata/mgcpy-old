@@ -28,14 +28,14 @@ python3 setup.py install
 - `sudo`, if required
 - `python3 setup.py build_ext --inplace  # for cython`, if you want to test in-place, first execute this
 
-## MGC Algorithm's Flow
-![MGCPY Flow](MGCPY.png)
-
 ## Setting up the development environment:
 - Install [docker](https://docs.docker.com/install/)
 - Build the docker image, `docker build -t mgcpy-dev:latest .`
   - This takes 10 to 15 mins to build
-- Launch the container to go into the mgcpy dev env, `docker run -it --rm --name mgcpy-dev-env mgcpy-dev`
+- Launch the container to go into mgcpy's dev env, `docker run -it --rm --name mgcpy-dev-env mgcpy-dev`
+
+## MGC Algorithm's Flow
+![MGCPY Flow](MGCPY.png)
 
 ## License
 

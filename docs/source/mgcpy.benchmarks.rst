@@ -1,6 +1,13 @@
 mgcpy.benchmarks package
 ========================
 
+Subpackages
+-----------
+
+.. toctree::
+
+    mgcpy.benchmarks.unit_tests
+
 Submodules
 ----------
 
@@ -12,26 +19,10 @@ mgcpy.benchmarks.power module
     :undoc-members:
     :show-inheritance:
 
-mgcpy.benchmarks.power\_test module
------------------------------------
-
-.. automodule:: mgcpy.benchmarks.power_test
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 mgcpy.benchmarks.simulations module
 -----------------------------------
 
 .. automodule:: mgcpy.benchmarks.simulations
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-mgcpy.benchmarks.simulations\_test module
------------------------------------------
-
-.. automodule:: mgcpy.benchmarks.simulations_test
     :members:
     :undoc-members:
     :show-inheritance:
