@@ -27,5 +27,5 @@ def test_mdmr():
     assert np.allclose(results[0,2], 0.000999)
     assert np.allclose(results[1,1], -22.6870867)
     assert np.allclose(results[1,2], 0.000999)
-    assert np.allclose(results[2,1], -13.702988)
-    assert np.allclose(results[2,2], -2.70117626)
+    assert np.allclose(results[2,1], -2.70117626)
+    assert np.allclose(results[2,2], 0.000999)
