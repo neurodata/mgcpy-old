@@ -37,15 +37,15 @@ def test_center_distance_matrix_rank():
                        center_distance_matrix(X_distance_matrix, "rank")["centered_distance_matrix"])
 
 
-def test_center_distance_matrix_dcor():
+def test_center_distance_matrix_dcorr():
     X = np.array([[2, 1, 100], [4, 2, 10], [8, 3, 10]])
     X_distance_matrix = distance_matrix(X, X)
-    X_centered_distance_matrix_dcor = np.array([[0.00000, - 30.009258, - 30.073983],
+    X_centered_distance_matrix_dcorr = np.array([[0.00000, - 30.009258, - 30.073983],
                                                 [-30.00926, 0.000000, -1.374369],
                                                 [-30.07398, -1.374369, 0.000000]])
 
-    assert np.allclose(X_centered_distance_matrix_dcor,
-                       center_distance_matrix(X_distance_matrix, "dcor")["centered_distance_matrix"])
+    assert np.allclose(X_centered_distance_matrix_dcorr,
+                       center_distance_matrix(X_distance_matrix, "dcorr")["centered_distance_matrix"])
 
 
 def test_center_distance_matrix_mantel():

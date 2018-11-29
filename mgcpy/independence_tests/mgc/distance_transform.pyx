@@ -41,7 +41,7 @@ cpdef center_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix, str
     :type distance_matrix: 2D numpy.array
 
     :param base_global_correlation: specifies which global correlation to build up-on,
-                                    including 'mgc','dcor','mantel', and 'rank'.
+                                    including 'mgc','dcorr','mantel', and 'rank'.
                                     Defaults to mgc.
     :type base_global_correlation: str
 
@@ -67,8 +67,8 @@ cpdef center_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix, str
     cdef np.ndarray expected_distance_matrix = np.repeat(
         ((distance_matrix.mean(axis=0) * n) / (n-1)), n).reshape(-1, n).T
 
-    # unbiased version of dcor distance transform (col-wise mean + row-wise mean - mean)
-    if base_global_correlation == "dcor":
+    # unbiased version of dcorr distance transform (col-wise mean + row-wise mean - mean)
+    if base_global_correlation == "dcorr":
         expected_distance_matrix = np.repeat(((distance_matrix.mean(axis=0) * n) / (n-2)), n).reshape(-1, n).T \
                                     + np.repeat(((distance_matrix.mean(axis=1) * n) / (n-2)), n).reshape(-1, n) \
                                     - (distance_matrix.sum() / ((n-1) * (n-2)))
@@ -99,7 +99,7 @@ cpdef transform_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix_A
     :type distance_matrix: 2D numpy.array
 
     :param base_global_correlation: specifies which global correlation to build up-on,
-                                    including 'mgc','dcor','mantel', and 'rank'.
+                                    including 'mgc','dcorr','mantel', and 'rank'.
                                     Defaults to mgc.
     :type base_global_correlation: str
 
