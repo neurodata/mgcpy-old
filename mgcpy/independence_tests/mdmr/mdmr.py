@@ -104,7 +104,7 @@ class MDMR(IndependenceTest):
                                     df_among, df_resid)
                 
                 p_vals = fperms_to_pvals(F_perms)
-                results[col-1,0] = colg
+                results[col-1,0] = col
                 results[col-1,1] = F_perms[0, :]
                 results[col-1,2] = p_vals
     
