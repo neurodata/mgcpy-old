@@ -1,5 +1,5 @@
 """
-     **HHG Class**
+     **HHG Independence Test Module**
 """
 
 import numpy as np
@@ -38,9 +38,9 @@ class HHG(IndependenceTest):
         :rtype: float, dict
 
         **Example:**
+        
         >>> import numpy as np
         >>> from mgcpy.independence_tests.hhg import HHG
-
         >>> X = np.array([0.07487683, -0.18073412, 0.37266440, 0.06074847, 0.76899045,
                       0.51862516, -0.13480764, -0.54368083, -0.73812644, 0.54910974]).reshape(-1, 1)
         >>> Y = np.array([-1.31741173, -0.41634224, 2.24021815, 0.88317196, 2.00149312,
@@ -106,9 +106,9 @@ class HHG(IndependenceTest):
         :rtype: list
 
         **Example:**
+        
         >>> import numpy as np
         >>> from mgcpy.independence_tests.hhg import HHG
-
         >>> X = np.array([0.07487683, -0.18073412, 0.37266440, 0.06074847, 0.76899045,
                       0.51862516, -0.13480764, -0.54368083, -0.73812644, 0.54910974]).reshape(-1, 1)
         >>> Y = np.array([-1.31741173, -0.41634224, 2.24021815, 0.88317196, 2.00149312,
