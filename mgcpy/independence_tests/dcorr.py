@@ -1,10 +1,6 @@
-import math
-
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 from mgcpy.utils.dist_transform import dist_transform
-from scipy.spatial.distance import pdist, squareform
-from scipy.stats import t
 
 
 class DCorr(IndependenceTest):
@@ -19,13 +15,6 @@ class DCorr(IndependenceTest):
         '''
         IndependenceTest.__init__(self)
         self.which_test = which_test
-
-    def get_name(self):
-        '''
-        :return: the name of the independence test
-        :rtype: string
-        '''
-        return self.which_test
 
     def test_statistic(self, matrix_X, matrix_Y):
         '''
@@ -125,30 +114,4 @@ class DCorr(IndependenceTest):
 
         :return: float representing the p-value
         '''
-        # calculte the test statistic with the given data
-        test_stat, _ = self.test_statistic(matrix_X, matrix_Y)
-        if self.which_test == 'mcorr':
-            '''
-            for the unbiased centering scheme used to compute mcorr test statistic
-            we can use a t-test to compute the p-value
-            notation follows from: Székely, Gábor J., and Maria L. Rizzo.
-            "The distance correlation t-test of independence in high dimension."
-            Journal of Multivariate Analysis 117 (2013): 193-213.
-            '''
-            T, df = self.mcorr_T(matrix_X=matrix_X, matrix_Y=matrix_Y)
-            # p-value is the probability of obtaining values more extreme than the test statistic
-            # under the null
-            if T < 0:
-                self.p_value_ = t.cdf(T, df=df)
-            else:
-                self.p_value_ = 1 - t.cdf(T, df=df)
-        else:
-            # estimate the null by a permutation test
-            test_stats_null = np.zeros(replication_factor)
-            for rep in range(replication_factor):
-                permuted_y = np.random.permutation(matrix_Y)
-                test_stats_null[rep], _ = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_y)
-            # p-value is the probability of observing more extreme test statistic under the null
-            self.p_value_ = np.where(test_stats_null >= test_stat)[0].shape[0] / replication_factor
-            self.p_value_metadata_ = {}
-        return (self.p_value_, self.p_value_metadata_)
+        return super(DCorr, self).p_value(matrix_X, matrix_Y)
