@@ -1,3 +1,7 @@
+"""
+     **Kendall and Spearman Class**
+"""
+
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 from scipy.stats import kendalltau, spearmanr
 
@@ -6,10 +10,10 @@ class KendallSpearman(IndependenceTest):
     def __init__(self, compute_distance_matrix=None, which_test='kendall'):
         """
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
-        :type compute_distance_matrix: FunctionType or callable()
+        :type compute_distance_matrix: ``FunctionType`` or ``callable()``
 
-        :param which_test: specifies which test to use, including 'kendall' or 'spearman'
-        :type which_test: str
+        :param which_test: specifies which test to use, including ``'kendall'`` or ``'spearman'``
+        :type which_test: string
         """
         IndependenceTest.__init__(self, compute_distance_matrix)
         self.which_test = which_test
@@ -26,17 +30,17 @@ class KendallSpearman(IndependenceTest):
         Computes the Spearman's rho or Kendall's tau measure between two datasets.
         - Implments scipy.stats's implementation for both
 
-        :param matrix_X: a [n*1] data matrix, a square matrix with n samples in 1 dimension
-        :type matrix_X: 1D numpy.array
+        :param matrix_X: a ``[n*1]`` data matrix, a square matrix with ``n`` samples in ``1`` dimension
+        :type matrix_X: 1D `numpy.array`
 
-        :param matrix_Y: a [n*1] data matrix, a square matrix with n samples in 1 dimension
-        :type matrix_Y: 1D numpy.array
+        :param matrix_Y: a ``[n*1]`` data matrix, a square matrix with ``n`` samples in ``1`` dimension
+        :type matrix_Y: 1D `numpy.array`
 
         :return: returns a list of two items, that contains:
             - :test_stat_: test statistic
             - :test_statistic_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                          that the independence tests computes in the process
-        :rtype: float, dict
+        :rtype: list
 
         **Example:**
         >>> import numpy as np
@@ -66,21 +70,21 @@ class KendallSpearman(IndependenceTest):
         """
         Tests independence between two datasets using the independence test.
 
-        :param matrix_X: a [n*1] data matrix, a square matrix with n samples in p dimensions
+        :param matrix_X: a ``[n*1]`` data matrix, a square matrix with ``n`` samples in ``1`` dimension
         :type matrix_X: 2D `numpy.array`
 
-        :param matrix_Y: a [n*1] data matrix, a square matrix with n samples in q dimensions
+        :param matrix_Y: a ``[n*1] data`` matrix, a square matrix with ``n`` samples in ``1`` dimensions
         :type matrix_Y: 2D `numpy.array`
 
         :param replication_factor: specifies the number of replications to use for
                                    the permutation test. Defaults to 1000.
-        :type replication_factor: int
+        :type replication_factor: integer
 
         :return: returns a list of two items, that contains:
             - :p_value_: P-value
             - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                  that the independence tests computes in the process
-        :rtype: float, dict
+        :rtype: list
 
         **Example:**
         >>> import numpy as np
