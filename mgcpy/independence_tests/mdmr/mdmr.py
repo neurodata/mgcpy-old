@@ -21,7 +21,7 @@ class MDMR(IndependenceTest):
     def get_name(self):
         return "MDMR"
     
-    def test_statistic(self, data_matrix_X, data_matrix_Y, permutations = 1000, individual = 0, disttype = 'cityblock'):
+    def test_statistic(self, data_matrix_X, data_matrix_Y, permutations = 0, individual = 0, disttype = 'cityblock'):
         """
         Computes MDMR between two datasets.
         - It first takes the distance matrix of Y (by )
@@ -115,6 +115,6 @@ class MDMR(IndependenceTest):
         """
         Computes the p-value of the pseudo-F test statistic.
         """
-        p_value = self.test_statistic(data_matrix_X, data_matrix_Y)[1]
+        p_value = self.test_statistic(data_matrix_X, data_matrix_Y, permutations)[1]
         
         return p_value
