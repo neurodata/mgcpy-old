@@ -58,10 +58,12 @@ class DCorr(IndependenceTest):
             matrix_Y = self.compute_distance_matrix(matrix_Y)
 
         # perform distance transformation
-        # transformed_dist_mtx_X, transformed_dist_mtx_Y = dist_transform(matrix_X, matrix_Y, self.which_test)
-        transformed_distance_matrices = transform_distance_matrix(matrix_X, matrix_Y, self.which_test)
+        transformed_dist_mtx_X, transformed_dist_mtx_Y = dist_transform(matrix_X, matrix_Y, self.which_test)
+        '''
+        transformed_distance_matrices = transform_distance_matrix(matrix_X, matrix_Y, base_global_correlation=self.which_test, is_ranked=False)
         transformed_dist_mtx_X = transformed_distance_matrices['centered_distance_matrix_A']
         transformed_dist_mtx_Y = transformed_distance_matrices['centered_distance_matrix_B']
+        '''
 
         # transformed_dist_mtx need not be symmetric
         covariance = self.compute_global_covariance(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_Y))
