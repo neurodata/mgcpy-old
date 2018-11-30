@@ -43,7 +43,7 @@ class KendallSpearman(IndependenceTest):
         :rtype: list
 
         **Example:**
-        
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.kendall_spearman import KendallSpearman
 
@@ -56,8 +56,8 @@ class KendallSpearman(IndependenceTest):
         """
         assert matrix_X.shape[1] == 1, "Data matrix should be (n, 1) shape"
         assert matrix_Y.shape[1] == 1, "Data matrix should be (n, 1) shape"
-        
-        if self.which_test == 'kendall':            
+
+        if self.which_test == 'kendall':
             test_statistic_ = kendalltau(matrix_X, matrix_Y)[0]
         else:
             test_statistic_ = spearmanr(matrix_X, matrix_Y)[0]
@@ -88,7 +88,7 @@ class KendallSpearman(IndependenceTest):
         :rtype: list
 
         **Example:**
-        
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.kendall_spearman import KendallSpearman
         >>> X = np.array([0.07487683, -0.18073412, 0.37266440, 0.06074847, 0.76899045,
@@ -102,7 +102,7 @@ class KendallSpearman(IndependenceTest):
         row_Y, columns_Y = matrix_Y.shape[0], matrix_Y.shape[1]
         assert row_X == 1 or columns_X == 1, "Data matrix should be (n, 1) shape"
         assert row_Y == 1 or columns_Y == 1, "Data matrix should be (n, 1) shape"
-        
+
         if self.which_test == 'kendall':
             p_value_ = kendalltau(matrix_X, matrix_Y)[1]
         else:

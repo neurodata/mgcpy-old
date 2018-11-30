@@ -1,7 +1,7 @@
 import mgcpy.benchmarks.simulations as sims
 import numpy as np
-from mgcpy import HHG
 import pytest
+from mgcpy import HHG
 
 
 def test_hhg():
@@ -28,4 +28,6 @@ def test_hhg():
     test_stat = hhg.test_statistic(X, Y)
 
     assert np.round(test_stat, decimals=2) == 950600.00
+
+
 test_hhg()

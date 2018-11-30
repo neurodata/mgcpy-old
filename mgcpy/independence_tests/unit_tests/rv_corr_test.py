@@ -1,7 +1,7 @@
 import mgcpy.benchmarks.simulations as sims
 import numpy as np
-from mgcpy import RVCorr
 import pytest
+from mgcpy import RVCorr
 
 
 def test_local_corr():
@@ -13,7 +13,7 @@ def test_local_corr():
     rvcorr = RVCorr(None)
     rvcorr2 = RVCorr(None, 'pearson')
     rvcorr3 = RVCorr(None, 'cca')
-    
+
     test_stat1 = rvcorr.test_statistic(X, Y)[0]
     test_stat2 = rvcorr2.test_statistic(X, Y)[0]
     test_stat3 = rvcorr3.test_statistic(X, Y)[0]

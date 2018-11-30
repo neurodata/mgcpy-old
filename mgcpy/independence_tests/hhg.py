@@ -38,7 +38,7 @@ class HHG(IndependenceTest):
         :rtype: float, dict
 
         **Example:**
-        
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.hhg import HHG
         >>> X = np.array([0.07487683, -0.18073412, 0.37266440, 0.06074847, 0.76899045,
@@ -82,7 +82,7 @@ class HHG(IndependenceTest):
         # no metadata for HHG
         self.test_statistic_metadata_ = {}
         self.test_statistic_ = corr
-        
+
         return corr, {}
 
     def p_value(self, matrix_X=None, matrix_Y=None, replication_factor=1000):
@@ -106,7 +106,7 @@ class HHG(IndependenceTest):
         :rtype: list
 
         **Example:**
-        
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.hhg import HHG
         >>> X = np.array([0.07487683, -0.18073412, 0.37266440, 0.06074847, 0.76899045,
@@ -126,5 +126,5 @@ class HHG(IndependenceTest):
         # p-value is the probability of observing more extreme test statistic under the null
         self.p_value_ = np.where(test_stats_null >= test_stat)[0].shape[0] / replication_factor
         self.p_value_metadata_ = {}
-        
+
         return np.where(test_stats_null >= test_stat)[0].shape[0] / replication_factor, {}

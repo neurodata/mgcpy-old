@@ -1,7 +1,7 @@
 """
      **RVCorr Independence Test Module**
 """
- 
+
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 from numpy import matlib as mb
@@ -52,7 +52,7 @@ class RVCorr(IndependenceTest):
         :rtype: list
 
         **Example:**
-        
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.rv_corr import RVCorr
         >>> X = np.array([0.07487683, -0.18073412, 0.37266440, 0.06074847, 0.76899045,
@@ -66,9 +66,9 @@ class RVCorr(IndependenceTest):
         row_Y, columns_Y = matrix_Y.shape[0], matrix_Y.shape[1]
 
         mat1 = matrix_X - mb.repmat(np.mean(matrix_X, axis=0),
-                                         matrix_X.shape[0], 1)
+                                    matrix_X.shape[0], 1)
         mat2 = matrix_Y - mb.repmat(np.mean(matrix_Y, axis=0),
-                                         matrix_Y.shape[0], 1)
+                                    matrix_Y.shape[0], 1)
 
         covar = np.dot(mat1.T, mat2)
         varX = np.dot(mat1.T, mat1)
@@ -117,7 +117,7 @@ class RVCorr(IndependenceTest):
         :rtype: list
 
         **Example:**
-        
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.rv_corr import RVCorr
         >>> X = np.array([0.07487683, -0.18073412, 0.37266440, 0.06074847, 0.76899045,
@@ -130,5 +130,5 @@ class RVCorr(IndependenceTest):
         test_stat = self.test_statistic(matrix_X, matrix_Y)[0]
         self.p_value_ = np.abs(test_stat)
         self.p_value_metadata_ = {}
-        
+
         return np.abs(test_stat), {}
