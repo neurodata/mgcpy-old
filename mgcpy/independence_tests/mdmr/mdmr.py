@@ -115,10 +115,10 @@ class MDMR(IndependenceTest):
         """
         Computes the permutation p-value of the pseudo-F test statistic.
         """
-        if individual = 0:
+        if individual == 0:
             p_value = self.test_statistic(data_matrix_X, data_matrix_Y, permutations)[1]
             return p_value
-        if individual = 1:
+        if individual == 1:
             p_value = self.test_statistic(data_matrix_X, data_matrix_Y, permutations)[1]
             results = self.test_statistic(data_matrix_X, data_matrix_Y, permutations)[2]
             return p_value, results
