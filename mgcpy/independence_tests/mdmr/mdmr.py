@@ -119,6 +119,6 @@ class MDMR(IndependenceTest):
             p_value = self.test_statistic(data_matrix_X, data_matrix_Y, permutations)[1]
             return p_value
         if individual == 1:
-            p_value = self.test_statistic(data_matrix_X, data_matrix_Y, permutations)[1]
-            results = self.test_statistic(data_matrix_X, data_matrix_Y, permutations)[2]
+            p_value = self.test_statistic(data_matrix_X, data_matrix_Y, permutations, individual)[1]
+            results = self.test_statistic(data_matrix_X, data_matrix_Y, permutations, individual)[2]
             return p_value, results

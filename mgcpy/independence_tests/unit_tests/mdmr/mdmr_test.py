@@ -11,7 +11,7 @@ def test_mdmr():
 
     mdmr = MDMR(compute_distance_matrix)
     a, b1, results1 = mdmr.test_statistic(X, Y, individual=1)
-    b2, results2 = mdmr.test_statistic(X, Y, individual = 1)
+    b2, results2 = mdmr.p_value(X, Y, individual = 1)
     
     #test get_name
     assert mdmr.get_name() == 'mdmr'
