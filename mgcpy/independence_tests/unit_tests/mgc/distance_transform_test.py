@@ -8,20 +8,19 @@ from mgcpy.independence_tests.mgc.distance_transform import rank_distance_matrix
 def test_rank_distance_matrix():
     a = np.array([[1, 4, 6],
                   [2, 5, 7],
-                  [1, 4, 6]])
+                  [1, 4, 6]], dtype=np.float)
     ranked_a = np.array([[1, 1, 1],
                          [2, 2, 2],
-                         [1, 1, 1]])
-    assert np.array_equal(ranked_a,
-                          rank_distance_matrix(a))
+                         [1, 1, 1]], dtype=np.float)
+    assert np.array_equal(ranked_a, rank_distance_matrix(a))
 
 
 def test_center_distance_matrix_mgc():
-    X = np.array([[2, 1, 100], [4, 2, 10], [8, 3, 10]])
+    X = np.array([[2, 1, 100], [4, 2, 10], [8, 3, 10]], dtype=np.float)
     X_distance_matrix = distance_matrix(X, X)
     X_centered_distance_matrix_mgc = np.array([[0.00000000, 42.95233, 43.04942],
                                                [-0.09708753, 0.00000, -43.04942],
-                                               [0.09708753, -42.95233, 0.00000]])
+                                               [0.09708753, -42.95233, 0.00000]], dtype=np.float)
 
     assert np.allclose(X_centered_distance_matrix_mgc,
                        center_distance_matrix(X_distance_matrix)["centered_distance_matrix"])

@@ -3,7 +3,7 @@ import math
 from mgcpy.independence_tests.dcorr import DCorr
 
 
-def power(independence_test, sample_generator, num_samples=100, num_dimensions=1, noise=0.0, repeats=1000, alpha=.05):
+def power(independence_test, sample_generator, num_samples=100, num_dimensions=1, noise=0.0, repeats=1000, alpha=.05, simulation_type=''):
     '''
     Estimate power
 
@@ -31,6 +31,9 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
     :param alpha: the type I error level
     :type: float
 
+    :param simulation_type: specify simulation when necessary (default to empty string)
+    :type: string
+
     :return empirical_power: the estimated power
     :type: float
     '''
@@ -41,11 +44,29 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
     test_stats_alternative = np.zeros(repeats)
     for rep in range(repeats):
         # generate new samples for each iteration
-        data_matrix_X, data_matrix_Y = sample_generator(num_samples, num_dimensions, noise)
+        # the if-else block below is for simulations that have a different argument list
+        # than the general case
+        if simulation_type == 'sine_16pi':
+            matrix_X, matrix_Y = sample_generator(num_samples, num_dimensions, noise=noise, period=np.pi*16)
+        elif simulation_type == 'multi_noise' or simulation_type == 'multi_indept':
+            matrix_X, matrix_Y = sample_generator(num_samples, num_dimensions)
+        elif simulation_type == 'ellipse':
+            matrix_X, matrix_Y = sample_generator(num_samples, num_dimensions, noise=noise, radius=5)
+        elif simulation_type == 'diamond':
+            matrix_X, matrix_Y = sample_generator(num_samples, num_dimensions, noise=noise, period=-np.pi/8)
+        else:
+            matrix_X, matrix_Y = sample_generator(num_samples, num_dimensions, noise=noise)
+
         # permutation test
-        permuted_y = np.random.permutation(data_matrix_Y)
-        test_stats_null[rep] = independence_test.test_statistic(data_matrix_X=data_matrix_X, data_matrix_Y=permuted_y)
-        test_stats_alternative[rep] = independence_test.test_statistic(data_matrix_X=data_matrix_X, data_matrix_Y=data_matrix_Y)
+        permuted_y = np.random.permutation(matrix_Y)
+        test_stats_null[rep], _ = independence_test.test_statistic(matrix_X, permuted_y)
+        test_stats_alternative[rep], _ = independence_test.test_statistic(matrix_X, matrix_Y)
+
+        # if the test is pearson, use absolute value of the test statistic
+        # so the more extreme test statistic is still in a one-sided interval
+        if independence_test.get_name() == 'pearson':
+            test_stats_null[rep] = abs(test_stats_null[rep])
+            test_stats_alternative[rep] = abs(test_stats_alternative[rep])
 
     # the cutoff is determined so that 1-alpha of the test statistics under the null distribution
     # is less than the cutoff

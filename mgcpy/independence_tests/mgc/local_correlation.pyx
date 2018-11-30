@@ -1,6 +1,13 @@
+# cython: linetrace=True
+# distutils: define_macros=CYTHON_TRACE_NOGIL=1
+
+"""
+    **MGC's Local Correlation Module**
+"""
+
 import numpy as np
 cimport numpy as np
-from scipy.spatial import distance_matrix
+from scipy.spatial.distance import pdist, squareform
 import warnings
 
 from mgcpy.independence_tests.mgc.distance_transform import transform_distance_matrix
@@ -11,23 +18,24 @@ cpdef local_covariance(np.ndarray[np.float_t, ndim=2] distance_matrix_A,
                        np.ndarray[np.int_t, ndim=2] ranked_distance_matrix_A,
                        np.ndarray[np.int_t, ndim=2] ranked_distance_matrix_B):
     """
-    Computes all local covariances simultaneously in O(n^2).
+    Computes all local covariances simultaneously in ``O(n^2)``.
 
-    :param distance_matrix_A: first distance matrix (centered or appropriately transformed), [n*n]
+    :param distance_matrix_A: first distance matrix (centered or appropriately transformed), ``[n*n]``
     :type distance_matrix_A: 2D numpy.array
 
-    :param distance_matrix_B: second distance matrix (centered or appropriately transformed), [n*n]
+    :param distance_matrix_B: second distance matrix (centered or appropriately transformed), ``[n*n]``
     :type distance_matrix_B: 2D numpy.array
 
-    :param ranked_distance_matrix_A: column-wise ranked matrix of ``A``, [n*n]
+    :param ranked_distance_matrix_A: column-wise ranked matrix of ``A``, ``[n*n]``
     :type ranked_distance_matrix_A: 2D numpy.array
 
-    :param ranked_distance_matrix_B: column-wise ranked matrix of ``B``, [n*n]
+    :param ranked_distance_matrix_B: column-wise ranked matrix of ``B``, ``[n*n]``
     :type ranked_distance_matrix_B: 2D numpy.array
 
-    :return: matrix of all local covariances, [n*n]
+    :return: matrix of all local covariances, ``[n*n]``
     :rtype: 2D numpy.array
     """
+
     # convert float32 numpy array to int, as it will be used as array indices [0 to n-1]
     ranked_distance_matrix_A = ranked_distance_matrix_A.astype(np.int) - 1
     ranked_distance_matrix_B = ranked_distance_matrix_B.astype(np.int) - 1
@@ -74,36 +82,45 @@ cpdef local_covariance(np.ndarray[np.float_t, ndim=2] distance_matrix_A,
 
 cpdef local_correlations(np.ndarray[np.float_t, ndim=2] matrix_A,
                          np.ndarray[np.float_t, ndim=2] matrix_B,
+                         distance_metric="euclidean",
                          base_global_correlation="mgc"):
         """
-        Computes all the local correlation coefficients in O(n^2 log n)
+        Computes all the local correlation coefficients in ``O(n^2 log n)``
 
         :param matrix_A: is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
+
+            - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
+            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
         :type matrix_A: 2D numpy.array
 
         :param matrix_B: is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
+
+            - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
+            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
         :type matrix_B: 2D numpy.array
+
+        :param distance_metric: specifies the distance_metric to use for computing the ``distance_matrix``,
+                                defaults to 'euclidean'
+        :type distance_metric: string
 
         :param base_global_correlation: specifies which global correlation to build up-on,
                                         including 'mgc','dcor','mantel', and 'rank'.
                                         Defaults to mgc.
-        :type base_global_correlation: str
+        :type base_global_correlation: string
 
         :return: A ``dict`` with the following keys:
-        :rtype: dict
-            - :local_correlation_matrix: a 2D matrix of all local correlations within [-1,1]
-            - :local_variance_A: all local variances of A
-            - :local_variance_B: all local variances of B
+
+                - :local_correlation_matrix: a 2D matrix of all local correlations within ``[-1,1]``
+                - :local_variance_A: all local variances of A
+                - :local_variance_B: all local variances of B
+        :rtype: dictionary
 
         **Example:**
+
         >>> import numpy as np
         >>> from scipy.spatial import distance_matrix
         >>> from mgcpy.mgc.local_correlation import local_correlations
-
+        >>>
         >>> X = np.array([[2, 1, 100], [4, 2, 10], [8, 3, 10]])
         >>> Y = np.array([[30, 20, 10], [5, 10, 20], [8, 16, 32]])
         >>> result = local_correlations(X, Y)
@@ -111,9 +128,9 @@ cpdef local_correlations(np.ndarray[np.float_t, ndim=2] matrix_A,
 
         # use the matrix shape and diagonal elements to determine if the given data is a distance matrix or not
         if matrix_A.shape[0] != matrix_A.shape[1] or sum(matrix_A.diagonal()**2) > 0:
-            matrix_A = distance_matrix(matrix_A, matrix_A)
+            matrix_A = squareform(pdist(matrix_A, metric=distance_metric))
         if matrix_B.shape[0] != matrix_B.shape[1] or sum(matrix_B.diagonal()**2) > 0:
-            matrix_B = distance_matrix(matrix_B, matrix_B)
+            matrix_B = squareform(pdist(matrix_B, metric=distance_metric))
 
         transformed_result = transform_distance_matrix(matrix_A, matrix_B, base_global_correlation)
 
