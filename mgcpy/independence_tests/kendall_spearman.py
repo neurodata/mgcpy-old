@@ -49,30 +49,27 @@ class KendallSpearman(IndependenceTest):
         >>> kendall_spearman = KendallSpearman()
         >>> kendall_spearman_stat = kendall_spearman.test_statistic(X, Y)
         """
-        if matrix_X is None:
-            matrix_X = self.matrix_X
-        if matrix_Y is None:
-            matrix_Y = self.matrix_Y
         assert matrix_X.shape[1] == 1, "Data matrix should be (n, 1) shape"
         assert matrix_Y.shape[1] == 1, "Data matrix should be (n, 1) shape"
-
-        if self.which_test == 'kendall':
-            self.test_statistic_ = kendalltau(matrix_X, matrix_Y)[0]
+        
+        if self.which_test == 'kendall':            
+            test_statistic_ = kendalltau(matrix_X, matrix_Y)[0]
         else:
-            self.test_statistic_ = spearmanr(matrix_X, matrix_Y)[0]
+            test_statistic_ = spearmanr(matrix_X, matrix_Y)[0]
 
+        self.test_statistic_ = test_statistic_
         self.test_statistic_metadata_ = {}
 
-        return self.test_statistic_, self.test_statistic_metadata_
+        return test_statistic_, {}
 
     def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
         """
         Tests independence between two datasets using the independence test.
 
-        :param matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
+        :param matrix_X: a [n*1] data matrix, a square matrix with n samples in p dimensions
         :type matrix_X: 2D `numpy.array`
 
-        :param matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
+        :param matrix_Y: a [n*1] data matrix, a square matrix with n samples in q dimensions
         :type matrix_Y: 2D `numpy.array`
 
         :param replication_factor: specifies the number of replications to use for
@@ -96,18 +93,17 @@ class KendallSpearman(IndependenceTest):
         >>> kendall_spearman = KendallSpearman()
         >>> kendall_spearman_p_value = kendall_spearman.p_value(X, Y)
         """
-        if matrix_X is None:
-            matrix_X = self.matrix_X
-        if matrix_Y is None:
-            matrix_Y = self.matrix_Y
-        assert matrix_X.shape[1] == 1, "Data matrix should be (n, 1) shape"
-        assert matrix_Y.shape[1] == 1, "Data matrix should be (n, 1) shape"
-
+        row_X, columns_X = matrix_X.shape[0], matrix_X.shape[1]
+        row_Y, columns_Y = matrix_Y.shape[0], matrix_Y.shape[1]
+        assert row_X == 1 or columns_X == 1, "Data matrix should be (n, 1) shape"
+        assert row_Y == 1 or columns_Y == 1, "Data matrix should be (n, 1) shape"
+        
         if self.which_test == 'kendall':
-            self.p_value_ = kendalltau(matrix_X, matrix_Y)[1]
+            p_value_ = kendalltau(matrix_X, matrix_Y)[1]
         else:
-            self.p_value_ = spearmanr(matrix_X, matrix_Y)[1]
+            p_value_ = spearmanr(matrix_X, matrix_Y)[1]
 
+        self.p_value_ = p_value_
         self.p_value_metadata_ = {}
 
-        return self.p_value_, self.p_value_metadata_
+        return p_value_, {}

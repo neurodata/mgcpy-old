@@ -70,7 +70,9 @@ class RVCorr(IndependenceTest):
         varX = np.dot(mat1.T, mat1)
         varY = np.dot(mat2.T, mat2)
 
-        if (self.which_test == 'pearson') and ((row_X == 1 or columns_X == 1) and (row_Y == 1 or columns_Y == 1)):
+        if (self.which_test == 'pearson'):
+            assert row_X == 1 or columns_X == 1, "Data matrix should be (n, 1) shape"
+            assert row_Y == 1 or columns_Y == 1, "Data matrix should be (n, 1) shape"
             corr, covar = pearsonr(matrix_X, matrix_Y)
         elif (self.which_test == 'rv'):
             covar = np.trace(np.dot(covar, covar.T))
@@ -88,9 +90,9 @@ class RVCorr(IndependenceTest):
         self.test_statistic_ = corr
         self.test_statistic_metadata_ = {"covariance": covar}
 
-        return self.test_statistic_, self.test_statistic_metadata_
+        return corr, {"covariance": covar}
 
-    def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
+    def p_value(self, matrix_X, matrix_Y, replication_factor=None):
         """
         Tests independence between two datasets using the independence test.
 
@@ -101,7 +103,7 @@ class RVCorr(IndependenceTest):
         :type matrix_Y: 2D `numpy.array`
 
         :param replication_factor: specifies the number of replications to use for
-                                   the permutation test. Defaults to 1000.
+                                   the permutation test. Defaults to None.
         :type replication_factor: int
 
         :return: returns a list of two items, that contains:
@@ -121,11 +123,8 @@ class RVCorr(IndependenceTest):
         >>> rvcorr = RVCorr()
         >>> rvcorr_p_value = rvcorr.p_value(X, Y)
         """
-        if matrix_X is None:
-            matrix_X = self.matrix_X
-        if matrix_Y is None:
-            matrix_Y = self.matrix_Y
-        self.p_value_ = self.test_statistic(matrix_X, matrix_Y)
+        test_stat = self.test_statistic(matrix_X, matrix_Y)[0]
+        self.p_value_ = np.abs(test_stat)
         self.p_value_metadata_ = {}
-
-        return self.p_value_, self.p_value_metadata_
+        
+        return np.abs(test_stat), {}

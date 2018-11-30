@@ -1,6 +1,5 @@
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
-from scipy.spatial import distance_matrix
 
 
 class HHG(IndependenceTest):
@@ -54,11 +53,11 @@ class HHG(IndependenceTest):
 
         # use the matrix shape and diagonal elements to determine if the given data is a distance matrix or not
         if row_X != columns_X or sum(matrix_X.diagonal()**2) > 0:
-            dist_mtx_X = distance_matrix(matrix_X, matrix_X)
+            dist_mtx_X = self.compute_distance_matrix(matrix_X)
         else:
             dist_mtx_X = matrix_X
         if row_Y != columns_Y or sum(matrix_Y.diagonal()**2) > 0:
-            dist_mtx_Y = distance_matrix(matrix_Y, matrix_Y)
+            dist_mtx_Y = self.compute_distance_matrix(matrix_Y)
         else:
             dist_mtx_Y = matrix_Y
 
@@ -84,7 +83,7 @@ class HHG(IndependenceTest):
         self.test_statistic_metadata_ = {}
         self.test_statistic_ = corr
         
-        return self.test_statistic_, self.test_statistic_metadata_
+        return corr, {}
 
     def p_value(self, matrix_X=None, matrix_Y=None, replication_factor=1000):
         """
@@ -117,15 +116,15 @@ class HHG(IndependenceTest):
         >>> hhg = HHG()
         >>> hhg_p_value = hhg.p_value(X, Y)
         """
-        test_stat = self.test_statistic()
+        test_stat = self.test_statistic(matrix_X=matrix_X, matrix_Y=matrix_Y)[0]
         # estimate the null by a permutation test
         test_stats_null = np.zeros(replication_factor)
         for rep in range(replication_factor):
-            permuted_y = np.random.permutation(self.matrix_Y)
-            test_stats_null[rep] = self.test_statistic(matrix_X=self.matrix_X, matrix_Y=permuted_y)
+            permuted_y = np.random.permutation(matrix_Y)
+            test_stats_null[rep] = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_y)[0]
 
         # p-value is the probability of observing more extreme test statistic under the null
         self.p_value_ = np.where(test_stats_null >= test_stat)[0].shape[0] / replication_factor
         self.p_value_metadata_ = {}
         
-        return self.p_value_, self.p_value_metadata_
+        return np.where(test_stats_null >= test_stat)[0].shape[0] / replication_factor, {}
