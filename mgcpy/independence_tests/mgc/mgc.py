@@ -25,15 +25,8 @@ class MGC(IndependenceTest):
         '''
 
         IndependenceTest.__init__(self, compute_distance_matrix)
+        self.which_test = "mgc"
         self.base_global_correlation = base_global_correlation
-
-    def get_name(self):
-        '''
-        :return: the name of the independence test
-        :rtype: string
-        '''
-
-        return 'mgc'
 
     def test_statistic(self, matrix_X, matrix_Y):
         """
@@ -145,37 +138,4 @@ class MGC(IndependenceTest):
         >>> mgc = MGC()
         >>> p_value, metadata = mgc.p_value(X, Y, replication_factor = 100)
         """
-        np.random.seed(int(time.time()))
-
-        mgc_statistic, independence_test_metadata = self.test_statistic(matrix_X, matrix_Y)
-        local_correlation_matrix = independence_test_metadata["local_correlation_matrix"]
-
-        p_local_correlation_matrix = np.zeros(local_correlation_matrix.shape)
-        p_value = 0
-
-        # compute sample MGC statistic and all local correlations for each set of permuted data
-        for _ in range(replication_factor):
-            # use random permutations on the second data set
-            premuted_matrix_Y = np.random.permutation(matrix_Y)
-
-            temp_mgc_statistic, temp_independence_test_metadata = self.test_statistic(
-                matrix_X, premuted_matrix_Y)
-            temp_local_correlation_matrix = temp_independence_test_metadata["local_correlation_matrix"]
-
-            p_value += ((temp_mgc_statistic >= mgc_statistic) * (1/replication_factor))
-            p_local_correlation_matrix += ((temp_local_correlation_matrix >=
-                                            local_correlation_matrix) * (1/replication_factor))
-
-        p_value_metadata = {"test_statistic": mgc_statistic,
-                            "p_local_correlation_matrix": p_local_correlation_matrix,
-                            "local_correlation_matrix": local_correlation_matrix,
-                            "optimal_scale": independence_test_metadata["optimal_scale"]}
-
-        # The results are not statistically significant
-        if p_value > 0.05:
-            warnings.warn("The p-value is greater than 0.05, implying that the results are not statistically significant.\n" +
-                          "Use results such as test_statistic and optimal_scale, with caution!")
-
-        self.p_value_ = p_value
-        self.p_value_metadata_ = p_value_metadata
-        return p_value, p_value_metadata
+        return super(MGC, self).p_value(matrix_X, matrix_Y)

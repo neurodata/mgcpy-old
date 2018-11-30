@@ -10,13 +10,7 @@ class HHG(IndependenceTest):
         :type compute_distance_matrix: FunctionType or callable()
         """
         IndependenceTest.__init__(compute_distance_matrix)
-
-    def get_name(self):
-        '''
-        :return: the name of the independence test
-        :rtype: string
-        '''
-        return 'hhg'
+        self.which_test = "hhg"
 
     def test_statistic(self, matrix_X, matrix_Y):
         """
@@ -83,7 +77,7 @@ class HHG(IndependenceTest):
         # no metadata for HHG
         self.test_statistic_metadata_ = {}
         self.test_statistic_ = corr
-        
+
         return self.test_statistic_, self.test_statistic_metadata_
 
     def p_value(self, matrix_X=None, matrix_Y=None, replication_factor=1000):
@@ -117,15 +111,4 @@ class HHG(IndependenceTest):
         >>> hhg = HHG()
         >>> hhg_p_value = hhg.p_value(X, Y)
         """
-        test_stat = self.test_statistic()
-        # estimate the null by a permutation test
-        test_stats_null = np.zeros(replication_factor)
-        for rep in range(replication_factor):
-            permuted_y = np.random.permutation(self.matrix_Y)
-            test_stats_null[rep] = self.test_statistic(matrix_X=self.matrix_X, matrix_Y=permuted_y)
-
-        # p-value is the probability of observing more extreme test statistic under the null
-        self.p_value_ = np.where(test_stats_null >= test_stat)[0].shape[0] / replication_factor
-        self.p_value_metadata_ = {}
-        
-        return self.p_value_, self.p_value_metadata_
+        return super(HHG, self).p_value(matrix_X, matrix_Y)
