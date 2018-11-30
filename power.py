@@ -4,7 +4,7 @@ from mgcpy.independence_tests.dcorr import DCorr
 from transform_matrices import Transform_Matrices
 from scipy.ndimage import rotate
 
-def power(independence_test, sample_generator, num_samples=100, theta=0, num_dimensions=1, noise=0.0, repeats=1000, alpha=.05):
+def power(independence_test, sample_generator, num_samples=100, theta=0, num_dimensions=2, noise=0.0, repeats=1000, alpha=.05):
     '''
     Estimate power
     :param independence_test: an object whose class inherits from the Independence_Test abstract class
@@ -27,11 +27,11 @@ def power(independence_test, sample_generator, num_samples=100, theta=0, num_dim
     :return empirical_power: the estimated power
     :type: float
     '''
-def compute_distance_matrix(data_matrix_X, data_matrix_Y):
-    # obtain the pairwise distance matrix for X and Y
-    dist_mtx_X = squareform(pdist(data_matrix_X, metric='euclidean'))
-    dist_mtx_Y = squareform(pdist(data_matrix_Y, metric='euclidean'))
-    return (dist_mtx_X, dist_mtx_Y)
+    def compute_distance_matrix(data_matrix_X, data_matrix_Y):
+        # obtain the pairwise distance matrix for X and Y
+        dist_mtx_X = squareform(pdist(data_matrix_X, metric='euclidean'))
+        dist_mtx_Y = squareform(pdist(data_matrix_Y, metric='euclidean'))
+        return (dist_mtx_X, dist_mtx_Y)
 
     # test statistics under the null, used to estimate the cutoff value under the null distribution
     test_stats_null = np.zeros(repeats)
