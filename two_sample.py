@@ -13,27 +13,38 @@ from rv_corr import RVCorr
 from hhg import HHG
 from scipy.spatial.distance import pdist, squareform
 
-class Two_Sample():
+class Two_Sample:
     def __init__(self, data_matrix_X, data_matrix_Y, compute_distance_matrix,ind_test='dcorr'):
         self.ind_test = ind_test
-        trans_X,trans_Y = Transform_Matrices(data_matrix_X,data_matrix_Y)
-        independence(trans_X,trans_Y)
-
-    def independence(trans_X,trans_Y):
-        if self.ind_test=='dcorr':
-            return DCorr(trans_X,trans_Y,compute_distance_matrix)
-        if self.ind_test=='mgc':
-            return MGC(trans_X,trans_Y,compute_distance_matrix)
-        if self.ind_test=='rv_corr':
-            return RVCorr(trans_X,trans_Y,compute_distance_matrix)
-        if self.ind_test=='hhg':
-            return HHG(trans_X,trans_Y,compute_distance_matrix)
-    
-    def compute_distance_matrix(data_matrix_X, data_matrix_Y):
+        self.X=data_matrix_X
+        self.Y=data_matrix_Y
+        self.trans_X,self.trans_Y = self.Transform_Matrices(data_matrix_X,data_matrix_Y)
+        self.independence()
+        '''
+        :param data_matrix_X: data matrix
+        :type: numpy array
+        :param data_matrix_Y: data matrix
+        :type: numpy array
+        :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
+        :type: FunctionType or callable()
+        :param ind_test: the independence test to call
+        :type: str
+        '''
+    def compute_distance_matrix(self):
         # obtain the pairwise distance matrix for X and Y
-        dist_mtx_X = squareform(pdist(data_matrix_X, metric='euclidean'))
-        dist_mtx_Y = squareform(pdist(data_matrix_Y, metric='euclidean'))
+        dist_mtx_X = squareform(pdist(self.X, metric='euclidean'))
+        dist_mtx_Y = squareform(pdist(self.Y, metric='euclidean'))
         return (dist_mtx_X, dist_mtx_Y)
+
+    def independence(self):
+        if self.ind_test=='dcorr':
+            return DCorr(self.trans_X,self.trans_Y,self.compute_distance_matrix)
+        if self.ind_test=='mgc':
+            return MGC(self.trans_X,self.trans_Y,self.compute_distance_matrix)
+        if self.ind_test=='rv_corr':
+            return RVCorr(self.trans_X,self.trans_Y,self.compute_distance_matrix)
+        if self.ind_test=='hhg':
+            return HHG(self.trans_X,self.trans_Y,self.compute_distance_matrix)
 
     def Transform_Matrices(A,B):
         U=A.tolist()
