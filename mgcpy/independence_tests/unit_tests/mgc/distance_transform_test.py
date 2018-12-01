@@ -37,15 +37,22 @@ def test_center_distance_matrix_rank():
                        center_distance_matrix(X_distance_matrix, "rank")["centered_distance_matrix"])
 
 
-def test_center_distance_matrix_dcorr():
+def test_center_distance_matrix_unbiased():
     X = np.array([[2, 1, 100], [4, 2, 10], [8, 3, 10]])
     X_distance_matrix = distance_matrix(X, X)
-    X_centered_distance_matrix_dcorr = np.array([[0.00000, - 30.009258, - 30.073983],
-                                                [-30.00926, 0.000000, -1.374369],
-                                                [-30.07398, -1.374369, 0.000000]])
+    X_centered_distance_matrix_unbiased = np.array([[0.00000, - 30.009258, - 30.073983],
+                                                    [-30.00926, 0.000000, -1.374369],
+                                                    [-30.07398, -1.374369, 0.000000]])
 
-    assert np.allclose(X_centered_distance_matrix_dcorr,
-                       center_distance_matrix(X_distance_matrix, "dcorr")["centered_distance_matrix"])
+    assert np.allclose(X_centered_distance_matrix_unbiased, center_distance_matrix(X_distance_matrix, "unbiased")["centered_distance_matrix"])
+
+
+def test_center_distance_matrix_biased():
+    X = np.array([[2, 1, 100], [4, 2, 10], [8, 3, 10]])
+    X_distance_matrix = distance_matrix(X, X)
+    X_centered_distance_matrix_biased = np.array([[0, 39.5326, 39.6621], [39.5326, 0, -17.7371], [39.6621, -17.7371, 0]])
+
+    assert np.allclose(X_centered_distance_matrix_biased, center_distance_matrix(X_distance_matrix, "biased")["centered_distance_matrix"])
 
 
 def test_center_distance_matrix_mantel():
