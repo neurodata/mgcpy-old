@@ -17,13 +17,6 @@ class RVCorr(IndependenceTest):
         IndependenceTest.__init__(self, compute_distance_matrix)
         self.which_test = which_test
 
-    def get_name(self):
-        '''
-        :return: the name of the independence test
-        :rtype: string
-        '''
-        return self.which_test
-
     def test_statistic(self, matrix_X=None, matrix_Y=None):
         """
         Computes the Pearson/RV/CCa correlation measure between two datasets.
@@ -62,9 +55,9 @@ class RVCorr(IndependenceTest):
         row_Y, columns_Y = matrix_Y.shape[0], matrix_Y.shape[1]
 
         mat1 = matrix_X - mb.repmat(np.mean(matrix_X, axis=0),
-                                         matrix_X.shape[0], 1)
+                                    matrix_X.shape[0], 1)
         mat2 = matrix_Y - mb.repmat(np.mean(matrix_Y, axis=0),
-                                         matrix_Y.shape[0], 1)
+                                    matrix_Y.shape[0], 1)
 
         covar = np.dot(mat1.T, mat2)
         varX = np.dot(mat1.T, mat1)
@@ -121,11 +114,4 @@ class RVCorr(IndependenceTest):
         >>> rvcorr = RVCorr()
         >>> rvcorr_p_value = rvcorr.p_value(X, Y)
         """
-        if matrix_X is None:
-            matrix_X = self.matrix_X
-        if matrix_Y is None:
-            matrix_Y = self.matrix_Y
-        self.p_value_ = self.test_statistic(matrix_X, matrix_Y)
-        self.p_value_metadata_ = {}
-
-        return self.p_value_, self.p_value_metadata_
+        return super(RVCorr, self).p_value(matrix_X, matrix_Y)
