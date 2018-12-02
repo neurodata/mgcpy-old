@@ -99,8 +99,6 @@ class IndependenceTest(ABC):
             Journal of Multivariate Analysis 117 (2013): 193-213.
             '''
             T, df = self.unbiased_T(matrix_X=matrix_X, matrix_Y=matrix_Y)
-            print(T)
-            print(df)
             # p-value is the probability of obtaining values more extreme than the test statistic
             # under the null
             if T < 0:
