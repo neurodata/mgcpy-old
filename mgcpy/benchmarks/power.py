@@ -63,11 +63,13 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
         test_stats_null[rep], _ = independence_test.test_statistic(matrix_X, permuted_y)
         test_stats_alternative[rep], _ = independence_test.test_statistic(matrix_X, matrix_Y)
 
+        '''
         # if the test is pearson, use absolute value of the test statistic
         # so the more extreme test statistic is still in a one-sided interval
         if independence_test.get_name() == 'pearson':
             test_stats_null[rep] = abs(test_stats_null[rep])
             test_stats_alternative[rep] = abs(test_stats_alternative[rep])
+        '''
 
     # the cutoff is determined so that 1-alpha of the test statistics under the null distribution
     # is less than the cutoff
@@ -84,9 +86,9 @@ def power_given_data(independence_test, simulation_type, data_type='dimension', 
     # test statistic under the alternative
     test_stats_alternative = np.zeros(repeats)
     if data_type == 'dimension':
-        file_name_prefix = '../mgcpy/benchmarks/sample_data_power_dimensions/type_{}_dim_{}'.format(simulation_type, num_dimensions)
+        file_name_prefix = './mgcpy/benchmarks/sample_data_power_dimensions/type_{}_dim_{}'.format(simulation_type, num_dimensions)
     else:
-        file_name_prefix = '../mgcpy/benchmarks/sample_data_power_sample_sizes/type_{}_size_{}'.format(simulation_type, num_samples)
+        file_name_prefix = './mgcpy/benchmarks/sample_data_power_sample_sizes/type_{}_size_{}'.format(simulation_type, num_samples)
     all_matrix_X = scipy.io.loadmat(file_name_prefix + '_X.mat')['X']
     all_matrix_Y = scipy.io.loadmat(file_name_prefix + '_Y.mat')['Y']
     for rep in range(repeats):
