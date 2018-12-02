@@ -84,7 +84,6 @@ cpdef center_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix, str
         expected_distance_matrix = np.repeat(((distance_matrix.mean(axis=0) * n) / (n-2)), n).reshape(-1, n).T \
                                     + np.repeat(((distance_matrix.mean(axis=1) * n) / (n-2)), n).reshape(-1, n) \
                                     - (distance_matrix.sum() / ((n-1) * (n-2)))
-        expected_distance_matrix += distance_matrix / n
 
     # biased version of dcorr distance transform
     elif base_global_correlation == "biased":
