@@ -127,8 +127,15 @@ class RVCorr(IndependenceTest):
         >>> rvcorr = RVCorr()
         >>> rvcorr_p_value = rvcorr.p_value(X, Y)
         """
-        test_stat = self.test_statistic(matrix_X, matrix_Y)[0]
-        self.p_value_ = np.abs(test_stat)
+        test_stat = self.test_statistic(matrix_X=matrix_X, matrix_Y=matrix_Y)[0]
+        # estimate the null by a permutation test
+        test_stats_null = np.zeros(replication_factor)
+        for rep in range(replication_factor):
+            permuted_y = np.random.permutation(matrix_Y)
+            test_stats_null[rep] = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_y)[0]
+
+        # p-value is the probability of observing more extreme test statistic under the null
+        self.p_value_ = np.where(test_stats_null >= test_stat)[0].shape[0] / replication_factor
         self.p_value_metadata_ = {}
 
-        return np.abs(test_stat), {}
+        return np.where(test_stats_null >= test_stat)[0].shape[0] / replication_factor, {}
