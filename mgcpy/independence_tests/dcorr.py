@@ -1,6 +1,5 @@
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
-from mgcpy.utils.dist_transform import dist_transform
 from scipy.stats import t
 from mgcpy.independence_tests.mgc.distance_transform import transform_distance_matrix
 
