@@ -15,7 +15,7 @@ do
     # stdout.
     # Because pep8 reads from stdin, it will display each filename as 'stdin',
     # so we use a custom format to ensure the real filename is printed.
-    git show :$FILE | pep8 --format="$FILE:%(row)d:%(col)d %(code)s %(text)s" -
+    git show :$FILE | pycodestyle --format="$FILE:%(row)d:%(col)d %(code)s %(text)s" -
 
     if [[ "$?" == 0 ]]; then
         echo "\t\033[32mpep8 Passed: $FILE\033[0m"

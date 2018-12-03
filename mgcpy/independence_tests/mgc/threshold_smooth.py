@@ -1,8 +1,7 @@
 """
-    MGCPY Sample Statistic
+    **MGC's Sample Statistic Module**
 """
 
-import math
 import numpy as np
 import scipy.ndimage
 import scipy.stats
@@ -12,16 +11,17 @@ def threshold_local_correlations(local_correlation_matrix, sample_size):
     """
     Finds a connected region of significance in the local correlation map by thresholding
 
-    :param local_correlation_matrix: all local correlations within [-1,1]
+    :param local_correlation_matrix: all local correlations within ``[-1,1]``
     :type local_covariance_matrix: 2D numpy.array
 
     :param sample_size: the sample size of original data
-                        (which may not equal m or n in case of repeating data).
-    :type sample_size: int
+                        (which may not equal ``m`` or ``n`` in case of repeating data).
+    :type sample_size: integer
 
-    :return: a binary matrix of size m and n, with 1's indicating the significant region.
+    :return: a binary matrix of size ``m`` and ``n``, with 1's indicating the significant region.
     :rtype: 2D numpy.array
     """
+
     m, n = local_correlation_matrix.shape
 
     # parametric threshold
@@ -33,19 +33,19 @@ def threshold_local_correlations(local_correlation_matrix, sample_size):
     # non-paratemetric threshold
     # set option = 1 to compute a non-parametric and data-adaptive threshold
     # (using the negative local correlation)
-    option = 0
-    if option == 1:
-        np_threshold = local_correlation_matrix
-
-        # all negative correlations
-        np_threshold = np_threshold[np_threshold < 0]
-
-        # the standard deviation of negative correlations
-        np_threshold = 5 * np.sqrt(np.sum(np_threshold ** 2) / len(np_threshold))
-
-        # use the max of paratemetric and non-parametric thresholds
-        if not math.isnan(np_threshold) and np_threshold > threshold:
-            threshold = np_threshold
+    # option = 0
+    # if option == 1:
+    #     np_threshold = local_correlation_matrix
+    #
+    #     # all negative correlations
+    #     np_threshold = np_threshold[np_threshold < 0]
+    #
+    #     # the standard deviation of negative correlations
+    #     np_threshold = 5 * np.sqrt(np.sum(np_threshold ** 2) / len(np_threshold))
+    #
+    #     # use the max of paratemetric and non-parametric thresholds
+    #     if not np.isnan(np_threshold) and np_threshold > threshold:
+    #         threshold = np_threshold
 
     # take the max of threshold and local correlation at the maximal scale
     threshold = max(threshold, local_correlation_matrix[m - 1][n - 1])
@@ -56,7 +56,8 @@ def threshold_local_correlations(local_correlation_matrix, sample_size):
         significant_connected_region, _ = scipy.ndimage.measurements.label(
             significant_connected_region)
         _, label_counts = np.unique(significant_connected_region, return_counts=True)
-        max_label = np.argmax(label_counts[1:]) + 1  # skip the first element in label_counts, as it is count(zeros)
+        # skip the first element in label_counts, as it is count(zeros)
+        max_label = np.argmax(label_counts[1:]) + 1
         significant_connected_region = significant_connected_region == max_label
     else:
         significant_connected_region = np.array([[False]])
@@ -67,20 +68,23 @@ def threshold_local_correlations(local_correlation_matrix, sample_size):
 def smooth_significant_local_correlations(significant_connected_region, local_correlation_matrix):
     """
     Finds the smoothed maximal within the significant region R:
-    - If area of R is too small it returns the last local correlation
-    - Otherwise, returns the maximum within significant_connected_region.
 
-    :param significant_connected_region: a binary matrix of size m and n, with 1's indicating the significant region.
+        - If area of R is too small it returns the last local correlation
+        - Otherwise, returns the maximum within significant_connected_region.
+
+    :param significant_connected_region: a binary matrix of size ``m`` and ``n``, with 1's indicating the significant region.
     :type significant_connected_region: 2D numpy.array
 
-    :param local_correlation_matrix: all local correlations within [-1,1]
+    :param local_correlation_matrix: all local correlations within ``[-1,1]``
     :type local_covariance_matrix: 2D numpy.array
 
     :return: A ``dict`` with the following keys:
-    :rtype: dict
-        - :mgc_statistic: the sample MGC statistic within [-1, 1]
-        - :optimal_scale: the estimated optimal scale as an [x, y] pair.
+
+            - :mgc_statistic: the sample MGC statistic within ``[-1, 1]``
+            - :optimal_scale: the estimated optimal scale as an ``[x, y]`` pair.
+    :rtype: dictionary
     """
+
     m, n = local_correlation_matrix.shape
 
     # default sample mgc to local corr at max scale
@@ -90,20 +94,22 @@ def smooth_significant_local_correlations(significant_connected_region, local_co
     if np.linalg.norm(significant_connected_region) != 0:
 
         # proceed only when the connected region's area is sufficiently large
+        # if np.sum(significant_connected_region) >= min(m, n):
         if np.sum(significant_connected_region) >= 2 * min(m, n):
             max_local_correlation = np.max(local_correlation_matrix[significant_connected_region])
 
             # find all scales within significant_connected_region that maximize the local correlation
-            max_local_correlation_index = np.where(
+            max_local_correlation_indices = np.where(
                 (local_correlation_matrix >= max_local_correlation) & significant_connected_region)
-
-            # adding 1s to match R indexing
-            k = max_local_correlation_index[0][0] + 1
-            l = max_local_correlation_index[1][0] + 1
 
             if max_local_correlation >= mgc_statistic:
                 mgc_statistic = max_local_correlation
-                optimal_scale = [k, l]
+
+                k, l = max_local_correlation_indices
+                one_d_indices = k * n + l  # 2D to 1D indexing
+                k = np.max(one_d_indices) // n
+                l = np.max(one_d_indices) % n
+                optimal_scale = [k+1, l+1]  # adding 1s to match R indexing
 
     return {"mgc_statistic": mgc_statistic,
             "optimal_scale": optimal_scale}

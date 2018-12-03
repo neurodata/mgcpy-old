@@ -1,5 +1,8 @@
 # Mac
 .DS_Store
+_build
+_static
+_templates
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -7,6 +10,7 @@ __pycache__/
 *$py.class
 
 # C extensions
+*.c
 *.so
 
 # Distribution / packaging
