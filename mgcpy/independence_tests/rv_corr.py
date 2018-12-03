@@ -55,9 +55,9 @@ class RVCorr(IndependenceTest):
         row_Y, columns_Y = matrix_Y.shape[0], matrix_Y.shape[1]
 
         mat1 = matrix_X - mb.repmat(np.mean(matrix_X, axis=0),
-                                         matrix_X.shape[0], 1)
+                                    matrix_X.shape[0], 1)
         mat2 = matrix_Y - mb.repmat(np.mean(matrix_Y, axis=0),
-                                         matrix_Y.shape[0], 1)
+                                    matrix_Y.shape[0], 1)
 
         covar = np.dot(mat1.T, mat2)
         varX = np.dot(mat1.T, mat1)

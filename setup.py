@@ -55,7 +55,7 @@ setup(
     ],
     ext_modules=cythonize(["mgcpy/independence_tests/mgc/local_correlation.pyx",
                            "mgcpy/independence_tests/mgc/distance_transform.pyx"],
-                           compiler_directives={'embedsignature': True}),
+                          compiler_directives={'embedsignature': True}),
     include_dirs=[numpy.get_include()],
     packages=find_packages()
 )
