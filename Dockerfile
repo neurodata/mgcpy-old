@@ -78,9 +78,7 @@ WORKDIR /root/workspace/
 # install python requirements
 COPY requirements.txt /root/workspace/requirements.txt
 RUN pip install -r requirements.txt
-RUN pip install jupyter
-RUN pip install matplotlib
-RUN pip install pycodestyle
+RUN pip install matplotlib seaborn pandas jupyter pycodestyle
 
 # copy the mgcpy code into the container
 COPY . /root/workspace/
