@@ -71,9 +71,15 @@ RUN ln -s /usr/bin/python3.6 /usr/local/bin/python
 #  cd .. && \
 #  rm -rf *
 
-# change working directory
+# make a directory for mounting local files into docker
 RUN mkdir /root/workspace/
-WORKDIR /root/workspace/
+
+# add vim in docker
+RUN apt-get install -y vim
+
+# change working directory
+RUN mkdir /root/code/
+WORKDIR /root/code/
 
 # clone the mgcpy code into the container
 RUN git clone https://github.com/NeuroDataDesign/mgcpy.git .
@@ -91,7 +97,7 @@ RUN ./install-hooks.sh
 RUN python setup.py build_ext --inplace
 
 # add mgcpy to PYTHONPATH for dev purposes
-RUN echo "export PYTHONPATH='${PYTHONPATH}:/root/workspace'" >> ~/.bashrc
+RUN echo "export PYTHONPATH='${PYTHONPATH}:/root/code'" >> ~/.bashrc
 
 # test if mgcpy is correctly installed
 RUN py3clean .
