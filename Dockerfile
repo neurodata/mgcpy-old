@@ -75,13 +75,12 @@ RUN ln -s /usr/bin/python3.6 /usr/local/bin/python
 RUN mkdir /root/workspace/
 WORKDIR /root/workspace/
 
+# clone the mgcpy code into the container
+RUN git clone https://github.com/NeuroDataDesign/mgcpy.git .
+
 # install python requirements
-COPY requirements.txt /root/workspace/requirements.txt
 RUN pip install -r requirements.txt
 RUN pip install matplotlib seaborn pandas jupyter pycodestyle
-
-# copy the mgcpy code into the container
-COPY . /root/workspace/
 
 # setup pep8 guidelines (restricts push when pep8 is violated)
 RUN rm -f ./.git/hooks/pre-commit
