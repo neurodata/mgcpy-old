@@ -86,7 +86,7 @@ RUN pip install pycodestyle
 COPY . /root/workspace/
 
 # setup pep8 guidelines (restricts push when pep8 is violated)
-RUN rm ./.git/hooks/pre-commit
+RUN rm -f ./.git/hooks/pre-commit
 RUN chmod 777 install-hooks.sh
 RUN ./install-hooks.sh
 
