@@ -29,10 +29,27 @@ python3 setup.py install
 - `python3 setup.py build_ext --inplace  # for cython`, if you want to test in-place, first execute this
 
 ## Setting up the development environment:
-- Install [docker](https://docs.docker.com/install/)
-- Build the docker image, `docker build -t mgcpy-dev:latest .`
-  - This takes 10 to 15 mins to build
-- Launch the container to go into mgcpy's dev env, `docker run -it --rm --name mgcpy-dev-env mgcpy-dev`
+- To build image and run from scratch:
+  - Install [docker](https://docs.docker.com/install/)
+  - Build the docker image, `docker build -t mgcpy-dev:latest .`
+    - This takes 20-30 mins to build
+  - Launch the container to go into mgcpy's dev env, `docker run -it --rm --name mgcpy-dev-env mgcpy-dev`
+- Pull master branch image from Dockerhub and run:
+  - `docker pull tpsatish95/mgcpy-dev:latest`
+  - `docker run -it --rm -p 8888:8888 --name mgcpy-dev-env tpsatish95/mgcpy-dev`
+
+
+- To run demo notebooks (from within Docker):
+  - `cd demos`
+  - `jupyter notebook --ip 0.0.0.0 --no-browser --allow-root`
+  - Then copy the url it generates, it looks something like this: `http://(0de284ecf0cd or 127.0.0.1):8888/?token=e5a2541812d85e20026b1d04983dc8380055f2d16c28a6ad`
+  - Edit this: `(0de284ecf0cd or 127.0.0.1)` to: `127.0.0.1`, in the above link and open it in your browser
+  - Then open `mgc.ipynb`
+
+- To mount/load local files into docker container:
+  - Do `docker run -it --rm -v <local_dir_path>:/root/workspace/ -p 8888:8888 --name mgcpy-dev-env tpsatish95/mgcpy-dev`, replace `<local_dir_path>` with your local dir path.
+  - Do `cd ../workspace` when you are inside the container to view the mounted files. The **mgcpy** package code will be in `/root/code` directory.
+
 
 ## MGC Algorithm's Flow
 ![MGCPY Flow](MGCPY.png)
