@@ -27,3 +27,44 @@ def test_fast_mgc_test_non_linear():
     mgc = MGC()
     p_value_res, _ = mgc.p_value(X, Y, is_fast=True)
     assert np.allclose(p_value, p_value_res, rtol=0.1)
+
+
+def load_results(file_name, results_dir="./mgcpy/independence_tests/unit_tests/mgc/data/fast_mgc/"):
+    mgc_results = np.genfromtxt(results_dir + file_name, delimiter=',')
+
+    pMGC = mgc_results[:, 0][0]
+    statMGC = mgc_results[:, 1][0]
+    localCorr = mgc_results[:, 2:52]
+    optimalScale = np.array(np.unravel_index(int(mgc_results[:, 52][0])-1, (50, 50))) + 1  # add 1 to match Matlab indexing
+    ConfidenceInterval = mgc_results[:, 53:55][0]
+    RequiredSize = mgc_results[:, 55][0]
+
+    return (pMGC, statMGC, localCorr, optimalScale, ConfidenceInterval, RequiredSize)
+
+
+def test_mgc_test_all():
+    data_dir = "./mgcpy/independence_tests/unit_tests/mgc/data/"
+
+    # excluding step_sim, the matlab code has some bug in this case, need to figure out what
+    simulations = ["linear_sim", "exp_sim", "cub_sim", "joint_sim",
+                   "quad_sim", "w_sim", "spiral_sim", "ubern_sim", "log_sim", "root_sim",
+                   "sin_sim", "sin_sim_16", "square_sim", "two_parab_sim", "circle_sim",
+                   "ellipsis_sim", "square_sim_", "multi_noise_sim", "multi_indep_sim"]
+
+    print("\nSimulations being used to test MGC: ")
+    for simulation in simulations:
+        print(simulation)
+
+        X = np.genfromtxt(data_dir + "input/" + simulation + "_x.csv", delimiter=',').reshape(-1, 1)
+        Y = np.genfromtxt(data_dir + "input/" + simulation + "_y.csv", delimiter=',').reshape(-1, 1)
+
+        pMGC, statMGC, localCorr, optimalScale, ConfidenceInterval, RequiredSize = load_results(simulation + "_fast_res.csv")
+
+        mgc = MGC()
+        p_value, metadata = mgc.p_value(X, Y, is_fast=True)
+        assert np.allclose(pMGC, p_value, rtol=1.e-4)
+        assert np.allclose(statMGC, metadata["test_statistic"], rtol=1.e-4)
+        assert np.allclose(localCorr, metadata["local_correlation_matrix"], rtol=1.e-4)
+        assert np.allclose(optimalScale, metadata["optimal_scale"])
+        assert np.allclose(ConfidenceInterval, metadata["confidence_interval"], rtol=1.e-3)
+        assert np.allclose(RequiredSize, metadata["required_size"])
