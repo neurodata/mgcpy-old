@@ -2,11 +2,8 @@
     **Main MGC Independence Test Module**
 """
 
-import time
-import warnings
-
-import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
+from mgcpy.independence_tests.mgc.fast_mgc import fast_mgc
 from mgcpy.independence_tests.mgc.local_correlation import local_correlations
 from mgcpy.independence_tests.mgc.threshold_smooth import (smooth_significant_local_correlations,
                                                            threshold_local_correlations)
@@ -96,7 +93,7 @@ class MGC(IndependenceTest):
         self.test_statistic_metadata_ = test_statistic_metadata
         return mgc_statistic, test_statistic_metadata
 
-    def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
+    def p_value(self, matrix_X, matrix_Y, replication_factor=1000, is_fast=False, fast_mgc_data={}):
         """
         Tests independence between two datasets using MGC and permutation test.
 
@@ -116,10 +113,22 @@ class MGC(IndependenceTest):
                                    the permutation test. Defaults to ``1000``.
         :type replication_factor: integer
 
+        :param is_fast: is a boolean flag which specifies if the p_value should be computed (approximated)
+                        using the fast version of mgc. This defaults to False.
+        :type is_fast: boolean
+
+        :param fast_mgc_data: a ``dict`` of fast mgc params, refer: mgcpy.independence_tests.mgc.fast_mgc
+
+            - :sub_samples: specifies the number of subsamples.
+            - :null_only: specifies if subsampling is to be used for estimating the null only.
+            - :alpha: specifies the type 1 error level.
+        :type fast_mgc_data: dictonary
+
         :return: returns a list of two items, that contains:
 
             - :p_value: P-value of MGC
             - :metadata: a ``dict`` of metadata with the following keys:
+
                     - :test_statistic: the sample MGC statistic within ``[-1, 1]``
                     - :p_local_correlation_matrix: a 2D matrix of the P-values of the local correlations
                     - :local_correlation_matrix: a 2D matrix of all local correlations within ``[-1,1]``
@@ -138,4 +147,10 @@ class MGC(IndependenceTest):
         >>> mgc = MGC()
         >>> p_value, metadata = mgc.p_value(X, Y, replication_factor = 100)
         """
-        return super(MGC, self).p_value(matrix_X, matrix_Y)
+        if is_fast:
+            p_value, p_value_metadata = fast_mgc(matrix_X, matrix_Y, **fast_mgc_data)
+            self.p_value_ = p_value
+            self.p_value_metadata_ = p_value_metadata
+            return p_value, p_value_metadata
+        else:
+            return super(MGC, self).p_value(matrix_X, matrix_Y)
