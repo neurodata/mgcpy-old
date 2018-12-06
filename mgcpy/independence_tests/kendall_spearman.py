@@ -14,13 +14,6 @@ class KendallSpearman(IndependenceTest):
         IndependenceTest.__init__(self, compute_distance_matrix)
         self.which_test = which_test
 
-    def get_name(self):
-        '''
-        :return: the name of the independence test
-        :rtype: string
-        '''
-        return self.which_test
-
     def test_statistic(self, matrix_X, matrix_Y):
         """
         Computes the Spearman's rho or Kendall's tau measure between two datasets.
@@ -96,18 +89,4 @@ class KendallSpearman(IndependenceTest):
         >>> kendall_spearman = KendallSpearman()
         >>> kendall_spearman_p_value = kendall_spearman.p_value(X, Y)
         """
-        if matrix_X is None:
-            matrix_X = self.matrix_X
-        if matrix_Y is None:
-            matrix_Y = self.matrix_Y
-        assert matrix_X.shape[1] == 1, "Data matrix should be (n, 1) shape"
-        assert matrix_Y.shape[1] == 1, "Data matrix should be (n, 1) shape"
-
-        if self.which_test == 'kendall':
-            self.p_value_ = kendalltau(matrix_X, matrix_Y)[1]
-        else:
-            self.p_value_ = spearmanr(matrix_X, matrix_Y)[1]
-
-        self.p_value_metadata_ = {}
-
-        return self.p_value_, self.p_value_metadata_
+        return super(KendallSpearman, self).p_value(matrix_X, matrix_Y)

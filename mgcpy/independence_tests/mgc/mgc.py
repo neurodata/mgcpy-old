@@ -1,4 +1,9 @@
+"""
+    **Main MGC Independence Test Module**
+"""
+
 import time
+import warnings
 
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
@@ -11,57 +16,58 @@ class MGC(IndependenceTest):
     def __init__(self, compute_distance_matrix=None, base_global_correlation='mgc'):
         '''
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
-        :type compute_distance_matrix: FunctionType or callable()
+        :type compute_distance_matrix: ``FunctionType`` or ``callable()``
 
         :param base_global_correlation: specifies which global correlation to build up-on,
                                         including 'mgc','dcor','mantel', and 'rank'.
                                         Defaults to mgc.
-        :type base_global_correlation: str
+        :type base_global_correlation: string
         '''
 
         IndependenceTest.__init__(self, compute_distance_matrix)
+        self.which_test = "mgc"
         self.base_global_correlation = base_global_correlation
-
-    def get_name(self):
-        '''
-        :return: the name of the independence test
-        :rtype: string
-        '''
-        return 'mgc'
 
     def test_statistic(self, matrix_X, matrix_Y):
         """
         Computes the MGC measure between two datasets.
-        - It first computes all the local correlations
-        - Then, it returns the maximal statistic among all local correlations based on thresholding.
 
-        :param matrix_X: (optional, default picked from class attr) is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
+            - It first computes all the local correlations
+            - Then, it returns the maximal statistic among all local correlations based on thresholding.
+
+        :param matrix_X: is interpreted as either:
+
+            - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
+            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
         :type matrix_X: 2D numpy.array
 
-        :param matrix_Y: (optional, default picked from class attr) is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
+        :param matrix_Y: is interpreted as either:
+
+            - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
+            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
         :type matrix_Y: 2D numpy.array
 
         :return: returns a list of two items, that contains:
+
             - :test_statistic: the sample MGC statistic within [-1, 1]
             - :independence_test_metadata: a ``dict`` of metadata with the following keys:
-                    - :local_correlation_matrix: a 2D matrix of all local correlations within [-1,1]
-                    - :optimal_scale: the estimated optimal scale as an [x, y] pair.
+                    - :local_correlation_matrix: a 2D matrix of all local correlations within ``[-1,1]``
+                    - :optimal_scale: the estimated optimal scale as an ``[x, y]`` pair.
+        :rtype: list
 
         **Example:**
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.mgc.mgc import MGC
-
+        >>>
         >>> X = np.array([0.07487683, -0.18073412, 0.37266440, 0.06074847, 0.76899045,
-                      0.51862516, -0.13480764, -0.54368083, -0.73812644, 0.54910974]).reshape(-1, 1)
+        ...           0.51862516, -0.13480764, -0.54368083, -0.73812644, 0.54910974]).reshape(-1, 1)
         >>> Y = np.array([-1.31741173, -0.41634224, 2.24021815, 0.88317196, 2.00149312,
-                      1.35857623, -0.06729464, 0.16168344, -0.61048226, 0.41711113]).reshape(-1, 1)
+        ...           1.35857623, -0.06729464, 0.16168344, -0.61048226, 0.41711113]).reshape(-1, 1)
         >>> mgc = MGC()
         >>> mgc_statistic, test_statistic_metadata = mgc.test_statistic(X, Y)
         """
+
         # compute all local correlations
         distance_matrix_X = self.compute_distance_matrix(matrix_X)
         distance_matrix_Y = self.compute_distance_matrix(matrix_Y)
@@ -94,65 +100,42 @@ class MGC(IndependenceTest):
         """
         Tests independence between two datasets using MGC and permutation test.
 
-        :param matrix_X: (optional, default picked from class attr) is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
+        :param matrix_X: is interpreted as either:
+
+            - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
+            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
         :type matrix_X: 2D numpy.array
 
-        :param matrix_Y: (optional, default picked from class attr) is interpreted as either:
-            - a [n*n] distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a [n*d] data matrix, a square matrix with n samples in d dimensions
+        :param matrix_Y: is interpreted as either:
+
+            - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
+            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
         :type matrix_Y: 2D numpy.array
 
         :param replication_factor: specifies the number of replications to use for
-                                   the permutation test. Defaults to 1000.
-        :type replication_factor: int
+                                   the permutation test. Defaults to ``1000``.
+        :type replication_factor: integer
 
         :return: returns a list of two items, that contains:
+
             - :p_value: P-value of MGC
             - :metadata: a ``dict`` of metadata with the following keys:
-                    - :test_statistic: the sample MGC statistic within [-1, 1]
+                    - :test_statistic: the sample MGC statistic within ``[-1, 1]``
                     - :p_local_correlation_matrix: a 2D matrix of the P-values of the local correlations
-                    - :local_correlation_matrix: a 2D matrix of all local correlations within [-1,1]
-                    - :optimal_scale: the estimated optimal scale as an [x, y] pair.
+                    - :local_correlation_matrix: a 2D matrix of all local correlations within ``[-1,1]``
+                    - :optimal_scale: the estimated optimal scale as an ``[x, y]`` pair.
+        :rtype: list
 
         **Example:**
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.mgc.mgc import MGC
-
+        >>>
         >>> X = np.array([0.07487683, -0.18073412, 0.37266440, 0.06074847, 0.76899045,
-                      0.51862516, -0.13480764, -0.54368083, -0.73812644, 0.54910974]).reshape(-1, 1)
+        ...           0.51862516, -0.13480764, -0.54368083, -0.73812644, 0.54910974]).reshape(-1, 1)
         >>> Y = np.array([-1.31741173, -0.41634224, 2.24021815, 0.88317196, 2.00149312,
-                      1.35857623, -0.06729464, 0.16168344, -0.61048226, 0.41711113]).reshape(-1, 1)
+        ...           1.35857623, -0.06729464, 0.16168344, -0.61048226, 0.41711113]).reshape(-1, 1)
         >>> mgc = MGC()
         >>> p_value, metadata = mgc.p_value(X, Y, replication_factor = 100)
         """
-        np.random.seed(int(time.time()))
-
-        mgc_statistic, independence_test_metadata = self.test_statistic(matrix_X, matrix_Y)
-        local_correlation_matrix = independence_test_metadata["local_correlation_matrix"]
-
-        p_local_correlation_matrix = np.zeros(local_correlation_matrix.shape)
-        p_value = 0
-
-        # compute sample MGC statistic and all local correlations for each set of permuted data
-        for _ in range(replication_factor):
-            # use random permutations on the second data set
-            premuted_matrix_Y = np.random.permutation(matrix_Y)
-
-            temp_mgc_statistic, temp_independence_test_metadata = self.test_statistic(
-                matrix_X, premuted_matrix_Y)
-            temp_local_correlation_matrix = temp_independence_test_metadata["local_correlation_matrix"]
-
-            p_value += ((temp_mgc_statistic >= mgc_statistic) * (1/replication_factor))
-            p_local_correlation_matrix += ((temp_local_correlation_matrix >=
-                                            local_correlation_matrix) * (1/replication_factor))
-
-        p_value_metadata = {"test_statistic": mgc_statistic,
-                            "p_local_correlation_matrix": p_local_correlation_matrix,
-                            "local_correlation_matrix": local_correlation_matrix,
-                            "optimal_scale": independence_test_metadata["optimal_scale"]}
-
-        self.p_value_ = p_value
-        self.p_value_metadata_ = p_value_metadata
-        return p_value, p_value_metadata
+        return super(MGC, self).p_value(matrix_X, matrix_Y)

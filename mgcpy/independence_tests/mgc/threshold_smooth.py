@@ -1,5 +1,5 @@
 """
-    MGCPY Sample Statistic
+    **MGC's Sample Statistic Module**
 """
 
 import numpy as np
@@ -11,16 +11,17 @@ def threshold_local_correlations(local_correlation_matrix, sample_size):
     """
     Finds a connected region of significance in the local correlation map by thresholding
 
-    :param local_correlation_matrix: all local correlations within [-1,1]
+    :param local_correlation_matrix: all local correlations within ``[-1,1]``
     :type local_covariance_matrix: 2D numpy.array
 
     :param sample_size: the sample size of original data
-                        (which may not equal m or n in case of repeating data).
-    :type sample_size: int
+                        (which may not equal ``m`` or ``n`` in case of repeating data).
+    :type sample_size: integer
 
-    :return: a binary matrix of size m and n, with 1's indicating the significant region.
+    :return: a binary matrix of size ``m`` and ``n``, with 1's indicating the significant region.
     :rtype: 2D numpy.array
     """
+
     m, n = local_correlation_matrix.shape
 
     # parametric threshold
@@ -67,26 +68,28 @@ def threshold_local_correlations(local_correlation_matrix, sample_size):
 def smooth_significant_local_correlations(significant_connected_region, local_correlation_matrix):
     """
     Finds the smoothed maximal within the significant region R:
-    - If area of R is too small it returns the last local correlation
-    - Otherwise, returns the maximum within significant_connected_region.
 
-    :param significant_connected_region: a binary matrix of size m and n, with 1's indicating the significant region.
+        - If area of R is too small it returns the last local correlation
+        - Otherwise, returns the maximum within significant_connected_region.
+
+    :param significant_connected_region: a binary matrix of size ``m`` and ``n``, with 1's indicating the significant region.
     :type significant_connected_region: 2D numpy.array
 
-    :param local_correlation_matrix: all local correlations within [-1,1]
+    :param local_correlation_matrix: all local correlations within ``[-1,1]``
     :type local_covariance_matrix: 2D numpy.array
 
     :return: A ``dict`` with the following keys:
-    :rtype: dict
-        - :mgc_statistic: the sample MGC statistic within [-1, 1]
-        - :optimal_scale: the estimated optimal scale as an [x, y] pair.
+
+            - :mgc_statistic: the sample MGC statistic within ``[-1, 1]``
+            - :optimal_scale: the estimated optimal scale as an ``[x, y]`` pair.
+    :rtype: dictionary
     """
+
     m, n = local_correlation_matrix.shape
 
     # default sample mgc to local corr at max scale
     mgc_statistic = local_correlation_matrix[m - 1][n - 1]
     optimal_scale = [m, n]  # default the optimal scale to max scale
-    # optimal_scale = [0, 0]  # default the optimal scale to 0
 
     if np.linalg.norm(significant_connected_region) != 0:
 
