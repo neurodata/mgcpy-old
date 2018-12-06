@@ -25,11 +25,9 @@ def compute_distance_matrix(X, disttype):
         
 def hatify(X):
     """
-    Returns the "hat" matrix, X*(X.T *X)^-1 *X.T
+    Returns the "hat" matrix.
     """
-    Q1, _ = np.linalg.qr(X)
-    H = Q1.dot(Q1.T)
-    return H
+    return X.dot(np.linalg.inv(X.T.dot(X))).dot(X.T)
 
 def gower_center(Y):
     """
@@ -61,70 +59,25 @@ def gower_center_many(Ys):
     return Gs
 
 
-def gen_H2_perms_single(X, columns, permutation_indexes):
+def gen_H2_perms(X, predictors, permutation_indexes):
     """
     Return H2 for each permutation of X indices, where H2 is the hat matrix
     minus the hat matrix of the untested columns.
-    
-    The function calculates this correctly for single column tests.
     """
     permutations, observations = permutation_indexes.shape
     variables = X.shape[1]
     
+    covariates = [i for i in range(variables) if i not in predictors]
     H2_permutations = np.zeros((observations ** 2, permutations))
     for i in range(permutations):
-        perm_X = X[permutation_indexes[i, :]]
-        cols_X = perm_X[:, columns]
-        fix = cols_X.shape[0]
-        cols_X = cols_X.reshape((fix,1))
-        H = hatify(cols_X)
-        other_columns = [i for i in range(variables) if i != columns]
-        H2 = H - hatify(X[:, other_columns])
+        perm_X = X[permutation_indexes[i]]
+        H2 = hatify(perm_X) - hatify(perm_X[:, covariates])
         H2_permutations[:, i] = H2.flatten()
     
     return H2_permutations
 
-def gen_IH_perms_single(X, columns, permutation_indexes):
-    """
-    Return I-H where H is the hat matrix and I is the identity matrix.
-    
-    The function calculates this correctly for single column tests.
-    """
-    permutations, observations = permutation_indexes.shape
-    I = np.eye(observations, observations)
-    
-    IH_permutations = np.zeros((observations ** 2, permutations))
-    for i in range(permutations):
-        cols_X = X[permutation_indexes[i, :]][:, columns]
-        fix = cols_X.shape[0]
-        cols_X = cols_X.reshape((fix,1))
-        IH = I - hatify(cols_X)
-        IH_permutations[:,i] = IH.flatten()
-    
-    return IH_permutations
 
-def gen_H2_perms(X, columns, permutation_indexes):
-    """
-    Return H2 for each permutation of X indices, where H2 is the hat matrix
-    minus the hat matrix of the untested columns.
-    
-    The function calculates this correctly for multiple column tests.
-    """
-    permutations, observations = permutation_indexes.shape
-    variables = X.shape[1]
-    
-    H2_permutations = np.zeros((observations ** 2, permutations))
-    for i in range(permutations):
-        perm_X = X[permutation_indexes[i, :]]
-        cols_X = perm_X[:, columns]
-        H = hatify(cols_X)
-        other_columns = [i for i in range(variables) if i not in columns]
-        H2 = H - hatify(X[:, other_columns])
-        H2_permutations[:, i] = H2.flatten()
-    
-    return H2_permutations
-
-def gen_IH_perms(X, columns, permutation_indexes):
+def gen_IH_perms(X, predictors, permutation_indexes):
     """
     Return I-H where H is the hat matrix and I is the identity matrix.
     
@@ -135,10 +88,11 @@ def gen_IH_perms(X, columns, permutation_indexes):
     
     IH_permutations = np.zeros((observations ** 2, permutations))
     for i in range(permutations):
-        IH = I - hatify(X[permutation_indexes[i, :]][:, columns])
+        IH = I - hatify(X[permutation_indexes[i, :]])
         IH_permutations[:,i] = IH.flatten()
     
     return IH_permutations
+
 
 def calc_ftest(Hs, IHs, Gs, m2, nm):
     """
@@ -149,13 +103,15 @@ def calc_ftest(Hs, IHs, Gs, m2, nm):
     F = (N / m2) / (D / nm)
     return F
 
+
 def fperms_to_pvals(F_perms):
     """
     This function calculates the permutation p-value from the test statistics of all permutations.
     """
     permutations, tests = F_perms.shape
+    permutations -= 1
     pvals = np.zeros(tests)
     for i in range(tests):
-        j        = (F_perms[:, i] >= F_perms[0, i]).sum().astype('float')
-        pvals[i] = j / permutations
+        j        = (F_perms[1:, i] >= F_perms[0, i]).sum().astype('float')
+        pvals[i] = (j+1) / (permutations+1)
     return pvals

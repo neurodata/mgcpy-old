@@ -48,8 +48,8 @@ class MDMR(IndependenceTest):
         a = D.shape[0]**2
         D = D.reshape((a,1))
         
-        columns = np.arange(X.shape[1])
-        columnsingle = X.shape[1]
+        predictors = np.arange(X.shape[1])
+        predsingle = X.shape[1]
         check_rank(X)
     
         subjects = X.shape[0]
@@ -57,56 +57,57 @@ class MDMR(IndependenceTest):
             raise Exception("# of subjects incompatible between X and D")
         
         X = np.hstack((np.ones((X.shape[0], 1)), X))
-        col = copy.copy(columns)
-        col += 1
+        predictors = np.array(predictors)
+        predictors += 1
     
         Gs = gower_center_many(D)
     
-        df_among = float(col.shape[0])
-        df_resid = float(subjects - X.shape[1])
+        m2 = float(X.shape[1] - predictors.shape[0])
+        nm = float(subjects - X.shape[1])
     
         permutation_indexes = np.zeros((permutations + 1, subjects), dtype=np.int)
         permutation_indexes[0, :] = range(subjects)
         for i in range(1, permutations + 1):
             permutation_indexes[i,:] = np.random.permutation(subjects)
     
-        H2perms = gen_H2_perms(X, col, permutation_indexes)
-        IHperms = gen_IH_perms(X, col, permutation_indexes)
+        H2perms = gen_H2_perms(X, predictors, permutation_indexes)
+        IHperms = gen_IH_perms(X, predictors, permutation_indexes)
         
-        F_perms = calc_ftest(H2perms, IHperms, Gs,
-                            df_among, df_resid)
+        F_perms = calc_ftest(H2perms, IHperms, Gs, m2, nm)
     
-        p_vals = fperms_to_pvals(F_perms)
+        p_vals = None
+        if permutations > 0:
+            p_vals = fperms_to_pvals(F_perms)
         F_permtotal = F_perms[0, :]
         pvaltotal = p_vals
         if individual == 0:
             return F_permtotal, pvaltotal
         if individual == 1:
-            results = np.zeros((columnsingle,3))
-            for col in range(1, columnsingle+1):
-                col = copy.copy(col)
-                #    columns += 1
+            results = np.zeros((predsingle,3))
+            for predictors in range(1, predsingle+1):
+                predictors = np.array([predictors])
                 
                 Gs = gower_center_many(D)
                 
-                df_among = float(col)
-                df_resid = float(subjects - X.shape[1])
+                m2 = float(X.shape[1] - predictors.shape[0])
+                nm = float(subjects - X.shape[1])
                 
                 permutation_indexes = np.zeros((permutations + 1, subjects), dtype=np.int)
                 permutation_indexes[0, :] = range(subjects)
                 for i in range(1, permutations + 1):
                     permutation_indexes[i,:] = np.random.permutation(subjects)
                     
-                H2perms = gen_H2_perms_single(X, col, permutation_indexes)
-                IHperms = gen_IH_perms_single(X, col, permutation_indexes)
+                H2perms = gen_H2_perms(X, predictors, permutation_indexes)
+                IHperms = gen_IH_perms(X, predictors, permutation_indexes)
                     
-                F_perms = calc_ftest(H2perms, IHperms, Gs,
-                                    df_among, df_resid)
+                F_perms = calc_ftest(H2perms, IHperms, Gs, m2, nm)
                 
-                p_vals = fperms_to_pvals(F_perms)
-                results[col-1,0] = col
-                results[col-1,1] = F_perms[0, :]
-                results[col-1,2] = p_vals
+                p_vals = None
+                if permutations > 0:
+                    p_vals = fperms_to_pvals(F_perms)
+                results[predictors-1,0] = predictors
+                results[predictors-1,1] = F_perms[0, :]
+                results[predictors-1,2] = p_vals
     
     
             return F_permtotal, pvaltotal, results

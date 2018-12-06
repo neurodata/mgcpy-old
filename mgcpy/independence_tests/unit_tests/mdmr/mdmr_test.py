@@ -17,15 +17,15 @@ def test_mdmr():
     assert mdmr.get_name() == 'mdmr'
     
     #test statistic
-    assert np.allclose(a, 25.03876688)
+    assert np.allclose(a, 75.11630064)
     
     #p-value
     assert np.allclose(b2, 0.000999)
     
     #individual statistics
-    assert np.allclose(results1[0,1], -13.702988)
+    assert np.allclose(results1[0,1], 10.39953044)
     assert np.allclose(results2[0,2], 0.000999)
-    assert np.allclose(results1[1,1], -22.6870867)
+    assert np.allclose(results1[1,1], 4.12263312)
     assert np.allclose(results2[1,2], 0.000999)
-    assert np.allclose(results1[2,1], -2.70117626)
+    assert np.allclose(results1[2,1], 11.31712737)
     assert np.allclose(results2[2,2], 0.000999)
