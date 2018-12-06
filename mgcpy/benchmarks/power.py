@@ -91,7 +91,7 @@ def power_given_data(independence_test, simulation_type, data_type='dimension', 
     if data_type == 'dimension':
         file_name_prefix = dir_name + '/sample_data_power_dimensions/type_{}_dim_{}'.format(simulation_type, num_dimensions)
     else:
-        file_name_prefix = dir_name + '/sample_data_power_sample_sizes/type_{}_size_{}'.format(simulation_type, num_samples)
+        file_name_prefix = dir_name + '/sample_data_power_sample_size/type_{}_size_{}'.format(simulation_type, num_samples)
     all_matrix_X = scipy.io.loadmat(file_name_prefix + '_X.mat')['X']
     all_matrix_Y = scipy.io.loadmat(file_name_prefix + '_Y.mat')['Y']
     for rep in range(repeats):
