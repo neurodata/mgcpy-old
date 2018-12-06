@@ -1,14 +1,17 @@
 """
-    **Faster version of MGC**
+    **Fast version of MGC**
 """
+import math
+import warnings
 
 import numpy as np
 from mgcpy.independence_tests.mgc.mgc import MGC
 from mgcpy.independence_tests.mgc.threshold_smooth import (smooth_significant_local_correlations,
                                                            threshold_local_correlations)
+from scipy.stats import norm
 
 
-def faster_mgc(matrix_X, matrix_Y, sub_samples=100, null_only=True, alpha=0.01):
+def fast_mgc(matrix_X, matrix_Y, sub_samples=100, null_only=True, alpha=0.01):
     '''
     MGC test statistic computation and permutation test by fast subsampling.
     Note that trivial amount of noise is added to matrix_X and matrix_Y,
@@ -43,15 +46,17 @@ def faster_mgc(matrix_X, matrix_Y, sub_samples=100, null_only=True, alpha=0.01):
                   this is is used to derive the confidence interval and estimate required sample size to achieve power 1.
     :type alpha: float
 
-    :return: a ``dict`` of results with the following keys:
+    :return: returns a list of two items, that contains:
 
         - :p_value: P-value of MGC
-        - :test_statistic: the sample MGC statistic within ``[-1, 1]``
-        - :local_correlation_matrix: a 2D matrix of all local correlations within ``[-1,1]``
-        - :optimal_scale: the estimated optimal scale as an ``[x, y]`` pair.
-        - :confidence_interval: a ``[1*2]`` matrix representing the confidence_interval for the local correlation with 1-alpha confidence.
-        - :required_size: the required estimated sample size to have power 1 at level alpha
-    :rtype: dictionary
+        - :metadata: a ``dict`` of metadata with the following keys:
+
+                - :test_statistic: the sample MGC statistic within ``[-1, 1]``
+                - :local_correlation_matrix: a 2D matrix of all local correlations within ``[-1,1]``
+                - :optimal_scale: the estimated optimal scale as an ``[x, y]`` pair.
+                - :confidence_interval: a ``[1*2]`` matrix representing the confidence_interval for the local correlation with 1-alpha confidence.
+                - :required_size: the required estimated sample size to have power 1 at level alpha
+    :rtype: list
     '''
     total_samples = matrix_Y.shape[0]
     num_samples = total_samples // sub_samples
@@ -98,3 +103,37 @@ def faster_mgc(matrix_X, matrix_Y, sub_samples=100, null_only=True, alpha=0.01):
     result = smooth_significant_local_correlations(
         significant_connected_region, local_correlation_matrix)
     mgc_statistic, optimal_scale = result["mgc_statistic"], result["optimal_scale"]
+
+    k, l = optimal_scale
+    k = math.ceil((k - 1)/(sub_samples - 1) * (total_samples - 1)) + 1
+    l = math.ceil((l - 1)/(sub_samples - 1) * (total_samples - 1)) + 1
+    optimal_scale = [k, l]
+
+    # the observed statistic uses the full data
+    if null_only:
+        mgc_statistic, test_statistic_metadata = mgc.test_statistic(matrix_X, matrix_Y)
+        mgc_statistic = test_statistic_metadata["local_correlation_matrix"][optimal_scale[0]][optimal_scale[1]]
+        optimal_scale = test_statistic_metadata["optimal_scale"]
+        sigma /= math.sqrt(num_samples)
+
+    p_value = 1 - norm.cdf(mgc_statistic, 0, sigma)
+    threshold = norm.ppf(1 - alpha, 0, 1)
+    confidence_interval = [mgc_statistic - (threshold * sigma), mgc_statistic + (threshold * sigma)]
+
+    if mgc_statistic < 0:
+        required_size = np.Inf
+    else:
+        required_size = math.ceil(threshold * sigma * total_samples / mgc_statistic / 10) * 10
+
+    # The results are not statistically significant
+    if p_value > 0.05:
+        warnings.warn("The p-value is greater than 0.05, implying that the results are not statistically significant.\n" +
+                      "Use results such as test_statistic and optimal_scale, with caution!")
+
+    p_value_metadata = {"test_statistic": mgc_statistic,
+                        "local_correlation_matrix": test_statistic_metadata["local_correlation_matrix"],
+                        "optimal_scale": optimal_scale,
+                        "confidence_interval": confidence_interval,
+                        "required_size": required_size}
+
+    return p_value, p_value_metadata
