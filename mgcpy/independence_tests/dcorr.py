@@ -83,15 +83,12 @@ class DCorr(IndependenceTest):
         # store the variance of X, variance of Y and the covariace as metadata
         self.test_statistic_metadata_ = {'variance_X': variance_X, 'variance_Y': variance_Y, 'covariance': covariance}
 
-        '''
         # use absolute value for mantel coefficients
 
         if self.which_test == 'mantel':
             self.test_statistic_ = np.abs(correlation)
         else:
             self.test_statistic_ = correlation
-        '''
-        self.test_statistic_ = correlation
 
         return (self.test_statistic_, self.test_statistic_metadata_)
 
