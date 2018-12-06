@@ -12,6 +12,8 @@
 
 `mgcpy` is a Python package containing tools for multiscale graph correlation and other statistical tests, that is capable of dealing with high dimensional and multivariate data.
 
+**Documentation:** https://mgcpy.readthedocs.io/en/latest/
+
 ## Installation Guide:
 
 ### Install from PyPi
