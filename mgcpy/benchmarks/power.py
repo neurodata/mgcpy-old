@@ -72,13 +72,11 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
         test_stats_null[rep], _ = independence_test.test_statistic(matrix_X, permuted_y)
         test_stats_alternative[rep], _ = independence_test.test_statistic(matrix_X, matrix_Y)
 
-        '''
         # if the test is pearson, use absolute value of the test statistic
         # so the more extreme test statistic is still in a one-sided interval
         if independence_test.get_name() == 'pearson':
             test_stats_null[rep] = abs(test_stats_null[rep])
             test_stats_alternative[rep] = abs(test_stats_alternative[rep])
-        '''
 
     # the cutoff is determined so that 1-alpha of the test statistics under the null distribution
     # is less than the cutoff
@@ -149,13 +147,12 @@ def power_given_data(independence_test, simulation_type, data_type='dimension', 
         permuted_y = np.random.permutation(matrix_Y)
         test_stats_null[rep], _ = independence_test.test_statistic(matrix_X, permuted_y)
         test_stats_alternative[rep], _ = independence_test.test_statistic(matrix_X, matrix_Y)
-        '''
+
         # if the test is pearson, use absolute value of the test statistic
         # so the more extreme test statistic is still in a one-sided interval
         if independence_test.get_name() == 'pearson':
             test_stats_null[rep] = abs(test_stats_null[rep])
             test_stats_alternative[rep] = abs(test_stats_alternative[rep])
-        '''
 
     # the cutoff is determined so that 1-alpha of the test statistics under the null distribution
     # is less than the cutoff
