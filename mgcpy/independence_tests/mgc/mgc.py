@@ -3,6 +3,7 @@
 """
 import math
 import warnings
+from statistics import stdev
 
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
@@ -218,7 +219,7 @@ class MGC(IndependenceTest):
             num_samples = 4
 
         # the observed statistics by subsampling
-        test_statistic_sub_sampling = np.zeros((1, num_samples))
+        test_statistic_sub_sampling = np.zeros(num_samples)
 
         # add trivial noise to break any ties
         matrix_X += 1e-10 * np.random.uniform(size=matrix_X.shape)
@@ -229,15 +230,15 @@ class MGC(IndependenceTest):
 
         # subsampling computation
         for i in range(num_samples):
-            sub_matrix_X = matrix_X[(sub_samples*i):(sub_samples*(i+1)-1)]
-            sub_matrix_Y = matrix_Y[(sub_samples*i):(sub_samples*(i+1)-1)]
+            sub_matrix_X = matrix_X[(sub_samples*i):sub_samples*(i+1), :]
+            sub_matrix_Y = matrix_Y[(sub_samples*i):sub_samples*(i+1), :]
 
             mgc_statistic, test_statistic_metadata = self.test_statistic(sub_matrix_X, sub_matrix_Y)
             test_statistic_sub_sampling[i], local_correlation_matrix_sub_sampling[:, :, i] = \
                 mgc_statistic, test_statistic_metadata["local_correlation_matrix"]
 
         local_correlation_matrix = np.mean(local_correlation_matrix_sub_sampling, axis=2)
-        sigma = np.std(test_statistic_sub_sampling) / np.sqrt(num_samples)
+        sigma = stdev(test_statistic_sub_sampling) / np.sqrt(num_samples)
 
         sample_size = len(matrix_X) - 1  # sample size minus 1
 
@@ -258,7 +259,6 @@ class MGC(IndependenceTest):
         # the observed statistic uses the full data
         if null_only:
             mgc_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
-            mgc_statistic = test_statistic_metadata["local_correlation_matrix"][optimal_scale[0]][optimal_scale[1]]
             optimal_scale = test_statistic_metadata["optimal_scale"]
             sigma /= math.sqrt(num_samples)
 
