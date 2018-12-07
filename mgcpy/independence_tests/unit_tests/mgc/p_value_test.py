@@ -31,7 +31,7 @@ def test_mgc_test_non_linear():
     assert np.allclose(p_value, p_value_res, rtol=0.1)
 
 
-def load_results(file_name, results_dir="./mgcpy/independence_tests/unit_tests/mgc/data/"):
+def load_results(file_name, results_dir="./mgcpy/independence_tests/unit_tests/mgc/data/mgc/"):
     mgc_results = np.genfromtxt(results_dir + file_name, delimiter=',')[1:]
 
     pMGC = mgc_results[:, 0][0]
@@ -54,11 +54,11 @@ def test_mgc_test_all():
     for simulation in simulations:
         print(simulation)
 
-        X = np.genfromtxt(data_dir + simulation + "_x.csv", delimiter=',').reshape(-1, 1)
-        Y = np.genfromtxt(data_dir + simulation + "_y.csv", delimiter=',').reshape(-1, 1)
+        X = np.genfromtxt(data_dir + "input/" + simulation + "_x.csv", delimiter=',').reshape(-1, 1)
+        Y = np.genfromtxt(data_dir + "input/" + simulation + "_y.csv", delimiter=',').reshape(-1, 1)
 
         if simulation == "step_sim":
-            mgc_results = np.genfromtxt(data_dir + simulation + "_res.csv", delimiter=',')[1:]
+            mgc_results = np.genfromtxt(data_dir + "mgc/" + simulation + "_res.csv", delimiter=',')[1:]
             pMGC = mgc_results[:, 0][0]
             statMGC = mgc_results[:, 1][0]
             # pLocalCorr = mgc_results[:, 2:4]

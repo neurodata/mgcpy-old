@@ -10,6 +10,9 @@ from scipy.spatial.distance import pdist, squareform
 from scipy.stats import t
 
 
+def EUCLIDEAN_DISTANCE(x): return squareform(pdist(x, metric='euclidean'))
+
+
 class IndependenceTest(ABC):
     """
     IndependenceTest abstract class
@@ -29,7 +32,6 @@ class IndependenceTest(ABC):
         self.which_test = None
 
         if not compute_distance_matrix:
-            def EUCLIDEAN_DISTANCE(x): return squareform(pdist(x, metric='euclidean'))
             compute_distance_matrix = EUCLIDEAN_DISTANCE
         self.compute_distance_matrix = compute_distance_matrix
 
@@ -88,15 +90,15 @@ class IndependenceTest(ABC):
         # calculte the test statistic with the given data
         test_statistic, independence_test_metadata = self.test_statistic(matrix_X, matrix_Y)
 
-        if self.get_name() == "mcorr":
+        if self.get_name() == "unbiased":
             '''
-            for the unbiased centering scheme used to compute mcorr test statistic
+            for the unbiased centering scheme used to compute unbiased dcorr test statistic
             we can use a t-test to compute the p-value
             notation follows from: Székely, Gábor J., and Maria L. Rizzo.
             "The distance correlation t-test of independence in high dimension."
             Journal of Multivariate Analysis 117 (2013): 193-213.
             '''
-            T, df = self.mcorr_T(matrix_X=matrix_X, matrix_Y=matrix_Y)
+            T, df = self.unbiased_T(matrix_X=matrix_X, matrix_Y=matrix_Y)
             # p-value is the probability of obtaining values more extreme than the test statistic
             # under the null
             if T < 0:
