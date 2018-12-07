@@ -1,7 +1,7 @@
 import mgcpy.benchmarks.simulations as sims
 import numpy as np
 import pytest
-from mgcpy import KendallSpearman
+from mgcpy.independence_tests.kendall_spearman import KendallSpearman
 
 
 def test_kendall_spearman():

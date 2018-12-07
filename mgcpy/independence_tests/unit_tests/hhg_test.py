@@ -1,7 +1,7 @@
 import mgcpy.benchmarks.simulations as sims
 import numpy as np
 import pytest
-from mgcpy import HHG
+from mgcpy.independence_tests.hhg import HHG
 
 
 def test_hhg():

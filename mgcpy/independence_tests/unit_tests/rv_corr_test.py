@@ -1,7 +1,7 @@
 import mgcpy.benchmarks.simulations as sims
 import numpy as np
 import pytest
-from mgcpy import RVCorr
+from mgcpy.independence_tests.rv_corr import RVCorr
 
 
 def test_local_corr():
