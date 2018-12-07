@@ -26,6 +26,3 @@ def test_hhg():
     test_stat = hhg.test_statistic(X, Y)[0]
 
     assert np.round(test_stat, decimals=2) == 950600.00
-
-
-test_hhg()
