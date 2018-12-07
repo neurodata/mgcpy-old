@@ -131,10 +131,13 @@ class IndependenceTest(ABC):
                                 "optimal_scale": independence_test_metadata["optimal_scale"]}
         elif self.get_name() == "kendall":
             p_value = kendalltau(matrix_X, matrix_Y)[1]
+            p_value_metadata = {}
         elif self.get_name() == "spearman":
             p_value = spearmanr(matrix_X, matrix_Y)[1]
+            p_value_metadata = {}
         elif self.get_name() == "pearson":
             p_value = pearsonr(matrix_X, matrix_Y)[1]
+            p_value_metadata = {}
         else:
             # estimate the null by a permutation test
             test_stats_null = np.zeros(replication_factor)
