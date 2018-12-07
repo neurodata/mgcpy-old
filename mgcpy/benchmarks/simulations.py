@@ -147,8 +147,12 @@ def joint_sim(num_samp, num_dim, noise=0.5):
 
     samp = (np.random.multivariate_normal(cov=sig, mean=np.zeros(2*num_dim),
                                           size=num_samp))
-    y = samp[:, num_dim: (2*num_dim)] + kappa*noise*gauss_noise
-    x = samp[:, 0:num_dim]
+    if num_dim == 1:
+        y = samp[:, (num_dim):(2*num_dim)] + kappa*noise*gauss_noise
+        x = samp[:, 0:num_dim]
+    else:      
+        y = samp[:, (num_dim+1):(2*num_dim)] + kappa*noise*gauss_noise
+        x = samp[:, 0:num_dim]
 
     return x, y
 
@@ -256,27 +260,18 @@ def spiral_sim(num_samp, num_dim, noise=0.4, low=0, high=5):
 
     :return: the data matrix and a response array
     """
+    uniform_dist = gen_x_unif(num_samp, num_dim=1, low=low, high=high)
+    the_x = np.array(np.cos(np.pi * uniform_dist)).reshape(num_samp, 1)
+    y = uniform_dist * np.sin(np.pi * uniform_dist)
+    x = np.zeros(shape=(num_samp, num_dim))
+
     if num_dim > 1:
-        kappa = 1
-    else:
-        kappa = 0
-    x = gen_x_unif(num_samp, num_dim, low=low, high=high)
-    rx = gen_x_unif(num_samp, num_dim, low=low, high=high)
-    ry = rx
-    z = rx
-    sig = np.diag(np.ones(shape=(num_dim)))
-    gauss_noise = (np.random.multivariate_normal(cov=sig,
-                                                 mean=np.zeros(num_dim),
-                                                 size=num_samp))
+        for i in range(num_dim - 1):
+            x[:, i] = np.squeeze((y * np.power(the_x, i)))
+    x[:, num_dim-1] = np.squeeze(uniform_dist * the_x)
 
-    ry = np.ones((num_samp, num_dim))
-    x[:, 0] = np.cos(z[:, 0].reshape((num_samp)) * np.pi)
-    for i in range(num_dim - 1):
-        x[:, i+1] = (x[:, i].reshape((num_samp)) * np.cos(z[:, i+1].reshape((num_samp)) * np.pi))
-        x[:, i] = (x[:, i].reshape((num_samp)) * np.sin(z[:, i+1].reshape((num_samp)) * np.pi))
-    x = rx * x
-
-    y = ry * np.sin(z[:, 0].reshape((num_samp, 1)) * np.pi) + kappa*noise*ry*gauss_noise
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(x.shape[0], 1))
+    y = y + noise*num_dim*gauss_noise
 
     return x, y
 

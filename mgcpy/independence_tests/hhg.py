@@ -9,7 +9,7 @@ class HHG(IndependenceTest):
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
         :type compute_distance_matrix: FunctionType or callable()
         """
-        IndependenceTest.__init__(self)
+        IndependenceTest.__init__(self, compute_distance_matrix)
         self.which_test = "hhg"
 
     def test_statistic(self, matrix_X, matrix_Y):
