@@ -308,6 +308,3 @@ def test_simulations():
     ax1.scatter(x1, y1)
     ax1.set_title('Multimodal Independence', fontweight='bold')
     ax1.axis('off')
-
-
-test_simulations()

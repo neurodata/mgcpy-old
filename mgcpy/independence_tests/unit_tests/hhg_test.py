@@ -11,21 +11,19 @@ def test_hhg():
     Y = np.array([3.2311, 12.1113, 11.1350, 1.1989, 3.3127, 4.8580, 3.4917,
                   7.1748, 6.5792, 2.4012])[:, np.newaxis]
     hhg = HHG()
-    test_stat = hhg.test_statistic(X, Y)
+    test_stat = hhg.test_statistic(X, Y)[0]
 
     assert np.round(test_stat, decimals=2) == 411.88
 
     # Against linear simulations
     np.random.seed(0)
     X, Y = sims.linear_sim(100, 1)
-    hhg = HHG()
-    test_stat = hhg.test_statistic(X, Y)
+    test_stat = hhg.test_statistic(X, Y)[0]
 
     assert np.round(test_stat, decimals=2) == 28986.52
 
     X, Y = sims.linear_sim(100, 1, noise=0)
-    hhg = HHG()
-    test_stat = hhg.test_statistic(X, Y)
+    test_stat = hhg.test_statistic(X, Y)[0]
 
     assert np.round(test_stat, decimals=2) == 950600.00
 
