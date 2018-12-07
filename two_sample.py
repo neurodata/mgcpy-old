@@ -35,8 +35,15 @@ class Two_Sample:
         dist_mtx_X = squareform(pdist(self.X, metric='euclidean'))
         dist_mtx_Y = squareform(pdist(self.Y, metric='euclidean'))
         return (dist_mtx_X, dist_mtx_Y)
+        '''
+        :param self: object
+        :type: Two Sample Object
+        :return: distance matrices for X and Y
+        :rtype: matrices
+        '''
 
     def independence(self):
+        #choose independence test to run
         if self.ind_test=='dcorr':
             return DCorr(self.trans_X,self.trans_Y,self.compute_distance_matrix)
         if self.ind_test=='mgc':
@@ -46,7 +53,8 @@ class Two_Sample:
         if self.ind_test=='hhg':
             return HHG(self.trans_X,self.trans_Y,self.compute_distance_matrix)
 
-    def Transform_Matrices(A,B):
+    def Transform_Matrices(self,A,B):
+        #transform two data matrices into one concatenated matrix and one label matrix
         U=A.tolist()
         V=B.tolist()
         if isinstance(U[0],list):
@@ -78,7 +86,7 @@ class Two_Sample:
                         data[n3][n4+len(U)]=V[n4]
                         num[n4+len(U)]=1
                         
-        x=np.asarray(data)
-        y=np.asarray(num)
-        return x,y
+        self.x=np.asarray(data)
+        self.y=np.asarray(num)
+        return self.x,self.y
                                                     
