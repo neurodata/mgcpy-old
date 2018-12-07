@@ -1,9 +1,10 @@
 import numpy as np
+import pytest
 from mgcpy.benchmarks import simulations as sims
 
 
 def test_simulations():
-    num_samps = 100
+    num_samps = 1000
     num_dim1 = 1
     num_dim2 = 300
     independent = True

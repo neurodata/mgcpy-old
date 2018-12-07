@@ -42,10 +42,6 @@ class KendallSpearman(IndependenceTest):
         >>> kendall_spearman = KendallSpearman()
         >>> kendall_spearman_stat = kendall_spearman.test_statistic(X, Y)
         """
-        if matrix_X is None:
-            matrix_X = self.matrix_X
-        if matrix_Y is None:
-            matrix_Y = self.matrix_Y
         assert matrix_X.shape[1] == 1, "Data matrix should be (n, 1) shape"
         assert matrix_Y.shape[1] == 1, "Data matrix should be (n, 1) shape"
 
