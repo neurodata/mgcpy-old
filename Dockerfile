@@ -71,22 +71,25 @@ RUN ln -s /usr/bin/python3.6 /usr/local/bin/python
 #  cd .. && \
 #  rm -rf *
 
-# change working directory
+# make a directory for mounting local files into docker
 RUN mkdir /root/workspace/
-WORKDIR /root/workspace/
+
+# add vim in docker
+RUN apt-get install -y vim
+
+# change working directory
+RUN mkdir /root/code/
+WORKDIR /root/code/
+
+# clone the mgcpy code into the container
+RUN git clone https://github.com/NeuroDataDesign/mgcpy.git .
 
 # install python requirements
-COPY requirements.txt /root/workspace/requirements.txt
 RUN pip install -r requirements.txt
-RUN pip install jupyter
-RUN pip install matplotlib
-RUN pip install pycodestyle
-
-# copy the mgcpy code into the container
-COPY . /root/workspace/
+RUN pip install matplotlib seaborn pandas jupyter pycodestyle
 
 # setup pep8 guidelines (restricts push when pep8 is violated)
-RUN rm ./.git/hooks/pre-commit
+RUN rm -f ./.git/hooks/pre-commit
 RUN chmod 777 install-hooks.sh
 RUN ./install-hooks.sh
 
@@ -94,7 +97,7 @@ RUN ./install-hooks.sh
 RUN python setup.py build_ext --inplace
 
 # add mgcpy to PYTHONPATH for dev purposes
-RUN echo "export PYTHONPATH='${PYTHONPATH}:/root/workspace'" >> ~/.bashrc
+RUN echo "export PYTHONPATH='${PYTHONPATH}:/root/code'" >> ~/.bashrc
 
 # test if mgcpy is correctly installed
 RUN py3clean .
