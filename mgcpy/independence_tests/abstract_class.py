@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
-from scipy.stats import t
+from scipy.stats import kendalltau, pearsonr, spearmanr, t
 
 
 def EUCLIDEAN_DISTANCE(x): return squareform(pdist(x, metric='euclidean'))
@@ -129,6 +129,12 @@ class IndependenceTest(ABC):
                                 "p_local_correlation_matrix": p_local_correlation_matrix,
                                 "local_correlation_matrix": local_correlation_matrix,
                                 "optimal_scale": independence_test_metadata["optimal_scale"]}
+        elif self.get_name() == "kendall":
+            p_value = kendalltau(matrix_X, matrix_Y)[1]
+        elif self.get_name() == "spearman":
+            p_value = spearmanr(matrix_X, matrix_Y)[1]
+        elif self.get_name() == "pearson":
+            p_value = pearsonr(matrix_X, matrix_Y)[1]
         else:
             # estimate the null by a permutation test
             test_stats_null = np.zeros(replication_factor)
