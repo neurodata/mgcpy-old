@@ -100,9 +100,9 @@ RUN python setup.py build_ext --inplace
 # add mgcpy to PYTHONPATH for dev purposes
 RUN echo "export PYTHONPATH='${PYTHONPATH}:/root/code'" >> ~/.bashrc
 
-# test if mgcpy is correctly installed
+# clean dir and test if mgcpy is correctly installed
 RUN py3clean .
-RUN pytest
+RUN python -c "import mgcpy"
 
 # launch terminal
 CMD ["/bin/bash"]
