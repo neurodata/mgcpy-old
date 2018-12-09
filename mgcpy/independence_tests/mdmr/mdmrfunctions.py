@@ -113,5 +113,5 @@ def fperms_to_pvals(F_perms):
     pvals = np.zeros(tests)
     for i in range(tests):
         j        = (F_perms[1:, i] >= F_perms[0, i]).sum().astype('float')
-        pvals[i] = (j+1) / (permutations+1)
+        pvals[i] = (j) / (permutations)
     return pvals
