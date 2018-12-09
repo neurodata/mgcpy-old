@@ -33,12 +33,12 @@ python3 setup.py install
 ## Setting up the development environment:
 - To build image and run from scratch:
   - Install [docker](https://docs.docker.com/install/)
-  - Build the docker image, `docker build -t mgcpy-dev:latest .`
+  - Build the docker image, `docker build -t mgcpy:latest .`
     - This takes 20-30 mins to build
-  - Launch the container to go into mgcpy's dev env, `docker run -it --rm --name mgcpy-dev-env mgcpy-dev`
-- Pull master branch image from Dockerhub and run:
-  - `docker pull tpsatish95/mgcpy-dev:latest`
-  - `docker run -it --rm -p 8888:8888 --name mgcpy-dev-env tpsatish95/mgcpy-dev`
+  - Launch the container to go into mgcpy's dev env, `docker run -it --rm --name mgcpy-env mgcpy:latest`
+- Pull image from Dockerhub and run:
+  - `docker pull tpsatish95/mgcpy:latest` or `docker pull tpsatish95/mgcpy:development`
+  - `docker run -it --rm -p 8888:8888 --name mgcpy-env tpsatish95/mgcpy:latest`
 
 
 - To run demo notebooks (from within Docker):
@@ -49,7 +49,7 @@ python3 setup.py install
   - Then open `mgc.ipynb`
 
 - To mount/load local files into docker container:
-  - Do `docker run -it --rm -v <local_dir_path>:/root/workspace/ -p 8888:8888 --name mgcpy-dev-env tpsatish95/mgcpy-dev`, replace `<local_dir_path>` with your local dir path.
+  - Do `docker run -it --rm -v <local_dir_path>:/root/workspace/ -p 8888:8888 --name mgcpy-env tpsatish95/mgcpy:latest`, replace `<local_dir_path>` with your local dir path.
   - Do `cd ../workspace` when you are inside the container to view the mounted files. The **mgcpy** package code will be in `/root/code` directory.
 
 
