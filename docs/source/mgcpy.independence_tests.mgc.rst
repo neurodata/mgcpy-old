@@ -12,14 +12,6 @@ mgcpy.independence\_tests.mgc.distance\_transform module
     :undoc-members:
     :show-inheritance:
 
-mgcpy.independence\_tests.mgc.fast\_mgc module
-----------------------------------------------
-
-.. automodule:: mgcpy.independence_tests.mgc.fast_mgc
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 mgcpy.independence\_tests.mgc.local\_correlation module
 -------------------------------------------------------
 
