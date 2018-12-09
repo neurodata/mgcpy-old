@@ -6,6 +6,7 @@ Subpackages
 
 .. toctree::
 
+    mgcpy.independence_tests.mdmr
     mgcpy.independence_tests.mgc
     mgcpy.independence_tests.unit_tests
 

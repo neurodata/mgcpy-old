@@ -8,7 +8,6 @@ Subpackages
 
     mgcpy.benchmarks
     mgcpy.independence_tests
-    mgcpy.utils
 
 Module contents
 ---------------
