@@ -26,7 +26,7 @@ author = 'Satish Palaniappan, Bear Xiong, Sambit Panda, Sandhya Ramachandran, An
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = 'v0.0.4'
+release = 'v0.0.5'
 
 
 # -- General configuration ---------------------------------------------------
