@@ -26,10 +26,10 @@ def test_mdmr():
     #individual statistics
     assert np.allclose(results1[0,1], 10.39953044)
     assert np.allclose(results2[0,1], 10.39953044)
-    assert np.allclose(results2[0,2], 0.000999)
+    assert np.allclose(results2[0,2], 0.0)
     assert np.allclose(results1[1,1], 4.12263312)
     assert np.allclose(results2[1,1], 4.12263312)
-    assert np.allclose(results2[1,2], 0.000999)
+    assert np.allclose(results2[1,2], 0.0)
     assert np.allclose(results1[2,1], 11.31712737)
     assert np.allclose(results2[2,1], 11.31712737)
-    assert np.allclose(results2[2,2], 0.000999)
+    assert np.allclose(results2[2,2], 0.0)
