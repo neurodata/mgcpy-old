@@ -20,6 +20,7 @@ class RVCorr(IndependenceTest):
     def test_statistic(self, matrix_X=None, matrix_Y=None):
         """
         Computes the Pearson/RV/CCa correlation measure between two datasets.
+
         - Default computes linear correlation for RV
         - Computes pearson's correlation
         - Calculates local linear correlations for CCa
@@ -35,12 +36,14 @@ class RVCorr(IndependenceTest):
         :type replication_factor: int
 
         :return: returns a list of two items, that contains:
+
             - :test_statistic_: test statistic
             - :test_statistic_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                          that the independence tests computes in the process
         :rtype: float, dict
 
         **Example:**
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.rv_corr import RVCorr
 
@@ -98,12 +101,14 @@ class RVCorr(IndependenceTest):
         :type replication_factor: int
 
         :return: returns a list of two items, that contains:
+
             - :p_value_: P-value
             - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                  that the independence tests computes in the process
         :rtype: float, dict
 
         **Example:**
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.rv_corr import RVCorr
 

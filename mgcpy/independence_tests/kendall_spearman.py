@@ -26,12 +26,14 @@ class KendallSpearman(IndependenceTest):
         :type matrix_Y: 1D numpy.array
 
         :return: returns a list of two items, that contains:
+
             - :test_stat_: test statistic
             - :test_statistic_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                          that the independence tests computes in the process
         :rtype: float, dict
 
         **Example:**
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.kendall_spearman import KendallSpearman
 
@@ -69,12 +71,14 @@ class KendallSpearman(IndependenceTest):
         :type replication_factor: int
 
         :return: returns a list of two items, that contains:
+
             - :p_value_: P-value
             - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                  that the independence tests computes in the process
         :rtype: float, dict
 
         **Example:**
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.kendall_spearman import KendallSpearman
 
