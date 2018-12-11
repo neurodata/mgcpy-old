@@ -29,12 +29,12 @@ class MDMR(IndependenceTest):
         
         :param data_matrix_X: (optional, default picked from class attr) is interpreted as:
             
-            - a ``[n*d]`` data matrix, a square matrix with n samples in d dimensions
+            - a ``[n*d]`` data matrix, a matrix with n samples in d dimensions
         :type data_matrix_X: 2D `numpy.array`
         
         :param data_matrix_Y: (optional, default picked from class attr) is interpreted as:
             
-            - a ``[n*d]`` data matrix, a square matrix with n samples in d dimensions
+            - a ``[n*d]`` data matrix, a matrix with n samples in d dimensions
         :type data_matrix_Y: 2D `numpy.array`
         
         :parameter 'individual':
@@ -137,12 +137,12 @@ class MDMR(IndependenceTest):
         
         :param matrix_X: is interpreted as:
             
-            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
         :type matrix_X: 2D `numpy.array`
         
         :param matrix_Y: is interpreted as:
             
-            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
         :type matrix_Y: 2D `numpy.array`
         
         :param replication_factor: specifies the number of replications to use for
@@ -163,12 +163,12 @@ class MDMR(IndependenceTest):
         
         :param matrix_X: is interpreted as:
             
-            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
         :type matrix_X: 2D `numpy.array`
         
         :param matrix_Y: is interpreted as:
             
-            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
         :type matrix_Y: 2D `numpy.array`
         """
         results = self.test_statistic(matrix_X, matrix_Y, permutations, individual)[1]
