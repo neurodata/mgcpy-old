@@ -28,6 +28,13 @@ def test_dcorr():
     assert np.allclose(biased.test_statistic(X, Y)[0], 0.1179, atol=1e-4)
     assert np.allclose(mantel.test_statistic(X, Y)[0], 0.2255, atol=1e-4)
 
+    # additional test for mantel
+    X = np.genfromtxt(dir_name + 'mantel_test_stat_X_mtx.csv', delimiter=',')
+    Y = np.genfromtxt(dir_name + 'mantel_test_stat_Y_mtx.csv', delimiter=',')
+    X = X[:, np.newaxis]
+    Y = Y[:, np.newaxis]
+    assert np.allclose(mantel.test_statistic(X, Y)[0], 0.7080, atol=1e-4)
+
     '''
     test p value
     analytical p value for unbiased dcorr is compared with R package energy
