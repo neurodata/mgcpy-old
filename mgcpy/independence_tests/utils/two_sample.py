@@ -7,7 +7,7 @@ Created on Fri Oct 26 14:19:02 2018
 
 import numpy as np
 import pandas as pd
-from transform_matrices import Transform_Matrices
+from mgcpy.independence_tests.utils.transform_matrices import transform_matrices
 from mgcpy.independence_tests.dcorr import DCorr
 from mgcpy.independence_tests.mgc.mgc import MGC
 from mgcpy.independence_tests.rv_corr import RVCorr
@@ -16,8 +16,8 @@ from mgcpy.independence_tests.kendall_spearman import KendallSpearman
 from scipy.spatial.distance import pdist, squareform
 
 
-class Two_Sample:
-    def __init__(self, ind_test='dcorr_unbiased'):
+class TwoSample:
+    def __init__(self, independence_test_type='dcorr_unbiased'):
         '''
         :param data_matrix_X: data matrix
         :type: numpy array
@@ -25,46 +25,46 @@ class Two_Sample:
         :type: numpy array
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
         :type: FunctionType or callable()
-        :param ind_test: the independence test to call; options include dcorr_unbiased, dcorr_biased, mantel, mgc, rv_corr, cca, pearson, hhg, kendall, spearman
+        :param independence_test_type: the independence test to call; options include dcorr_unbiased, dcorr_biased, mantel, mgc, rv_corr, cca, pearson, hhg, kendall, spearman
         :type: str
         '''
-        self.ind_test = ind_test
-
-    def transform(self, data_matrix_X, data_matrix_Y):
-        x, y = Transform_Matrices(data_matrix_X, data_matrix_Y)
+        self.independence_test_type = independence_test_type
+        
+    def transform(self, matrix_X, matrix_Y):
+        x, y = transform_matrices(matrix_X, matrix_Y)
         y = y[:, np.newaxis]
         x = x.T
         return x, y
 
-    def independence(self, data_matrix_X, data_matrix_Y):
-        X, Y = self.transform(data_matrix_X, data_matrix_Y)
-        if self.ind_test == 'dcorr_unbiased':
+    def test(self, matrix_X, matrix_Y):
+        X, Y = self.transform(matrix_X, matrix_Y)
+        if self.independence_test_type == 'dcorr_unbiased':
             dcorr = DCorr()
             return dcorr.test_statistic(X, Y), dcorr.p_value(X, Y)
-        if self.ind_test == 'dcorr_biased':
+        if self.independence_test_type == 'dcorr_biased':
             dcorr = DCorr(which_test='biased')
             return dcorr.test_statistic(X, Y), dcorr.p_value(X, Y)
-        if self.ind_test == 'mantel':
+        if self.independence_test_type == 'mantel':
             dcorr = DCorr(which_test='mantel')
             return dcorr.test_statistic(X, Y), dcorr.p_value(X, Y)
-        if self.ind_test == 'mgc':
+        if self.independence_test_type == 'mgc':
             mgc = MGC()
             return mgc.test_statistic(X, Y), mgc.p_value(X, Y)
-        if self.ind_test == 'rv_corr':
+        if self.independence_test_type == 'rv_corr':
             rv_corr = RVCorr()
             return rv_corr.test_statistic(X, Y), rv_corr.p_value(X, Y)
-        if self.ind_test == 'cca':
+        if self.independence_test_type == 'cca':
             rv_corr = RVCorr(which_test='cca')
             return rv_corr.test_statistic(X, Y), rv_corr.p_value(X, Y)
-        if self.ind_test == 'pearson':
+        if self.independence_test_type == 'pearson':
             rv_corr = RVCorr(which_test='pearson')
             return rv_corr.test_statistic(X, Y), rv_corr.p_value(X, Y)
-        if self.ind_test == 'hhg':
+        if self.independence_test_type == 'hhg':
             hhg = HHG()
             return hhg.test_statistic(X, Y), hhg.p_value(X, Y)
-        if self.ind_test == 'kendall':
+        if self.independence_test_type == 'kendall':
             ks = KendallSpearman(which_test='kendall')
             return ks.test_statistic(X, Y), ks.p_value(X, Y)
-        if self.ind_test == 'spearman':
+        if self.independence_test_type == 'spearman':
             ks = KendallSpearman(which_test='spearman')
             return ks.test_statistic(X, Y), ks.p_value(X, Y)

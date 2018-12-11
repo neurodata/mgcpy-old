@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 
 
-def Transform_Matrices(A, B):
+def transform_matrices(A, B):
     U = A.tolist()
     V = B.tolist()
     if isinstance(U[0], list):
