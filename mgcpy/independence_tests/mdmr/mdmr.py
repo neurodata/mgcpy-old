@@ -2,8 +2,15 @@
     **Main MDMR Independence Test Module**
 """
 
+import numpy as np
+import scipy.spatial as scp
 from mgcpy.independence_tests.abstract_class import IndependenceTest
-from mgcpy.independence_tests.mdmr.mdmrfunctions import *
+from mgcpy.independence_tests.mdmr.mdmrfunctions import (calc_ftest,
+                                                         check_rank,
+                                                         fperms_to_pvals,
+                                                         gen_H2_perms,
+                                                         gen_IH_perms,
+                                                         gower_center_many)
 
 
 class MDMR(IndependenceTest):
@@ -94,7 +101,6 @@ class MDMR(IndependenceTest):
         if permutations > 0:
             p_vals = fperms_to_pvals(F_perms)
         F_permtotal = F_perms[0, :]
-        pvaltotal = p_vals
         self.test_statistic_ = F_permtotal
         if individual == 0:
             return self.test_statistic_, self.test_statistic_metadata_

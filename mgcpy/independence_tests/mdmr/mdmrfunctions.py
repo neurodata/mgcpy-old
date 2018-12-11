@@ -20,7 +20,7 @@ def check_rank(X):
     """
     rank = np.linalg.matrix_rank(X)
     if rank < min(X.shape[0], X.shape[1]):
-        raise Exception("matrix is rank deficient (rank %i vs cols %i)" % (rank, k))
+        raise Exception("matrix is rank deficient (rank %i vs cols %i)" % (rank, X.shape[1]))
 
 
 def compute_distance_matrix(X, disttype):
@@ -188,22 +188,27 @@ def calc_ftest(Hs, IHs, Gs, m2, nm):
     This function calculates the pseudo-F statistic.
 
     :param Hs: is interpreted as:
+
         - a ``[p+1*n^2]`` array with the flattened H2 matrix for each permutation
     :type Hs: 2D `numpy.array`
 
     :param IHs: is interpreted as:
+
         - a ``[p+1*n^2]`` array with the flattened IH matrix for each permutation
     :type IHs: 2D `numpy.array`
 
     :param Gs: is interpreted as:
+
         - a [n^2*a] array with the gower centered distance matrix where a is in practice 1
     :type Gs: 2D `numpy.array`
 
     :param m2: is interpreted as:
+
         - a float equal to the number of predictors minus the number of tests (which will be 1)
     :type m2: `float`
 
     :param nm: is interpreted as:
+
         - a float equal to the number of subjects minus the number of predictors
     :type nm: `float`
 
@@ -221,6 +226,7 @@ def fperms_to_pvals(F_perms):
     This function calculates the permutation p-value from the test statistics of all permutations.
 
     :param F_perms: is interpreted as:
+
         - a ``[p+1*1]`` array of F statistics for each permutation
     :type F_perms: 1D `numpy.array`
 
