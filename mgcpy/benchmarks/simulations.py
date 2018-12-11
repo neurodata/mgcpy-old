@@ -1,6 +1,4 @@
-import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
 
 
 def gen_coeffs(num_dim):
@@ -563,9 +561,3 @@ def multi_indep_sim(num_samp, num_dim, prob=0.5, sep1=3, sep2=2):
     y = v/sep1 + sep2*v_2 - 1
 
     return x, y
-
-
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-x, y = step_sim(100, 2, noise=0)
-ax.scatter(x[:, 0], x[:, 1], y)
