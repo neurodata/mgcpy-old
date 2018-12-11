@@ -1,4 +1,6 @@
+import matplotlib.pyplot as plt
 import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def gen_coeffs(num_dim):
@@ -150,7 +152,7 @@ def joint_sim(num_samp, num_dim, noise=0.5):
     if num_dim == 1:
         y = samp[:, (num_dim):(2*num_dim)] + kappa*noise*gauss_noise
         x = samp[:, 0:num_dim]
-    else:      
+    else:
         y = samp[:, (num_dim+1):(2*num_dim)] + kappa*noise*gauss_noise
         x = samp[:, 0:num_dim]
 
@@ -179,10 +181,8 @@ def step_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
         kappa = 0
 
     x_coeff = np.dot(a=x, b=coeffs)
-    x_coeff_temp = x_coeff.copy()
-    x_coeff_temp[x_coeff <= 0] = 0
-    x_coeff_temp[x_coeff > 0] = 1
-    y = (x_coeff_temp + kappa*noise*gauss_noise)
+    x_coeff = 1 * (x_coeff > 0)
+    y = (x_coeff + kappa*noise*gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
 
@@ -563,3 +563,9 @@ def multi_indep_sim(num_samp, num_dim, prob=0.5, sep1=3, sep2=2):
     y = v/sep1 + sep2*v_2 - 1
 
     return x, y
+
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+x, y = step_sim(100, 2, noise=0)
+ax.scatter(x[:, 0], x[:, 1], y)
