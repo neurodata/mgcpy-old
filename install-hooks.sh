@@ -2,7 +2,7 @@
 
 basedir=$(git rev-parse --show-toplevel)
 repohookspath="$basedir/.git/hooks"
-localhook="$basedir/git-hooks/pre-commit"
+localhook="$basedir/hooks/pre-commit"
 
 repohook="$repohookspath/pre-commit"
 
