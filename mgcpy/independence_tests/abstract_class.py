@@ -49,10 +49,10 @@ class IndependenceTest(ABC):
         """
         Abstract method to compute the test statistic given two data matrices
 
-        :param matrix_X: a ``[n*p]`` data matrix, a square matrix with n samples in ``p`` dimensions
+        :param matrix_X: a ``[n*p]`` data matrix, a matrix with n samples in ``p`` dimensions
         :type matrix_X: 2D `numpy.array`
 
-        :param matrix_Y: a ``[n*q]`` data matrix, a square matrix with n samples in ``q`` dimensions
+        :param matrix_Y: a ``[n*q]`` data matrix, a matrix with n samples in ``q`` dimensions
         :type matrix_Y: 2D `numpy.array`
 
         :return: returns a list of two items, that contains:
@@ -69,10 +69,10 @@ class IndependenceTest(ABC):
         """
         Tests independence between two datasets using the independence test and permutation test.
 
-        :param matrix_X: a ``[n*p]`` data matrix, a square matrix with n samples in ``p`` dimensions
+        :param matrix_X: a ``[n*p]`` matrix, a matrix with n samples in ``p`` dimensions
         :type matrix_X: 2D `numpy.array`
 
-        :param matrix_Y: a ``[n*q]`` data matrix, a square matrix with n samples in ``q`` dimensions
+        :param matrix_Y: a ``[n*q]`` matrix, a matrix with n samples in ``q`` dimensions
         :type matrix_Y: 2D `numpy.array`
 
         :param replication_factor: specifies the number of replications to use for

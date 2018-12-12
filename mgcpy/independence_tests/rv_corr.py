@@ -25,10 +25,10 @@ class RVCorr(IndependenceTest):
         - Computes pearson's correlation
         - Calculates local linear correlations for CCa
 
-        :param matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
+        :param matrix_X: a [n*p] data matrix, a matrix with n samples in p dimensions
         :type matrix_X: 2D `numpy.array`
 
-        :param matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
+        :param matrix_Y: a [n*q] data matrix, a matrix with n samples in q dimensions
         :type matrix_Y: 2D `numpy.array`
 
         :param replication_factor: specifies the number of replications to use for
@@ -90,10 +90,10 @@ class RVCorr(IndependenceTest):
         """
         Tests independence between two datasets using the independence test.
 
-        :param matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
+        :param matrix_X: a [n*p] data matrix, a matrix with n samples in p dimensions
         :type matrix_X: 2D `numpy.array`
 
-        :param matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
+        :param matrix_Y: a [n*q] data matrix, a matrix with n samples in q dimensions
         :type matrix_Y: 2D `numpy.array`
 
         :param replication_factor: specifies the number of replications to use for
