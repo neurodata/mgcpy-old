@@ -2,13 +2,13 @@
 
 import os
 import sys
-from setuptools import setup, find_packages
-from setuptools.command.install import install
-from subprocess import check_output, call
-from Cython.Build import cythonize
+from subprocess import call, check_output
 from sys import platform
-import numpy
 
+import numpy
+from Cython.Build import cythonize
+from setuptools import find_packages, setup
+from setuptools.command.install import install
 
 PACKAGE_NAME = 'mgcpy'
 DESCRIPTION = 'A set of tools in Python for multiscale graph correlation and other statistical tests'
