@@ -1,12 +1,16 @@
-import pytest
-import numpy as np
-from scipy.spatial.distance import pdist, squareform
-from mgcpy.independence_tests.dcorr import DCorr
-from mgcpy.benchmarks.simulations import w_sim, ubern_sim, sin_sim, multi_noise_sim, multi_indep_sim, circle_sim, square_sim, joint_sim
-from mgcpy.benchmarks.power import power, power_given_data
-from mgcpy.independence_tests.rv_corr import RVCorr
 import pickle
+
 import h5py
+import numpy as np
+import pytest
+from mgcpy.benchmarks.power import power, power_given_data
+from mgcpy.benchmarks.simulations import (circle_sim, joint_sim,
+                                          multi_indep_sim, multi_noise_sim,
+                                          sin_sim, square_sim, ubern_sim,
+                                          w_sim)
+from mgcpy.independence_tests.dcorr import DCorr
+from mgcpy.independence_tests.rv_corr import RVCorr
+from scipy.spatial.distance import pdist, squareform
 
 
 def test_power():

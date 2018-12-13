@@ -1,7 +1,8 @@
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
+from mgcpy.independence_tests.mgc.distance_transform import \
+    transform_distance_matrix
 from scipy.stats import t
-from mgcpy.independence_tests.mgc.distance_transform import transform_distance_matrix
 
 
 class DCorr(IndependenceTest):
@@ -26,13 +27,13 @@ class DCorr(IndependenceTest):
         :param matrix_X: is interpreted as either:
 
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
-            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
         :type matrix_X: 2D numpy.array
 
         :param matrix_Y: is interpreted as either:
 
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
-            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
         :type matrix_Y: 2D numpy.array
 
         :return: returns a list of two items, that contains:
@@ -114,13 +115,13 @@ class DCorr(IndependenceTest):
         :param matrix_X: is interpreted as either:
 
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
-            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*d]`` matrix, a matrix with ``n`` samples in ``d`` dimensions
         :type matrix_X: 2D numpy.array
 
         :param matrix_Y: is interpreted as either:
 
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
-            - a ``[n*d]`` data matrix, a square matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*d]`` matrix, a matrix with ``n`` samples in ``d`` dimensions
         :type matrix_Y: 2D numpy.array
 
         :return: test statistic of t-test for unbiased dcorr
