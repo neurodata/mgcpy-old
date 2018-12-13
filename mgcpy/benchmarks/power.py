@@ -87,7 +87,7 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
     return empirical_power
 
 
-def power_given_data(independence_test, simulation_type, data_type='dimension', num_samples=100, num_dimensions=1, repeats=1000, alpha=.05):
+def power_given_data(independence_test, simulation_type, data_type='dimension', num_samples=100, num_dimensions=1, repeats=1000, alpha=.05, additional_params={}):
     '''
     Estimate the power of an independence test given pre-generated data from the repository ``MGC-paper``
     Mostly for internal testing purposes
@@ -145,8 +145,8 @@ def power_given_data(independence_test, simulation_type, data_type='dimension', 
         matrix_Y = all_matrix_Y[:, :, rep]
         # permutation test
         permuted_y = np.random.permutation(matrix_Y)
-        test_stats_null[rep], _ = independence_test.test_statistic(matrix_X, permuted_y)
-        test_stats_alternative[rep], _ = independence_test.test_statistic(matrix_X, matrix_Y)
+        test_stats_null[rep], _ = independence_test.test_statistic(matrix_X, permuted_y, **additional_params)
+        test_stats_alternative[rep], _ = independence_test.test_statistic(matrix_X, matrix_Y, **additional_params)
 
         # if the test is pearson, use absolute value of the test statistic
         # so the more extreme test statistic is still in a one-sided interval
