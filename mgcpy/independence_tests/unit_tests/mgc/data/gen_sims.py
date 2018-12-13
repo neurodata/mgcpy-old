@@ -7,7 +7,7 @@ from mgcpy.benchmarks.simulations import (circle_sim, cub_sim, exp_sim,
                                           two_parab_sim, ubern_sim, w_sim)
 
 
-def gen_data(data_dir="./mgcpy/independence_tests/unit_tests/mgc/data/"):
+def gen_data(data_dir="./mgcpy/independence_tests/unit_tests/mgc/data/input/"):
     NUM_SAMPLES = 50
     NUM_DIMS = 1
 
@@ -28,7 +28,7 @@ def gen_data(data_dir="./mgcpy/independence_tests/unit_tests/mgc/data/"):
         np.savetxt(data_dir + str(simulation.__name__) + "_y.csv", y, delimiter=",")
 
 
-def load_results(file_name, results_dir="./mgcpy/independence_tests/unit_tests/mgc/data/"):
+def load_results(file_name, results_dir="./mgcpy/independence_tests/unit_tests/mgc/data/mgc/"):
     mgc_results = np.genfromtxt(results_dir + file_name, delimiter=',')[1:]
 
     pMGC = mgc_results[:, 0][0]
@@ -41,5 +41,5 @@ def load_results(file_name, results_dir="./mgcpy/independence_tests/unit_tests/m
 
 
 if __name__ == '__main__':
-    # gen_data()
-    print(load_results("linear_sim_res.csv"))
+    gen_data()
+    # print(load_results("linear_sim_res.csv"))
