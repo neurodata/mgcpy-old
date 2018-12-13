@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
-from scipy.stats import t
+from scipy.stats import kendalltau, pearsonr, spearmanr, t
 
 
 def EUCLIDEAN_DISTANCE(x): return squareform(pdist(x, metric='euclidean'))
@@ -49,10 +49,10 @@ class IndependenceTest(ABC):
         """
         Abstract method to compute the test statistic given two data matrices
 
-        :param matrix_X: a ``[n*p]`` data matrix, a square matrix with n samples in ``p`` dimensions
+        :param matrix_X: a ``[n*p]`` data matrix, a matrix with n samples in ``p`` dimensions
         :type matrix_X: 2D `numpy.array`
 
-        :param matrix_Y: a ``[n*q]`` data matrix, a square matrix with n samples in ``q`` dimensions
+        :param matrix_Y: a ``[n*q]`` data matrix, a matrix with n samples in ``q`` dimensions
         :type matrix_Y: 2D `numpy.array`
 
         :return: returns a list of two items, that contains:
@@ -69,10 +69,10 @@ class IndependenceTest(ABC):
         """
         Tests independence between two datasets using the independence test and permutation test.
 
-        :param matrix_X: a ``[n*p]`` data matrix, a square matrix with n samples in ``p`` dimensions
+        :param matrix_X: a ``[n*p]`` matrix, a matrix with n samples in ``p`` dimensions
         :type matrix_X: 2D `numpy.array`
 
-        :param matrix_Y: a ``[n*q]`` data matrix, a square matrix with n samples in ``q`` dimensions
+        :param matrix_Y: a ``[n*q]`` matrix, a matrix with n samples in ``q`` dimensions
         :type matrix_Y: 2D `numpy.array`
 
         :param replication_factor: specifies the number of replications to use for
@@ -129,6 +129,15 @@ class IndependenceTest(ABC):
                                 "p_local_correlation_matrix": p_local_correlation_matrix,
                                 "local_correlation_matrix": local_correlation_matrix,
                                 "optimal_scale": independence_test_metadata["optimal_scale"]}
+        elif self.get_name() == "kendall":
+            p_value = kendalltau(matrix_X, matrix_Y)[1]
+            p_value_metadata = {}
+        elif self.get_name() == "spearman":
+            p_value = spearmanr(matrix_X, matrix_Y)[1]
+            p_value_metadata = {}
+        elif self.get_name() == "pearson":
+            p_value = pearsonr(matrix_X, matrix_Y)[1]
+            p_value_metadata = {}
         else:
             # estimate the null by a permutation test
             test_stats_null = np.zeros(replication_factor)

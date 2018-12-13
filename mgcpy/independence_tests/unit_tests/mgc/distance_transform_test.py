@@ -1,8 +1,9 @@
-import pytest
 import numpy as np
+import pytest
+from mgcpy.independence_tests.mgc.distance_transform import (center_distance_matrix,
+                                                             rank_distance_matrix,
+                                                             transform_distance_matrix)
 from scipy.spatial import distance_matrix
-
-from mgcpy.independence_tests.mgc.distance_transform import rank_distance_matrix, center_distance_matrix, transform_distance_matrix
 
 
 def test_rank_distance_matrix():

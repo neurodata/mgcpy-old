@@ -19,19 +19,21 @@ class KendallSpearman(IndependenceTest):
         Computes the Spearman's rho or Kendall's tau measure between two datasets.
         - Implments scipy.stats's implementation for both
 
-        :param matrix_X: a [n*1] data matrix, a square matrix with n samples in 1 dimension
+        :param matrix_X: a [n*1] data matrix, a matrix with n samples in 1 dimension
         :type matrix_X: 1D numpy.array
 
-        :param matrix_Y: a [n*1] data matrix, a square matrix with n samples in 1 dimension
+        :param matrix_Y: a [n*1] data matrix, a matrix with n samples in 1 dimension
         :type matrix_Y: 1D numpy.array
 
         :return: returns a list of two items, that contains:
+
             - :test_stat_: test statistic
             - :test_statistic_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                          that the independence tests computes in the process
         :rtype: float, dict
 
         **Example:**
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.kendall_spearman import KendallSpearman
 
@@ -42,10 +44,6 @@ class KendallSpearman(IndependenceTest):
         >>> kendall_spearman = KendallSpearman()
         >>> kendall_spearman_stat = kendall_spearman.test_statistic(X, Y)
         """
-        if matrix_X is None:
-            matrix_X = self.matrix_X
-        if matrix_Y is None:
-            matrix_Y = self.matrix_Y
         assert matrix_X.shape[1] == 1, "Data matrix should be (n, 1) shape"
         assert matrix_Y.shape[1] == 1, "Data matrix should be (n, 1) shape"
 
@@ -62,10 +60,10 @@ class KendallSpearman(IndependenceTest):
         """
         Tests independence between two datasets using the independence test.
 
-        :param matrix_X: a [n*p] data matrix, a square matrix with n samples in p dimensions
+        :param matrix_X: a [n*p] data matrix, a matrix with n samples in p dimensions
         :type matrix_X: 2D `numpy.array`
 
-        :param matrix_Y: a [n*q] data matrix, a square matrix with n samples in q dimensions
+        :param matrix_Y: a [n*q] data matrix, a matrix with n samples in q dimensions
         :type matrix_Y: 2D `numpy.array`
 
         :param replication_factor: specifies the number of replications to use for
@@ -73,12 +71,14 @@ class KendallSpearman(IndependenceTest):
         :type replication_factor: int
 
         :return: returns a list of two items, that contains:
+
             - :p_value_: P-value
             - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                  that the independence tests computes in the process
         :rtype: float, dict
 
         **Example:**
+
         >>> import numpy as np
         >>> from mgcpy.independence_tests.kendall_spearman import KendallSpearman
 
