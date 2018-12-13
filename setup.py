@@ -9,7 +9,6 @@ from Cython.Build import cythonize
 from sys import platform
 import numpy
 
-
 PACKAGE_NAME = 'mgcpy'
 DESCRIPTION = 'A set of tools in Python for multiscale graph correlation and other statistical tests'
 with open('README.md', encoding='utf-8') as f:
@@ -21,7 +20,7 @@ MINIMUM_PYTHON_VERSION = 3, 4  # Minimum of Python 3.4
 
 REQUIRED_PACKAGES = ["numpy>=1.14.5", "scipy>=1.1.0", "pytest>=3.8.0", "pycodestyle>=2.3.1", "h5py>=2.7.1",
                      "Cython==0.29", "flake8>=3.5.0", "pytest-cov>=2.6.0", "coveralls>=1.5.1", "Sphinx>=1.8.2"]
-VERSION = '0.0.5'
+VERSION = '0.1.0'
 
 
 def check_python_version():

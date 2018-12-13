@@ -164,8 +164,8 @@ class MGC(IndependenceTest):
         test_statistic_sub_sampling = np.zeros(num_samples)
 
         # add trivial noise to break any ties
-        matrix_X += 1e-10 * np.random.uniform(size=matrix_X.shape)
-        matrix_Y += 1e-10 * np.random.uniform(size=matrix_Y.shape)
+        matrix_X = matrix_X + 1e-10 * np.random.uniform(size=matrix_X.shape)
+        matrix_Y = matrix_Y + 1e-10 * np.random.uniform(size=matrix_Y.shape)
 
         # the local correlations by subsampling
         local_correlation_matrix_sub_sampling = np.zeros((sub_samples, sub_samples, num_samples))
