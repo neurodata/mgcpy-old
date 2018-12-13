@@ -1,5 +1,5 @@
-import pytest
 import numpy as np
+import pytest
 from mgcpy.independence_tests.dcorr import DCorr
 
 

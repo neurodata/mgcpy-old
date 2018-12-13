@@ -1,7 +1,8 @@
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
+from mgcpy.independence_tests.mgc.distance_transform import \
+    transform_distance_matrix
 from scipy.stats import t
-from mgcpy.independence_tests.mgc.distance_transform import transform_distance_matrix
 
 
 class DCorr(IndependenceTest):

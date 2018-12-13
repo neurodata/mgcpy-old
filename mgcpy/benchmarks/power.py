@@ -1,8 +1,9 @@
-import numpy as np
 import math
-from mgcpy.independence_tests.dcorr import DCorr
-import scipy.io
 import os
+
+import numpy as np
+import scipy.io
+from mgcpy.independence_tests.dcorr import DCorr
 
 
 def power(independence_test, sample_generator, num_samples=100, num_dimensions=1, noise=0.0, repeats=1000, alpha=.05, simulation_type=''):
