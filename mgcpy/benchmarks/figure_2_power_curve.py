@@ -144,7 +144,11 @@ def power_vs_sample_size_parallel(params_dict):
     print(sim, test_name)
 
     for i in range(len(sample_sizes)):
-        estimated_power[i] = power_given_data(test, sim, data_type='sample_size', num_samples=sample_sizes[i], num_dimensions=1, additional_params=additional_params)
+        # fast mgc doesn't work for less than 20 samples
+        if test_name == 'fast_mgc' and sample_sizes[i] < 20:
+            estimated_power[i] = np.nan
+        else:
+            estimated_power[i] = power_given_data(test, sim, data_type='sample_size', num_samples=sample_sizes[i], num_dimensions=1, additional_params=additional_params)
 
     np.savetxt('../code/mgcpy/benchmarks/python_power_curves_sample_size/{}_{}_sample_size.csv'.format(sim, test_name), estimated_power, delimiter=',')
     print('{} {} finished'.format(sim, test_name))
