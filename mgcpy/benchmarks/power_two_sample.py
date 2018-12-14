@@ -1,6 +1,8 @@
 import numpy as np
 import math
 from mgcpy.independence_tests.dcorr import DCorr
+from mgcpy.independence_tests.utils.transform_matrices import \
+    transform_matrices
 import scipy.io
 import os
 
@@ -44,37 +46,43 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
     test_stats_null = np.zeros(repeats)
     # test statistic under the alternative
     test_stats_alternative = np.zeros(repeats)
-    theta=math.radians(theta)
-    a=[[0 for x in range(2)] for y in range(2)]
-    a[0][0]=math.cos(theta)
-    a[0][1]=math.sin(theta)*(-1)
-    a[1][0]=math.sin(theta)
-    a[1][1]=math.cos(theta)
-    a=np.asarray(a)
+    theta = math.radians(theta)
+    a = [[0 for x in range(2)] for y in range(2)]
+    a[0][0] = math.cos(theta)
+    a[0][1] = math.sin(theta)*(-1)
+    a[1][0] = math.sin(theta)
+    a[1][1] = math.cos(theta)
+    a = np.asarray(a)
     for rep in range(repeats):
         # generate new samples for each iteration
         # the if-else block below is for simulations that have a different argument list
         # than the general case
         if simulation_type == 'sine_16pi':
-            matrix_X, matrix_Y = sample_generator(num_samples, num_dimensions, noise=noise, period=np.pi*16)
+            matrix_X, matrix_Y = sample_generator(
+                num_samples, num_dimensions, noise=noise, period=np.pi*16)
         elif simulation_type == 'multi_noise' or simulation_type == 'multi_indept':
             matrix_X, matrix_Y = sample_generator(num_samples, num_dimensions)
         elif simulation_type == 'ellipse':
-            matrix_X, matrix_Y = sample_generator(num_samples, num_dimensions, noise=noise, radius=5)
+            matrix_X, matrix_Y = sample_generator(
+                num_samples, num_dimensions, noise=noise, radius=5)
         elif simulation_type == 'diamond':
-            matrix_X, matrix_Y = sample_generator(num_samples, num_dimensions, noise=noise, period=-np.pi/8)
+            matrix_X, matrix_Y = sample_generator(
+                num_samples, num_dimensions, noise=noise, period=-np.pi/8)
         else:
-            matrix_X, matrix_Y = sample_generator(num_samples, num_dimensions, noise=noise)
+            matrix_X, matrix_Y = sample_generator(
+                num_samples, num_dimensions, noise=noise)
 
-        data_matrix_X=transform_matrices(matrix_X,matrix_Y)[0]
-        data_matrix_Y=transform_matrices(matrix_X,matrix_Y)[1]
-        data_matrix_Y=data_matrix_Y[:,np.newaxis]
-        data_matrix_X=data_matrix_X.T
-        data_matrix_X=np.dot(data_matrix_X,a)
+        data_matrix_X = transform_matrices(matrix_X, matrix_Y)[0]
+        data_matrix_Y = transform_matrices(matrix_X, matrix_Y)[1]
+        data_matrix_Y = data_matrix_Y[:, np.newaxis]
+        data_matrix_X = data_matrix_X.T
+        data_matrix_X = np.dot(data_matrix_X, a)
         # permutation test
         permuted_y = np.random.permutation(matrix_Y)
-        test_stats_null[rep], _ = independence_test.test_statistic(matrix_X, permuted_y)
-        test_stats_alternative[rep], _ = independence_test.test_statistic(matrix_X, matrix_Y)
+        test_stats_null[rep], _ = independence_test.test_statistic(
+            matrix_X, permuted_y)
+        test_stats_alternative[rep], _ = independence_test.test_statistic(
+            matrix_X, matrix_Y)
 
         '''
         # if the test is pearson, use absolute value of the test statistic
@@ -89,7 +97,8 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
     cutoff = np.sort(test_stats_null)[math.ceil(repeats*(1-alpha))]
     # the proportion of test statistics under the alternative which is no less than the cutoff (in which case
     # the null is rejected) is the empirical power
-    empirical_power = np.where(test_stats_alternative >= cutoff)[0].shape[0] / repeats
+    empirical_power = np.where(test_stats_alternative >= cutoff)[
+        0].shape[0] / repeats
     return empirical_power
 
 
@@ -101,9 +110,13 @@ def power_given_data(independence_test, simulation_type, data_type='dimension', 
     # absolute path to the benchmark directory
     dir_name = os.path.dirname(__file__)
     if data_type == 'dimension':
-        file_name_prefix = dir_name + '/sample_data_power_dimensions/type_{}_dim_{}'.format(simulation_type, num_dimensions)
+        file_name_prefix = dir_name + \
+            '/sample_data_power_dimensions/type_{}_dim_{}'.format(
+                simulation_type, num_dimensions)
     else:
-        file_name_prefix = dir_name + '/sample_data_power_sample_sizes/type_{}_size_{}'.format(simulation_type, num_samples)
+        file_name_prefix = dir_name + \
+            '/sample_data_power_sample_sizes/type_{}_size_{}'.format(
+                simulation_type, num_samples)
     all_matrix_X = scipy.io.loadmat(file_name_prefix + '_X.mat')['X']
     all_matrix_Y = scipy.io.loadmat(file_name_prefix + '_Y.mat')['Y']
     for rep in range(repeats):
@@ -111,8 +124,10 @@ def power_given_data(independence_test, simulation_type, data_type='dimension', 
         matrix_Y = all_matrix_Y[:, :, rep]
         # permutation test
         permuted_y = np.random.permutation(matrix_Y)
-        test_stats_null[rep], _ = independence_test.test_statistic(matrix_X, permuted_y)
-        test_stats_alternative[rep], _ = independence_test.test_statistic(matrix_X, matrix_Y)
+        test_stats_null[rep], _ = independence_test.test_statistic(
+            matrix_X, permuted_y)
+        test_stats_alternative[rep], _ = independence_test.test_statistic(
+            matrix_X, matrix_Y)
         '''
         # if the test is pearson, use absolute value of the test statistic
         # so the more extreme test statistic is still in a one-sided interval
@@ -126,5 +141,6 @@ def power_given_data(independence_test, simulation_type, data_type='dimension', 
     cutoff = np.sort(test_stats_null)[math.ceil(repeats*(1-alpha))]
     # the proportion of test statistics under the alternative which is no less than the cutoff (in which case
     # the null is rejected) is the empirical power
-    empirical_power = np.where(test_stats_alternative >= cutoff)[0].shape[0] / repeats
+    empirical_power = np.where(test_stats_alternative >= cutoff)[
+        0].shape[0] / repeats
     return empirical_power
