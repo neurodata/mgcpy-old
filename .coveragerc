@@ -1,2 +1,7 @@
 [run]
 plugins = Cython.Coverage
+
+[report]
+show_missing = True
+omit =
+    mgcpy/benchmarks/figure_2_power_curve.py
