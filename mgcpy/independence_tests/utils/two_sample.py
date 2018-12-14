@@ -1,19 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Oct 26 14:19:02 2018
-
-@author: Ananya S
-"""
-
 import numpy as np
-import pandas as pd
-from mgcpy.independence_tests.utils.transform_matrices import transform_matrices
 from mgcpy.independence_tests.dcorr import DCorr
-from mgcpy.independence_tests.mgc.mgc import MGC
-from mgcpy.independence_tests.rv_corr import RVCorr
 from mgcpy.independence_tests.hhg import HHG
 from mgcpy.independence_tests.kendall_spearman import KendallSpearman
-from scipy.spatial.distance import pdist, squareform
+from mgcpy.independence_tests.mgc.mgc import MGC
+from mgcpy.independence_tests.rv_corr import RVCorr
+from mgcpy.independence_tests.utils.transform_matrices import \
+    transform_matrices
 
 
 class TwoSample:
@@ -29,7 +21,7 @@ class TwoSample:
         :type: str
         '''
         self.independence_test_type = independence_test_type
-        
+
     def transform(self, matrix_X, matrix_Y):
         x, y = transform_matrices(matrix_X, matrix_Y)
         y = y[:, np.newaxis]

@@ -1,12 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Oct 26 14:19:02 2018
-
-@author: Ananya S
-"""
-
 import numpy as np
-import pandas as pd
 
 
 def transform_matrices(A, B):
