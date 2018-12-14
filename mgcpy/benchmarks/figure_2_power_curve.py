@@ -47,7 +47,7 @@ simulations = {'joint_normal': (joint_sim, 4), 'sine_4pi': (sin_sim, 12), 'sine_
                'multi_indept': (multi_indep_sim, 20), 'bernoulli': (ubern_sim, 9), 'square': (square_sim, 14),
                'linear': (linear_sim, 1), 'exponential': (exp_sim, 2), 'cubic': (cub_sim, 3)}
 
-simulations = {'bernoulli': (ubern_sim, 9)}  # {'step': (step_sim, 5)}
+# simulations = {'bernoulli': (ubern_sim, 9)}  # {'step': (step_sim, 5)}
 # ## Parallel code
 
 # In[10]:
@@ -144,7 +144,7 @@ def power_vs_sample_size_parallel(params_dict):
     print(sim, test_name)
 
     for i in range(len(sample_sizes)):
-        estimated_power[i] = power_given_data(test, sim, data_type='sample_size', num_samples=sample_sizes[i], num_dimensions=1, additional_parameters=additional_parameters)
+        estimated_power[i] = power_given_data(test, sim, data_type='sample_size', num_samples=sample_sizes[i], num_dimensions=1, additional_params=additional_params)
 
     np.savetxt('../code/mgcpy/benchmarks/python_power_curves_sample_size/{}_{}_sample_size.csv'.format(sim, test_name), estimated_power, delimiter=',')
     print('{} {} finished'.format(sim, test_name))
@@ -162,7 +162,7 @@ def fill_params_dict_list_sample_sizes(do_fast_mgc=False):
     hhg = HHG()
     pearson = RVCorr(which_test='pearson')
     mdmr = MDMR(compute_distance_matrix=compute_distance_matrix)
-    independence_tests = [mdmr]
+    independence_tests = []
 
     params_dict_list = []
     for sim_name, sim_func in simulations.items():
@@ -180,8 +180,8 @@ def fill_params_dict_list_sample_sizes(do_fast_mgc=False):
 # In[13]:
 
 start_time = time.time()
-# params_dict = fill_params_dict_list_sample_sizes(do_fast_mgc=True)
-params_dict = fill_params_dict_list_dimensions(do_fast_mgc=True)
+params_dict = fill_params_dict_list_sample_sizes(do_fast_mgc=True)
+# params_dict = fill_params_dict_list_dimensions(do_fast_mgc=True)
 print('finished filling params dict')
 # In[14]:
 
@@ -189,8 +189,8 @@ print('finished filling params dict')
 # pool = mp.Pool(mp.cpu_count()-1)
 # results = pool.map(power_vs_dimension_parallel, params_dict)
 with mp.Pool(mp.cpu_count() - 1) as p:
-    # outputs = p.map(power_vs_sample_size_parallel, params_dict)
-    outputs = p.map(power_vs_dimension_parallel, params_dict)
+    outputs = p.map(power_vs_sample_size_parallel, params_dict)
+    # outputs = p.map(power_vs_dimension_parallel, params_dict)
 
 # power_vs_dimension_parallel(params_dict[0])
 print('all finished')
