@@ -72,11 +72,11 @@ def test_two_sample_tests():
     assert np.allclose(spearman_p, 0.40471089369759095, rtol=1.e-1)
 
     print("HHG")
-    (hhg_t, _), (hhg_p, _) = hhg.test(men[:20], women[:20])
-    assert np.allclose(hhg_t, 491.9622752)
+    (hhg_t, _), (hhg_p, _) = hhg.test(men[:10], women[:10])
+    assert np.allclose(hhg_t, 114.26451890021742)
     assert np.allclose(hhg_p, 0.679, rtol=1.e-1)
 
     print("MGC")
-    (mgc_t, _), (mgc_p, _) = mgc.test(men[:100], women[:100])
-    assert np.allclose(mgc_t, -0.00088954874649)
-    assert np.allclose(mgc_p, 0.410, rtol=1.e-1)
+    (mgc_t, _), (mgc_p, _) = mgc.test(men[:25], women[:25])
+    assert np.allclose(mgc_t, -0.012762686636339487)
+    assert np.allclose(mgc_p, 0.6110000000000004, rtol=1.e-1)

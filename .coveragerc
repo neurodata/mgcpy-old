@@ -5,3 +5,4 @@ plugins = Cython.Coverage
 show_missing = True
 omit =
     mgcpy/benchmarks/figure_2_power_curve.py
+    mgcpy/benchmarks/power_two_sample.py

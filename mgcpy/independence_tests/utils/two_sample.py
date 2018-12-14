@@ -11,24 +11,45 @@ from mgcpy.independence_tests.utils.transform_matrices import \
 class TwoSample:
     def __init__(self, independence_test_type='dcorr_unbiased'):
         '''
-        :param data_matrix_X: data matrix
-        :type: numpy array
-        :param data_matrix_Y: data matrix
-        :type: numpy array
-        :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
-        :type: FunctionType or callable()
         :param independence_test_type: the independence test to call; options include dcorr_unbiased, dcorr_biased, mantel, mgc, rv_corr, cca, pearson, hhg, kendall, spearman
         :type: str
         '''
         self.independence_test_type = independence_test_type
 
     def transform(self, matrix_X, matrix_Y):
+        '''
+        Transform two data matrices into one concatenated matrix and one label matrix
+
+        Procedure: Concatenate the two data matrices into one matrix.
+        In the label matrix, assign each element from matrix_X 0 and each element from matrix_Y 1.
+
+        :param matrix_X: data matrix
+        :type: numpy array
+        :param matrix_Y: data matrix
+        :type: numpy array
+
+        :return: two data matrices
+        :rtype: numpy arrays
+        '''
         x, y = transform_matrices(matrix_X, matrix_Y)
         y = y[:, np.newaxis]
         x = x.T
         return x, y
 
     def test(self, matrix_X, matrix_Y):
+        '''
+        Compute the correlation between matrix_X and matrix_Y using indicated test
+
+        :param matrix_X: data matrix
+        :type: 2D numpy array
+        :param matrix_Y: data matrix
+        :type: 2D numpy array
+
+        :return: returns a list of two items, that contains:
+            - :test_statistic: the test statistic computed using the respective independence test
+            - :p-value
+        :rtype: float, float
+        '''
         X, Y = self.transform(matrix_X, matrix_Y)
         if self.independence_test_type == 'dcorr_unbiased':
             dcorr = DCorr()
