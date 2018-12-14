@@ -58,7 +58,7 @@ python3 setup.py install
 ![MGCPY Flow](MGCPY.png)
 
 ## Power Curves
-- Recreated from https://arxiv.org/abs/1609.05148, with the addition of MDMR and Fast MGC
+- Recreated Figure 2 in https://arxiv.org/abs/1609.05148, with the addition of MDMR and Fast MGC
 ![Power Curves](power_curves_dimensions.png)
 
 ## License
