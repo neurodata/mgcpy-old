@@ -17,17 +17,17 @@ class TwoSample:
         self.independence_test_type = independence_test_type
 
     def transform(self, matrix_X, matrix_Y):
-         '''
+        '''
         Transform two data matrices into one concatenated matrix and one label matrix
-       
-        Procedure: Concatenate the two data matrices into one matrix. 
+
+        Procedure: Concatenate the two data matrices into one matrix.
         In the label matrix, assign each element from matrix_X 0 and each element from matrix_Y 1.
-        
+
         :param matrix_X: data matrix
         :type: numpy array
         :param matrix_Y: data matrix
         :type: numpy array
-        
+
         :return: two data matrices
         :rtype: numpy arrays
         '''
@@ -39,12 +39,12 @@ class TwoSample:
     def test(self, matrix_X, matrix_Y):
         '''
         Compute the correlation between matrix_X and matrix_Y using indicated test
-        
+
         :param matrix_X: data matrix
         :type: 2D numpy array
         :param matrix_Y: data matrix
         :type: 2D numpy array
-        
+
         :return: returns a list of two items, that contains:
             - :test_statistic: the test statistic computed using the respective independence test
             - :p-value
