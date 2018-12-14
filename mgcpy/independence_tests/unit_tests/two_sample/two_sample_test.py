@@ -6,21 +6,18 @@ Created on Thu Dec 13 16:13:30 2018
 """
 
 import numpy as np
-import pandas as pd
 from mgcpy.independence_tests.utils.two_sample import TwoSample
 
 # read in the data
-x = pd.read_csv(
-    './mgcpy/independence_tests/unit_tests/two_sample/data/salary_csv.csv')
+mycsv=np.genfromtxt('./mgcpy/independence_tests/unit_tests/two_sample/data/twosample_data.csv', delimiter=',')
 men = []
 women = []
 
 # create data matrices for men's and women's salaries
-for i in range(len(x)):
-    if x.loc[i][0] == 'M':
-        men.append(x.loc[i][1])
-    elif x.loc[i][0] == 'F':
-        women.append(x.loc[i][1])
+for i in range(1,5593):
+    men.append(mycsv[i][1])
+for j in range(5593,9399):
+    women.append(mycsv[j][1])
 
 # convert lists to numpy arrays
 men = np.asarray(men)
