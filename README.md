@@ -4,11 +4,12 @@
 [![Build Status](https://travis-ci.com/NeuroDataDesign/mgcpy.svg?branch=master)](https://travis-ci.com/NeuroDataDesign/mgcpy)
 [![PyPI](https://img.shields.io/pypi/v/mgcpy.svg)](https://pypi.org/project/mgcpy/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/mgcpy.svg)](https://pypi.org/project/mgcpy/)
+[![DockerHub](https://img.shields.io/docker/automated/tpsatish95/mgcpy.svg)](https://hub.docker.com/r/tpsatish95/mgcpy/)
 [![DOI](https://zenodo.org/badge/147731955.svg)](https://zenodo.org/badge/latestdoi/147731955)
 [![Documentation Status](https://readthedocs.org/projects/mgcpy/badge/?version=latest)](https://mgcpy.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
-<a href="https://codeclimate.com/github/NeuroDataDesign/mgcpy/maintainability"><img src="https://api.codeclimate.com/v1/badges/979888a65926b3f27971/maintainability" /></a>
+[![Code Climate](https://api.codeclimate.com/v1/badges/979888a65926b3f27971/maintainability)](https://codeclimate.com/github/NeuroDataDesign/mgcpy/maintainability)
 
 `mgcpy` is a Python package containing tools for multiscale graph correlation and other statistical tests, that is capable of dealing with high dimensional and multivariate data.
 
@@ -34,7 +35,7 @@ python3 setup.py install
 - To build image and run from scratch:
   - Install [docker](https://docs.docker.com/install/)
   - Build the docker image, `docker build -t mgcpy:latest .`
-    - This takes 20-30 mins to build
+    - This takes 10-15 mins to build
   - Launch the container to go into mgcpy's dev env, `docker run -it --rm --name mgcpy-env mgcpy:latest`
 - Pull image from Dockerhub and run:
   - `docker pull tpsatish95/mgcpy:latest` or `docker pull tpsatish95/mgcpy:development`
@@ -55,6 +56,10 @@ python3 setup.py install
 
 ## MGC Algorithm's Flow
 ![MGCPY Flow](MGCPY.png)
+
+## Power Curves
+- Recreated Figure 2 in https://arxiv.org/abs/1609.05148, with the addition of MDMR and Fast MGC
+![Power Curves](power_curves_dimensions.png)
 
 ## License
 
