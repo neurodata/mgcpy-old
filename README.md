@@ -57,6 +57,10 @@ python3 setup.py install
 ## MGC Algorithm's Flow
 ![MGCPY Flow](MGCPY.png)
 
+## Power Curves
+- Recreated Figure 2 in https://arxiv.org/abs/1609.05148, with the addition of MDMR and Fast MGC
+![Power Curves](power_curves_dimensions.png)
+
 ## License
 
 This project is covered under the **Apache 2.0 License**.
