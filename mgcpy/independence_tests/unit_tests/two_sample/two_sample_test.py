@@ -49,27 +49,27 @@ def test_two_sample_tests():
     print("RVCorr")
     (rv_corr_t, _), (rv_corr_p, _) = rv_corr.test(men[:100], women[:100])
     assert np.allclose(rv_corr_t, 0.005450544032308922)
-    assert np.allclose(rv_corr_p, 0.296, rtol=1.e-1)
+    assert np.allclose(rv_corr_p, 0.296, atol=1.e-1)
 
     print("CCA")
     (cca_t, _), (cca_p, _) = cca.test(men[:100], women[:100])
     assert np.allclose(cca_t, 0.005450544032308922)
-    assert np.allclose(cca_p, 0.273, rtol=1.e-1)
+    assert np.allclose(cca_p, 0.273, atol=1.e-1)
 
     print("Pearson")
     (pearson_t, _), (pearson_p, _) = pearson.test(men[:100], women[:100])
     assert np.allclose(pearson_t, -0.0738278)
-    assert np.allclose(pearson_p, 0.857, rtol=1.e-1)
+    assert np.allclose(pearson_p, 0.29882475, rtol=1.e-1)
 
     print("Kendall")
     (kendall_t, _), (kendall_p, _) = kendall.test(men[:100], women[:100])
     assert np.allclose(kendall_t, -0.048544835126699805)
-    assert np.allclose(kendall_p, 0.775, rtol=1.e-1)
+    assert np.allclose(kendall_p, 0.4033465589917702, rtol=1.e-1)
 
     print("Spearman")
     (spearman_t, _), (spearman_p, _) = spearman.test(men[:100], women[:100])
     assert np.allclose(spearman_t, -0.05923832207225863)
-    assert np.allclose(spearman_p, 0.827, rtol=1.e-1)
+    assert np.allclose(spearman_p, 0.40471089369759095, rtol=1.e-1)
 
     print("HHG")
     (hhg_t, _), (hhg_p, _) = hhg.test(men[:20], women[:20])
