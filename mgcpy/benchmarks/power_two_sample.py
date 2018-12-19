@@ -78,6 +78,7 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
         label_matrix = transform_matrices(data_matrix.T, r_matrix)[1]
         matrix_X = long_matrix.T
         matrix_Y = label_matrix.T
+        matrix_Y = matrix_Y[:,np.newaxis]
         # permutation test
         permuted_y = np.random.permutation(matrix_Y)
         test_stats_null[rep], _ = independence_test.test_statistic(
