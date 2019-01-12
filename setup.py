@@ -15,7 +15,7 @@ with open('README.md', encoding='utf-8') as f:
     LONG_DESCRIPTION = f.read()
 AUTHOR = 'Satish Palaniappan, Bear Xiong, Sambit Panda, Sandhya Ramachandran, Ananya Swaminathan, Richard Guo'
 AUTHOR_EMAIL = 'spalani2@jhu.edu'
-URL = 'https://github.com/NeuroDataDesign/mgcpy'
+URL = 'https://github.com/neurodata/mgcpy'
 MINIMUM_PYTHON_VERSION = 3, 4  # Minimum of Python 3.4
 
 REQUIRED_PACKAGES = ["numpy>=1.14.5", "scipy>=1.1.0", "pytest>=3.8.0", "pycodestyle>=2.3.1", "h5py>=2.7.1",

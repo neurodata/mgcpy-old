@@ -16,7 +16,7 @@ To setup,
 - Run `./install_hooks.sh` to install the pre-commit hooks for enforcing **pep8** before committing any code.
 
 ## Report bugs (using GitHub's issues)
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/NeuroDataDesign/mgcpy/issues), it's that easy!
+We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/neurodata/mgcpy/issues), it's that easy!
 - Write bug reports with detail, background, and sample code
 - **Great Bug Reports** tend to have:
 

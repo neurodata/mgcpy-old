@@ -83,7 +83,7 @@ WORKDIR /root/code/
 
 # clone the mgcpy code into the container
 ARG SOURCE_BRANCH=master
-RUN git clone -b ${SOURCE_BRANCH} https://github.com/NeuroDataDesign/mgcpy.git .
+RUN git clone -b ${SOURCE_BRANCH} https://github.com/neurodata/mgcpy.git .
 
 # install python requirements
 RUN pip install -r requirements.txt
