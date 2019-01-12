@@ -55,11 +55,11 @@ python3 setup.py install
 
 
 ## MGC Algorithm's Flow
-![MGCPY Flow](MGCPY.png)
+![MGCPY Flow](https://raw.githubusercontent.com/NeuroDataDesign/mgcpy/master/MGCPY.png)
 
 ## Power Curves
 - Recreated Figure 2 in https://arxiv.org/abs/1609.05148, with the addition of MDMR and Fast MGC
-![Power Curves](power_curves_dimensions.png)
+![Power Curves](https://raw.githubusercontent.com/NeuroDataDesign/mgcpy/master/power_curves_dimensions.png)
 
 ## License
 

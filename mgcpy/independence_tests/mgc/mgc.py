@@ -39,13 +39,13 @@ class MGC(IndependenceTest):
         :param matrix_X: is interpreted as either:
 
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
-            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*p]`` data matrix, a matrix with ``n`` samples in ``p`` dimensions
         :type matrix_X: 2D numpy.array
 
         :param matrix_Y: is interpreted as either:
 
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
-            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*q]`` data matrix, a matrix with ``n`` samples in ``q`` dimensions
         :type matrix_Y: 2D numpy.array
 
         :param is_fast: is a boolean flag which specifies if the test_statistic should be computed (approximated)
@@ -78,6 +78,8 @@ class MGC(IndependenceTest):
         >>> mgc = MGC()
         >>> mgc_statistic, test_statistic_metadata = mgc.test_statistic(X, Y)
         """
+        assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be equal to q"
+
         if is_fast:
             mgc_statistic, test_statistic_metadata = self._fast_mgc_test_statistic(matrix_X, matrix_Y, **fast_mgc_data)
         else:
@@ -119,13 +121,13 @@ class MGC(IndependenceTest):
         :param matrix_X: is interpreted as either:
 
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
-            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*p]`` data matrix, a matrix with ``n`` samples in ``p`` dimensions
         :type matrix_X: 2D numpy.array
 
         :param matrix_Y: is interpreted as either:
 
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
-            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*q]`` data matrix, a matrix with ``n`` samples in ``q`` dimensions
         :type matrix_Y: 2D numpy.array
 
         :param sub_samples: specifies the number of subsamples.
@@ -218,13 +220,13 @@ class MGC(IndependenceTest):
         :param matrix_X: is interpreted as either:
 
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
-            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*p]`` data matrix, a matrix with ``n`` samples in ``p`` dimensions
         :type matrix_X: 2D numpy.array
 
         :param matrix_Y: is interpreted as either:
 
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
-            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
+            - a ``[n*q]`` data matrix, a matrix with ``n`` samples in ``q`` dimensions
         :type matrix_Y: 2D numpy.array
 
         :param replication_factor: specifies the number of replications to use for
@@ -265,6 +267,8 @@ class MGC(IndependenceTest):
         >>> mgc = MGC()
         >>> p_value, metadata = mgc.p_value(X, Y, replication_factor = 100)
         """
+        assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be equal to q"
+
         if is_fast:
             p_value, p_value_metadata = self._fast_mgc_p_value(matrix_X, matrix_Y, **fast_mgc_data)
             self.p_value_ = p_value
@@ -284,13 +288,13 @@ class MGC(IndependenceTest):
         :param matrix_X: is interpreted as either:
 
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a ``[n*d]`` data matrix, a matrix with n samples in d dimensions
+            - a ``[n*p]`` data matrix, a matrix with n samples in p dimensions
         :type matrix_X: 2D numpy.array
 
         :param matrix_Y: is interpreted as either:
 
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a ``[n*d]`` data matrix, a matrix with n samples in d dimensions
+            - a ``[n*q]`` data matrix, a matrix with n samples in q dimensions
         :type matrix_Y: 2D numpy.array
 
         :param sub_samples: specifies the number of subsamples.
