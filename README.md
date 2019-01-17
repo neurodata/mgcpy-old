@@ -1,7 +1,7 @@
 # mgcpy
 
-[![Coverage Status](https://coveralls.io/repos/github/NeuroDataDesign/mgcpy/badge.svg?branch=master)](https://coveralls.io/github/NeuroDataDesign/mgcpy?branch=master)
-[![Build Status](https://travis-ci.com/NeuroDataDesign/mgcpy.svg?branch=master)](https://travis-ci.com/NeuroDataDesign/mgcpy)
+[![Coverage Status](https://coveralls.io/repos/github/neurodata/mgcpy/badge.svg?branch=master)](https://coveralls.io/github/neurodata/mgcpy?branch=master)
+[![Build Status](https://travis-ci.com/neurodata/mgcpy.svg?branch=master)](https://travis-ci.com/neurodata/mgcpy)
 [![PyPI](https://img.shields.io/pypi/v/mgcpy.svg)](https://pypi.org/project/mgcpy/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/mgcpy.svg)](https://pypi.org/project/mgcpy/)
 [![DockerHub](https://img.shields.io/docker/automated/tpsatish95/mgcpy.svg)](https://hub.docker.com/r/tpsatish95/mgcpy/)
@@ -9,7 +9,7 @@
 [![Documentation Status](https://readthedocs.org/projects/mgcpy/badge/?version=latest)](https://mgcpy.readthedocs.io/en/latest/?badge=latest)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
-[![Code Climate](https://api.codeclimate.com/v1/badges/979888a65926b3f27971/maintainability)](https://codeclimate.com/github/NeuroDataDesign/mgcpy/maintainability)
+[![Code Climate](https://api.codeclimate.com/v1/badges/51ac28d51f1474bf3567/maintainability)](https://codeclimate.com/github/neurodata/mgcpy/maintainability)
 
 `mgcpy` is a Python package containing tools for multiscale graph correlation and other statistical tests, that is capable of dealing with high dimensional and multivariate data.
 
@@ -24,7 +24,7 @@ pip3 install mgcpy
 
 ### Install from Github
 ```
-git clone https://github.com/NeuroDataDesign/mgcpy
+git clone https://github.com/neurodata/mgcpy
 cd mgcpy
 python3 setup.py install
 ```
@@ -55,11 +55,11 @@ python3 setup.py install
 
 
 ## MGC Algorithm's Flow
-![MGCPY Flow](MGCPY.png)
+![MGCPY Flow](https://raw.githubusercontent.com/neurodata/mgcpy/master/MGCPY.png)
 
 ## Power Curves
 - Recreated Figure 2 in https://arxiv.org/abs/1609.05148, with the addition of MDMR and Fast MGC
-![Power Curves](power_curves_dimensions.png)
+![Power Curves](https://raw.githubusercontent.com/neurodata/mgcpy/master/power_curves_dimensions.png)
 
 ## License
 
