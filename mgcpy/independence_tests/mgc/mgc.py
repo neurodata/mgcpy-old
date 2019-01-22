@@ -162,7 +162,6 @@ class MGC(IndependenceTest):
 
         # subsampling computation
         permuted_Y = np.random.permutation(matrix_Y)
-
         for i in range(num_samples):
             sub_matrix_X = matrix_X[(sub_samples*i):sub_samples*(i+1), :]
             sub_matrix_Y = permuted_Y[(sub_samples*i):sub_samples*(i+1), :]
