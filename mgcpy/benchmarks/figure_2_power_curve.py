@@ -112,7 +112,7 @@ def fill_params_dict_list_dimensions(do_fast_mgc=False):
             params_dict_list.append(params_dict)
         if do_fast_mgc:
             fast_mgc = MGC()
-            additional_params = {"is_fast": True, "fast_mgc_data": {"null_only": False}}
+            additional_params = {"is_fast": True}
             params_dict = {'independence_test': fast_mgc, 'simulation_type': sim_func[1], 'dim': find_dim(sim_name), 'additional_params': additional_params}
             params_dict_list.append(params_dict)
 
@@ -175,7 +175,7 @@ def fill_params_dict_list_sample_sizes(do_fast_mgc=False):
             params_dict_list.append(params_dict)
         if do_fast_mgc:
             fast_mgc = MGC()
-            additional_params = {"is_fast": True, "fast_mgc_data": {"null_only": False}}
+            additional_params = {"is_fast": True}
             params_dict = {'independence_test': fast_mgc, 'simulation_type': sim_func[1], 'additional_params': additional_params}
             params_dict_list.append(params_dict)
     return params_dict_list

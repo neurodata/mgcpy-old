@@ -55,7 +55,6 @@ class MGC(IndependenceTest):
         :param fast_mgc_data: a ``dict`` of fast mgc params, refer: self._fast_mgc_test_statistic
 
             - :sub_samples: specifies the number of subsamples.
-            - :null_only: specifies if subsampling is to be used for estimating the null only.
         :type fast_mgc_data: dictonary
 
         :return: returns a list of two items, that contains:
@@ -145,6 +144,7 @@ class MGC(IndependenceTest):
                     - :local_correlation_matrix: a 2D matrix of all local correlations within ``[-1,1]``
                     - :optimal_scale: the estimated optimal scale as an ``[x, y]`` pair.
                     - :sigma: computed standard deviation for computing the p-value next.
+                    - :mu: computed mean for computing the p-value next.
         :rtype: list
         """
         total_samples = matrix_Y.shape[0]
@@ -212,8 +212,6 @@ class MGC(IndependenceTest):
         :param fast_mgc_data: a ``dict`` of fast mgc params, , refer: self._fast_mgc_p_value
 
             - :sub_samples: specifies the number of subsamples.
-            - :null_only: specifies if subsampling is to be used for estimating the null only.
-            - :alpha: specifies the type 1 error level.
         :type fast_mgc_data: dictonary
 
         :return: returns a list of two items, that contains:
@@ -254,11 +252,7 @@ class MGC(IndependenceTest):
         Fast and powerful test by subsampling that runs in O(n^2 log(n)+ns*n), based on
         C. Shen and J. Vogelstein, “Fast and Powerful Testing for Distance-Based Correlations”
 
-        Fast version of MGC's p-value computation
-
         MGC test statistic computation and permutation test by fast subsampling.
-        Note that trivial amount of noise is added to matrix_X and matrix_Y,
-        to break possible ties in data for MGC.
 
         :param matrix_X: is interpreted as either:
 
