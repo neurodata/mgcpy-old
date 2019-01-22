@@ -28,12 +28,18 @@ def test_dcorr():
     assert np.allclose(biased.test_statistic(X, Y)[0], 0.1179, atol=1e-4)
     assert np.allclose(mantel.test_statistic(X, Y)[0], 0.2255, atol=1e-4)
 
+    # test statistic (fast versions)
+    assert np.allclose(unbiased.test_statistic(X, Y, is_fast=True)[0], 0.1562, atol=1e-4)
+    assert np.allclose(biased.test_statistic(X, Y, is_fast=True)[0], 0.1919, atol=1e-4)
+    assert np.allclose(mantel.test_statistic(X, Y, is_fast=True)[0], 0.1609, atol=1e-4)
+
     # additional test for mantel
     X = np.genfromtxt(dir_name + 'mantel_test_stat_X_mtx.csv', delimiter=',')
     Y = np.genfromtxt(dir_name + 'mantel_test_stat_Y_mtx.csv', delimiter=',')
     X = X[:, np.newaxis]
     Y = Y[:, np.newaxis]
     assert np.allclose(mantel.test_statistic(X, Y)[0], 0.7080, atol=1e-4)
+    assert np.allclose(mantel.test_statistic(X, Y, is_fast=True)[0],  0.7213, atol=1e-4) # faster version
 
     '''
     test p value
@@ -45,6 +51,12 @@ def test_dcorr():
     Y = np.genfromtxt(dir_name + 'pvalue_Y_mtx.csv', delimiter=',')
     Y = Y[:, np.newaxis]
 
+    # p value
     assert np.allclose(unbiased.p_value(X, Y)[0], 0.04827, atol=0.01)
     assert np.allclose(biased.p_value(X, Y)[0], 0.0621, atol=0.03)
     assert np.allclose(mantel.p_value(X, Y)[0], 0.1823, atol=0.04)
+
+    # p value (faster versions)
+    assert np.allclose(unbiased.p_value(X, Y, is_fast=True)[0], 0.7429, atol=0.01)
+    assert np.allclose(biased.p_value(X, Y, is_fast=True)[0], 0.0694, atol=0.03)
+    assert np.allclose(mantel.p_value(X, Y, is_fast=True)[0], 4.0657e-07, atol=0.04)
