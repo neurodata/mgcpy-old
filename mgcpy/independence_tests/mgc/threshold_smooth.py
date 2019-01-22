@@ -95,7 +95,8 @@ def smooth_significant_local_correlations(significant_connected_region, local_co
 
         # proceed only when the connected region's area is sufficiently large
         # if np.sum(significant_connected_region) >= min(m, n):
-        if np.sum(significant_connected_region) >= 2 * min(m, n):
+        # if np.sum(significant_connected_region) >= 2 * min(m, n):
+        if np.sum(significant_connected_region) >= np.ceil(0.02*max(m,n))*min(m,n):
             max_local_correlation = np.max(local_correlation_matrix[significant_connected_region])
 
             # find all scales within significant_connected_region that maximize the local correlation
