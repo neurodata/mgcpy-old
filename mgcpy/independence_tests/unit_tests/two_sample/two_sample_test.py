@@ -38,13 +38,13 @@ def test_two_sample_tests():
 
     print("DCorr (Biased)")
     (dcorr_bt, _), (dcorr_bp, _) = dcorr_biased.test(men[:100], women[:100])
-    assert np.allclose(dcorr_bt, -0.0008446435181938056)
+    assert np.allclose(dcorr_bt, 0.008266367785130459)
     assert np.allclose(dcorr_bp, 0.415, rtol=1.e-1)
 
     print("Mantel")
     (mantel_t, _), (mantel_p, _) = mantel.test(men[:100], women[:100])
-    assert np.allclose(mantel_t, 0.0005541922995149036)
-    assert np.allclose(mantel_p, 0.904, rtol=1.e-1)
+    assert np.allclose(mantel_t, 0.005235443585975389)
+    assert np.allclose(mantel_p, 0.417, rtol=1.e-1)
 
     print("RVCorr")
     (rv_corr_t, _), (rv_corr_p, _) = rv_corr.test(men[:100], women[:100])
