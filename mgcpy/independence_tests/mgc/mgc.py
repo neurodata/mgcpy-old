@@ -3,7 +3,7 @@
 """
 import math
 import warnings
-from statistics import stdev
+from statistics import stdev, mean
 
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
@@ -55,7 +55,6 @@ class MGC(IndependenceTest):
         :param fast_mgc_data: a ``dict`` of fast mgc params, refer: self._fast_mgc_test_statistic
 
             - :sub_samples: specifies the number of subsamples.
-            - :null_only: specifies if subsampling is to be used for estimating the null only.
         :type fast_mgc_data: dictonary
 
         :return: returns a list of two items, that contains:
@@ -111,8 +110,11 @@ class MGC(IndependenceTest):
         self.test_statistic_metadata_ = test_statistic_metadata
         return mgc_statistic, test_statistic_metadata
 
-    def _fast_mgc_test_statistic(self, matrix_X, matrix_Y, sub_samples=100, null_only=True):
+    def _fast_mgc_test_statistic(self, matrix_X, matrix_Y, sub_samples=10):
         """
+        Fast and powerful test by subsampling that runs in O(n^2 log(n)+ns*n), based on
+        C. Shen and J. Vogelstein, “Fast and Powerful Testing for Distance-Based Correlations”
+
         Faster version of MGC's test_statistic function
 
             - It computes local correlations and test statistics by subsampling
@@ -132,16 +134,8 @@ class MGC(IndependenceTest):
 
         :param sub_samples: specifies the number of subsamples.
                             generally total_samples/sub_samples should be more than 4,
-                            and ``sub_samples`` should be large than 30.
+                            and ``sub_samples`` should be large than 10.
         :type sub_samples: integer
-
-        :param null_only: specifies if subsampling is to be used for estimating the null only OR to compute the observed statistic as well
-
-            - *True:* uses subsampled statistics for estimating the null only and computes the observed statistic by full data,
-                    this runs in ``O(total_samples^2 + sub_samples * total_samples)``
-            - *False:* uses subsampled statistics for estimating the null and also computes the observed statistic by subsampling,
-                     this runs in ``O(sub_samples*total_samples)``
-        :type null_only: boolean
 
         :return: returns a list of two items, that contains:
 
@@ -150,6 +144,7 @@ class MGC(IndependenceTest):
                     - :local_correlation_matrix: a 2D matrix of all local correlations within ``[-1,1]``
                     - :optimal_scale: the estimated optimal scale as an ``[x, y]`` pair.
                     - :sigma: computed standard deviation for computing the p-value next.
+                    - :mu: computed mean for computing the p-value next.
         :rtype: list
         """
         total_samples = matrix_Y.shape[0]
@@ -165,51 +160,27 @@ class MGC(IndependenceTest):
         # the observed statistics by subsampling
         test_statistic_sub_sampling = np.zeros(num_samples)
 
-        # add trivial noise to break any ties
-        matrix_X = matrix_X + 1e-10 * np.random.uniform(size=matrix_X.shape)
-        matrix_Y = matrix_Y + 1e-10 * np.random.uniform(size=matrix_Y.shape)
-
-        # the local correlations by subsampling
-        local_correlation_matrix_sub_sampling = np.zeros((sub_samples, sub_samples, num_samples))
-
         # subsampling computation
+        permuted_Y = np.random.permutation(matrix_Y)
         for i in range(num_samples):
             sub_matrix_X = matrix_X[(sub_samples*i):sub_samples*(i+1), :]
-            sub_matrix_Y = matrix_Y[(sub_samples*i):sub_samples*(i+1), :]
+            sub_matrix_Y = permuted_Y[(sub_samples*i):sub_samples*(i+1), :]
 
-            mgc_statistic, test_statistic_metadata = self.test_statistic(sub_matrix_X, sub_matrix_Y)
-            test_statistic_sub_sampling[i], local_correlation_matrix_sub_sampling[:, :, i] = \
-                mgc_statistic, test_statistic_metadata["local_correlation_matrix"]
+            test_statistic_sub_sampling[i], _ = self.test_statistic(sub_matrix_X, sub_matrix_Y)
 
-        local_correlation_matrix = np.mean(local_correlation_matrix_sub_sampling, axis=2)
-        sigma = stdev(test_statistic_sub_sampling) / np.sqrt(num_samples)
+        # approximate the null distribution by normal distribution
+        sigma = stdev(test_statistic_sub_sampling) / num_samples
+        mu = max(0, mean(test_statistic_sub_sampling));
 
-        sample_size = len(matrix_X) - 1  # sample size minus 1
-
-        # find a connected region of significant local correlations, by thresholding
-        significant_connected_region = threshold_local_correlations(
-            local_correlation_matrix, sample_size)
-
-        # find the maximum within the significant region
-        result = smooth_significant_local_correlations(
-            significant_connected_region, local_correlation_matrix)
-        mgc_statistic, optimal_scale = result["mgc_statistic"], result["optimal_scale"]
-
-        k, l = optimal_scale
-        k = math.ceil((k - 1)/(sub_samples - 1) * (total_samples - 1)) + 1
-        l = math.ceil((l - 1)/(sub_samples - 1) * (total_samples - 1)) + 1
-        optimal_scale = [k, l]
-
-        # the observed statistic uses the full data
-        if null_only:
-            mgc_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
-            local_correlation_matrix = test_statistic_metadata["local_correlation_matrix"]
-            optimal_scale = test_statistic_metadata["optimal_scale"]
-            sigma /= math.sqrt(num_samples)
+        # compute the observed statistic
+        mgc_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
+        local_correlation_matrix = test_statistic_metadata["local_correlation_matrix"]
+        optimal_scale = test_statistic_metadata["optimal_scale"]
 
         test_statistic_metadata = {"local_correlation_matrix": local_correlation_matrix,
                                    "optimal_scale": optimal_scale,
-                                   "sigma": sigma}
+                                   "sigma": sigma,
+                                   "mu": mu}
 
         return mgc_statistic, test_statistic_metadata
 
@@ -240,8 +211,6 @@ class MGC(IndependenceTest):
         :param fast_mgc_data: a ``dict`` of fast mgc params, , refer: self._fast_mgc_p_value
 
             - :sub_samples: specifies the number of subsamples.
-            - :null_only: specifies if subsampling is to be used for estimating the null only.
-            - :alpha: specifies the type 1 error level.
         :type fast_mgc_data: dictonary
 
         :return: returns a list of two items, that contains:
@@ -277,13 +246,12 @@ class MGC(IndependenceTest):
         else:
             return super(MGC, self).p_value(matrix_X, matrix_Y)
 
-    def _fast_mgc_p_value(self, matrix_X, matrix_Y, sub_samples=100, null_only=True, alpha=0.01):
+    def _fast_mgc_p_value(self, matrix_X, matrix_Y, sub_samples=10):
         '''
-        Fast version of MGC's p-value computation
+        Fast and powerful test by subsampling that runs in O(n^2 log(n)+ns*n), based on
+        C. Shen and J. Vogelstein, “Fast and Powerful Testing for Distance-Based Correlations”
 
         MGC test statistic computation and permutation test by fast subsampling.
-        Note that trivial amount of noise is added to matrix_X and matrix_Y,
-        to break possible ties in data for MGC.
 
         :param matrix_X: is interpreted as either:
 
@@ -299,20 +267,8 @@ class MGC(IndependenceTest):
 
         :param sub_samples: specifies the number of subsamples.
                             generally total_samples/sub_samples should be more than 4,
-                            and ``sub_samples`` should be large than 30.
+                            and ``sub_samples`` should be large than 10.
         :type sub_samples: integer
-
-        :param null_only: specifies if subsampling is to be used for estimating the null only OR to compute the observed statistic as well
-
-            - *True:* uses subsampled statistics for estimating the null only and computes the observed statistic by full data,
-                    this runs in ``O(total_samples^2 + sub_samples * total_samples)``
-            - *False:* uses subsampled statistics for estimating the null and also computes the observed statistic by subsampling,
-                     this runs in ``O(sub_samples*total_samples)``
-        :type null_only: boolean
-
-        :param alpha: specifies the type 1 error level.
-                      this is is used to derive the confidence interval and estimate required sample size to achieve power 1.
-        :type alpha: float
 
         :return: returns a list of two items, that contains:
 
@@ -322,22 +278,14 @@ class MGC(IndependenceTest):
                     - :test_statistic: the sample MGC statistic within ``[-1, 1]``
                     - :local_correlation_matrix: a 2D matrix of all local correlations within ``[-1,1]``
                     - :optimal_scale: the estimated optimal scale as an ``[x, y]`` pair.
-                    - :confidence_interval: a ``[1*2]`` matrix representing the confidence_interval for the local correlation with 1-alpha confidence.
-                    - :required_size: the required estimated sample size to have power 1 at level alpha
         :rtype: list
         '''
-        mgc_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y, is_fast=True, fast_mgc_data={"sub_samples": sub_samples, "null_only": null_only})
-        total_samples = matrix_Y.shape[0]
+        mgc_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y, is_fast=True, fast_mgc_data={"sub_samples": sub_samples})
         sigma = test_statistic_metadata["sigma"]
+        mu = test_statistic_metadata["mu"]
 
-        p_value = 1 - norm.cdf(mgc_statistic, 0, sigma)
-        threshold = norm.ppf(1 - alpha, 0, 1)
-        confidence_interval = [mgc_statistic - (threshold * sigma), mgc_statistic + (threshold * sigma)]
-
-        if mgc_statistic < 0:
-            required_size = np.Inf
-        else:
-            required_size = math.ceil(threshold * sigma * total_samples / mgc_statistic / 10) * 10
+        # compute p value
+        p_value = 1 - norm.cdf(mgc_statistic, mu, sigma)
 
         # The results are not statistically significant
         if p_value > 0.05:
@@ -346,8 +294,6 @@ class MGC(IndependenceTest):
 
         p_value_metadata = {"test_statistic": mgc_statistic,
                             "local_correlation_matrix": test_statistic_metadata["local_correlation_matrix"],
-                            "optimal_scale": test_statistic_metadata["optimal_scale"],
-                            "confidence_interval": confidence_interval,
-                            "required_size": required_size}
+                            "optimal_scale": test_statistic_metadata["optimal_scale"]}
 
         return p_value, p_value_metadata
