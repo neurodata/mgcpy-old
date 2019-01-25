@@ -30,7 +30,7 @@ AUTHOR_EMAIL = 'spalani2@jhu.edu'
 URL = 'https://github.com/neurodata/mgcpy'
 MINIMUM_PYTHON_VERSION = 3, 4  # Minimum of Python 3.4
 REQUIRED_PACKAGES = ["numpy>=1.14.5", "scipy>=1.1.0", "h5py>=2.7.1", "Cython==0.29"]
-VERSION = '0.1.2'
+VERSION = '0.2.0'
 
 
 def check_python_version():
