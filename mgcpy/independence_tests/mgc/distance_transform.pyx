@@ -87,7 +87,7 @@ cpdef center_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix, str
 
     # biased version of dcorr distance transform
     elif base_global_correlation == "biased":
-      expected_distance_matrix = np.repeat(distance_matrix.mean(axis=0), n).reshape(-1, n).T \
+        expected_distance_matrix = np.repeat(distance_matrix.mean(axis=0), n).reshape(-1, n).T \
                                   + np.repeat(distance_matrix.mean(axis=1), n).reshape(-1, n) \
                                   - (distance_matrix.sum() / (n * n))
 
@@ -97,8 +97,10 @@ cpdef center_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix, str
 
     cdef np.ndarray centered_distance_matrix = distance_matrix - expected_distance_matrix
 
-    # the diagonal entries are always excluded
-    np.fill_diagonal(centered_distance_matrix, 0)
+    # the diagonal entries are excluded for unbiased and mgc centering, but not
+    # excluded for biased and mantel(simple) centering. (from MGC Matlab)
+    if base_global_correlation != "mantel" and base_global_correlation != "biased":
+        np.fill_diagonal(centered_distance_matrix, 0)
 
     return {"centered_distance_matrix": centered_distance_matrix,
             "ranked_distance_matrix": ranked_distance_matrix}

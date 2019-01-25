@@ -3,10 +3,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.2.0] - 2019-01-25
+- Add FastDCorr
+- Update FastMGC to latest and more stable code
+- Update FastMGC and FastDCorr unit test
+- Update MGC's Smoothing and Distance Transform functions
+- Fix broken unit tests
+
+## [0.1.2] - 2019-01-17
+- Fix setup.py to be able to build from source when wheel is not found
+- Add MANIFEST.in to include Cython `*.pyx` files
+
 ## [0.1.1] - 2019-01-12
 - Port repo from `NeuroDataDesign` to `neurodata` org
 - Assert dims of input matrices
-- Fixing other issues ...
 
 ## [0.1.0] - 2018-12-14
 ### Added
