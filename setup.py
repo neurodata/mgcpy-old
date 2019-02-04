@@ -7,7 +7,7 @@ from setuptools.command.install import install
 from subprocess import check_output, call
 from sys import platform
 
-REQUIRED_PACKAGES = ["numpy>=1.14.5", "scipy>=1.1.0", "h5py>=2.7.1", "Cython==0.29"]
+REQUIRED_PACKAGES = ["numpy>=1.14.5", "scipy>=1.1.0", "h5py>=2.7.1", "Cython==0.29", "scikit-learn>=0.19.2"]
 try:
     from Cython.Build import cythonize
     import numpy
@@ -29,7 +29,6 @@ AUTHOR = 'Satish Palaniappan, Bear Xiong, Sambit Panda, Sandhya Ramachandran, An
 AUTHOR_EMAIL = 'spalani2@jhu.edu'
 URL = 'https://github.com/neurodata/mgcpy'
 MINIMUM_PYTHON_VERSION = 3, 4  # Minimum of Python 3.4
-REQUIRED_PACKAGES = ["numpy>=1.14.5", "scipy>=1.1.0", "h5py>=2.7.1", "Cython==0.29"]
 VERSION = '0.2.0'
 
 
