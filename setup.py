@@ -7,7 +7,7 @@ from setuptools.command.install import install
 from subprocess import check_output, call
 from sys import platform
 
-REQUIRED_PACKAGES = ["numpy>=1.14.5", "scipy>=1.1.0", "h5py>=2.7.1", "Cython==0.29", "scikit-learn>=0.19.2"]
+REQUIRED_PACKAGES = ["numpy>=1.14.5", "scipy>=1.1.0", "h5py>=2.7.1", "Cython==0.29", "scikit-learn>=0.19.2", "pandas>=0.23.4"]
 try:
     from Cython.Build import cythonize
     import numpy
