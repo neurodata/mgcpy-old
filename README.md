@@ -25,7 +25,8 @@
 ``mgcpy`` aims to be a comprehensive independence testing package including all of the commonly used independence tests as mentioned above and additional functionality such as two sample independence testing and a novel random forest-based independence test. These tests are not only included to benchmark MGC but to have a convenient location for users if they would prefer to utilize those tests instead. The package utilizes a simple class structure to enhance usability while also allowing easy extension of the package for developers. The package can be installed on all major platforms (e.g. BSD, GNU/Linux, OS X, Windows)from Python Package Index (PyPI) and GitHub.
 
 # Documenation
-The official documentation with usage is at https://mgcpy.readthedocs.io/en/latest/
+The official documentation with usage is at: https://mgc.neurodata.io/
+ReadTheDocs: https://mgcpy.readthedocs.io/en/latest/
 
 # System Requirements
 ## Hardware requirements
