@@ -45,9 +45,19 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.autosummary',
+    'numpydoc',
     'sphinx.ext.todo',
-    'sphinx.ext.ifconfig'
+    'sphinx.ext.ifconfig',
+    'sphinxcontrib.rawfiles',
+    'nbsphinx',
 ]
+
+# -- sphinxcontrib.rawfiles
+rawfiles = ['CNAME']
+
+# -- numpydoc
+# Below is needed to prevent errors
+numpydoc_show_class_members = False
 
 # -- sphinx.ext.autosummary
 autosummary_generate = True
