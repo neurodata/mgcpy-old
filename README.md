@@ -11,11 +11,46 @@
 [![PEP8](https://img.shields.io/badge/code%20style-pep8-orange.svg)](https://www.python.org/dev/peps/pep-0008/)
 [![Code Climate](https://api.codeclimate.com/v1/badges/51ac28d51f1474bf3567/maintainability)](https://codeclimate.com/github/neurodata/mgcpy/maintainability)
 
-`mgcpy` is a Python package containing tools for multiscale graph correlation and other statistical tests, that is capable of dealing with high dimensional and multivariate data.
+`mgcpy` is a Python package containing tools for independence testing using multiscale graph correlation and other statistical tests, that is capable of dealing with high dimensional and multivariate data.
 
-**Documentation:** https://mgcpy.readthedocs.io/en/latest/
+- [Overview](#overview)
+- [Documentation](#documentation)
+- [System Requirements](#system-requirements)
+- [Installation Guide](#installation-guide)
+- [Setting up the development environment](#setting-up-the-development-environment)
+- [License](#license)
+- [Issues](https://github.com/neurodata/mgcpy/issues)
 
-## Installation Guide:
+# Overview
+``mgcpy`` aims to be a comprehensive independence testing package including all of the commonly used independence tests as mentioned above and additional functionality such as two sample independence testing and a novel random forest-based independence test. These tests are not only included to benchmark MGC but to have a convenient location for users if they would prefer to utilize those tests instead. The package utilizes a simple class structure to enhance usability while also allowing easy extension of the package for developers. The package can be installed on all major platforms (e.g. BSD, GNU/Linux, OS X, Windows)from Python Package Index (PyPI) and GitHub.
+
+# Documenation
+The official documentation with usage is at: https://mgc.neurodata.io/
+ReadTheDocs: https://mgcpy.readthedocs.io/en/latest/
+
+# System Requirements
+## Hardware requirements
+`mgcpy` package requires only a standard computer with enough RAM to support the in-memory operations.
+
+## Software requirements
+### OS Requirements
+This package is supported for *macOS* and *Linux*. The package has been tested on the following systems:
++ macOS: Mojave (10.14.1)
++ Linux: Ubuntu 16.04
+
+### Python Dependencies
+`mgcpy` mainly depends on the Python scientific stack.
+
+```
+numpy
+scipy
+Cython
+scikit-learn
+pandas
+seaborn
+```
+
+# Installation Guide:
 
 ### Install from PyPi
 ```
@@ -31,7 +66,7 @@ python3 setup.py install
 - `sudo`, if required
 - `python3 setup.py build_ext --inplace  # for cython`, if you want to test in-place, first execute this
 
-## Setting up the development environment:
+# Setting up the development environment:
 - To build image and run from scratch:
   - Install [docker](https://docs.docker.com/install/)
   - Build the docker image, `docker build -t mgcpy:latest .`
@@ -61,6 +96,6 @@ python3 setup.py install
 - Recreated Figure 2 in https://arxiv.org/abs/1609.05148, with the addition of MDMR and Fast MGC
 ![Power Curves](https://raw.githubusercontent.com/neurodata/mgcpy/master/power_curves_dimensions.png)
 
-## License
+# License
 
 This project is covered under the **Apache 2.0 License**.

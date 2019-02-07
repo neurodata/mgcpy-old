@@ -18,15 +18,16 @@
 
 
 # -- Project information -----------------------------------------------------
+import sphinx_rtd_theme
 
 project = 'mgcpy'
 copyright = '2018, Satish Palaniappan, Bear Xiong, Sambit Panda, Sandhya Ramachandran, Ananya Swaminathan, Richard Guo'
 author = 'Satish Palaniappan, Bear Xiong, Sambit Panda, Sandhya Ramachandran, Ananya Swaminathan, Richard Guo'
 
 # The short X.Y version
-version = ''
+version = 'v0.2.1'
 # The full version, including alpha/beta/rc tags
-release = 'v0.2.0'
+release = 'beta'
 
 
 # -- General configuration ---------------------------------------------------
@@ -43,7 +44,36 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx.ext.autosummary',
+    'numpydoc',
+    'sphinx.ext.todo',
+    'sphinx.ext.ifconfig',
+    'sphinxcontrib.rawfiles',
+    'nbsphinx',
 ]
+
+# -- sphinxcontrib.rawfiles
+rawfiles = ['CNAME']
+
+# -- numpydoc
+# Below is needed to prevent errors
+numpydoc_show_class_members = False
+
+# -- sphinx.ext.autosummary
+autosummary_generate = True
+
+# -- sphinx.ext.autodoc
+autoclass_content = 'both'
+autodoc_default_flags = ['members', 'inherited-members']
+autodoc_member_order = 'bysource'  # default is alphabetical
+
+# -- sphinx.ext.intersphinx
+intersphinx_mapping = {
+    'numpy': ('https://docs.scipy.org/doc/numpy', None),
+    'python': ('https://docs.python.org/3', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+    'sklearn': ('http://scikit-learn.org/dev', None),
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -67,18 +97,27 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**.ipynb_checkpoints']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
 
+source_encoding = "utf-8"
 
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'nature'
+# Use RTD Theme
+
+html_theme = 'sphinx_rtd_theme'
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme_options = {
+    # 'includehidden': False,
+    'collapse_navigation': False,
+    'navigation_depth': 3,
+}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
