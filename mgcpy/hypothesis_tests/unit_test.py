@@ -6,6 +6,8 @@ from mgcpy.independence_tests.mgc.mgc import MGC
 
 
 def test_k_sample():
+    np.random.seed(1234)
+
     # prepare data
     salary_data = pd.read_csv("./mgcpy/hypothesis_tests/salary_data.csv")
 
