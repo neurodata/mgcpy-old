@@ -15,7 +15,7 @@ def test_k_sample():
     u, v = k_sample_transform(np.random.choice(men_salaries, 1000), np.random.choice(women_salaries, 1000))
     mgc = MGC()
     p_value, p_value_metadata = mgc.p_value(u, v, is_fast=True)
-    assert np.allclose(p_value, 0.0)
+    assert np.allclose(p_value, 0.0, atol=0.01)
 
     # k sample case
     salaries = salary_data["Current Annual Salary"].values
@@ -23,7 +23,7 @@ def test_k_sample():
     u, v = k_sample_transform(salaries[:100], department_labels[:100], is_y_categorical=True)
     mgc = MGC()
     p_value, p_value_metadata = mgc.p_value(u, v)
-    assert np.allclose(p_value, 0.0)
+    assert np.allclose(p_value, 0.0, atol=0.01)
 
     # 2 sample case (H_0 is valid)
 
