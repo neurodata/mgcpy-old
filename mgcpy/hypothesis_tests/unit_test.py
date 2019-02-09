@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import pytest
-from mgcpy.hypothesis_tests.transforms import k_sample_transform
+from mgcpy.hypothesis_tests.transforms import k_sample_transform, paired_two_sample_transform
 from mgcpy.independence_tests.mgc.mgc import MGC
 
 
@@ -47,3 +47,33 @@ def test_k_sample():
     mgc = MGC()
     p_value, p_value_metadata = mgc.p_value(u, v)
     assert np.allclose(p_value, 0.819, atol=0.1)
+
+
+def test_paired_two_sample():
+    np.random.seed(1234)
+
+    # Assume a sample of 1000 drivers was chosen, and their reaction times in an obstacle course was measured before and after drinking two beers.
+
+    # case 1: Response time before and after having two beers is the same (sampled from same distribution)
+    # generate data
+    response_before = np.random.normal(0, 1, 1000).reshape(-1, 1)
+    response_after = np.random.normal(0, 1, 1000).reshape(-1, 1)
+
+    # use MGC to perform independence test
+    u, v = paired_two_sample_transform(response_before, response_after)
+    mgc = MGC()
+    p_value, p_value_metadata = mgc.p_value(u, v, is_fast=True)
+
+    assert np.allclose(p_value, 1.0, atol=0.1)
+
+    # case 2: Response time before having two beers is less than after having two beers (sampled from different distribution)
+    # generate data
+    response_before = np.random.normal(3, 1, 1000).reshape(-1, 1)
+    response_after = np.random.normal(9, 1, 1000).reshape(-1, 1)
+
+    # use MGC to perform independence test
+    u, v = paired_two_sample_transform(response_before, response_after)
+    mgc = MGC()
+    p_value, p_value_metadata = mgc.p_value(u, v, is_fast=True)
+
+    assert np.allclose(p_value, 0.0, atol=0.1)
