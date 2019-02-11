@@ -4,9 +4,7 @@ import numpy as np
 def gen_coeffs(num_dim):
     """
     Helper function for generating a linear simulation.
-
     :param num_dim: number of dimensions for the simulation
-
     :return: a vector of coefficients
     """
     coeff_vec = np.array([1 / (x+1) for x in range(num_dim)])
@@ -17,12 +15,10 @@ def gen_coeffs(num_dim):
 def gen_x_unif(num_samp, num_dim, low=-1, high=1):
     """
     Helper function for generating n samples from d-dimensional vector
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param low: the lower limit of the data matrix, defaults to -1
     :param high: the upper limit of the data matrix, defaults to 1
-
     :return: uniformly distributed simulated data matrix
     """
     uniform_vec = np.array(np.random.uniform(low=low, high=high,
@@ -35,14 +31,12 @@ def gen_x_unif(num_samp, num_dim, low=-1, high=1):
 def linear_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     """
     Function for generating a linear simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 1
     :param indep: whether to sample x and y independently, defaults to false
     :param low: the lower limit of the data matrix, defaults to -1
     :param high: the upper limit of the data matrix, defaults to 1
-
     :return: the data matrix and a response array
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
@@ -63,14 +57,12 @@ def linear_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
 def exp_sim(num_samp, num_dim, noise=10, indep=False, low=0, high=3):
     """
     Function for generating an exponential simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 10
     :param indep: whether to sample x and y independently, defaults to false
     :param low: the lower limit of the data matrix, defaults to 0
     :param high: the upper limit of the data matrix, defaults to 3
-
     :return: the data matrix and a response array
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
@@ -92,7 +84,6 @@ def cub_sim(num_samp, num_dim, noise=80, indep=False, low=-1, high=1,
             cub_coeff=np.array([-12, 48, 128]), scale=1/3):
     """
     Function for generating a cubic simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 80
@@ -103,7 +94,6 @@ def cub_sim(num_samp, num_dim, noise=80, indep=False, low=-1, high=1,
                       corresponds to the respective order coefficientj,
                       defaults to [-12, 48, 128]
     :param scale: scaling center of the cubic, defaults to 1/3
-
     :return: the data matrix and a response array
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
@@ -128,11 +118,9 @@ def cub_sim(num_samp, num_dim, noise=80, indep=False, low=-1, high=1,
 def joint_sim(num_samp, num_dim, noise=0.5):
     """
     Function for generating a joint-normal simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 80
-
     :return: the data matrix and a response array
     """
     gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
@@ -160,14 +148,12 @@ def joint_sim(num_samp, num_dim, noise=0.5):
 def step_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     """
     Function for generating a joint-normal simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 1
     :param indep: whether to sample x and y independently, defaults to false
     :param low: the lower limit of the data matrix, defaults to -1
     :param high: the upper limit of the data matrix, defaults to 1
-
     :return: the data matrix and a response array
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
@@ -190,14 +176,12 @@ def step_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
 def quad_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     """
     Function for generating a quadratic simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 1
     :param indep: whether to sample x and y independently, defaults to false
     :param low: the lower limit of the data matrix, defaults to -1
     :param high: the upper limit of the data matrix, defaults to 1
-
     :return: the data matrix and a response array
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
@@ -218,14 +202,12 @@ def quad_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
 def w_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     """
     Function for generating a w-shaped simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 1
     :param indep: whether to sample x and y independently, defaults to false
     :param low: the lower limit of the data matrix, defaults to -1
     :param high: the upper limit of the data matrix, defaults to 1
-
     :return: the data matrix and a response array
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
@@ -249,13 +231,11 @@ def w_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
 def spiral_sim(num_samp, num_dim, noise=0.4, low=0, high=5):
     """
     Function for generating a spiral simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 0.4
     :param low: the lower limit of the data matrix, defaults to 0
     :param high: the upper limit of the data matrix, defaults to 5
-
     :return: the data matrix and a response array
     """
     uniform_dist = gen_x_unif(num_samp, num_dim=1, low=low, high=high)
@@ -277,12 +257,10 @@ def spiral_sim(num_samp, num_dim, noise=0.4, low=0, high=5):
 def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
     """
     Function for generating an uncorrelated bernoulli simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 0.5
     :param bern_prob: the bernoulli probability, defaults to 0.5
-
     :return: the data matrix and a response array
     """
     if num_dim > 1:
@@ -315,13 +293,11 @@ def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
 def log_sim(num_samp, num_dim, noise=3, indep=False, base=2):
     """
     Function for generating a logarithmic simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 1
     :param indep: whether to sample x and y independently, defaults to false
     :param base: the base of the log, defaults to 2
-
     :return: the data matrix and a response array
     """
     sig = np.diag(np.ones(shape=(num_dim)))
@@ -345,7 +321,6 @@ def log_sim(num_samp, num_dim, noise=3, indep=False, base=2):
 def root_sim(num_samp, num_dim, noise=0.25, indep=False, low=-1, high=1, n_root=4):
     """
     Function for generating an nth root simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 1
@@ -353,7 +328,6 @@ def root_sim(num_samp, num_dim, noise=0.25, indep=False, low=-1, high=1, n_root=
     :param low: the lower limit of the data matrix, defaults to -1
     :param high: the upper limit of the data matrix, defaults to 1
     :param n_root: the root of the simulation, defaults to 4
-
     :return: the data matrix and a response array
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
@@ -375,9 +349,7 @@ def root_sim(num_samp, num_dim, noise=0.25, indep=False, low=-1, high=1, n_root=
 def sin_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=4*np.pi):
     """
     Function for generating a sinusoid simulation.
-
     Note: For producing 4*pi and 16*pi simulations, change the ``period`` to the respective value.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 1
@@ -385,7 +357,6 @@ def sin_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=4*np
     :param low: the lower limit of the data matrix, defaults to -1
     :param high: the upper limit of the data matrix, defaults to 1
     :param period: the period of the sine wave, defaults to 4*pi
-
     :return: the data matrix and a response array
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
@@ -415,9 +386,7 @@ def sin_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=4*np
 def square_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=-np.pi/8):
     """
     Function for generating a square or diamond simulation.
-
     Note: For producing square or diamond simulations, change the ``period`` to -pi/8 or -pi/4.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 0.05
@@ -425,7 +394,6 @@ def square_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=-
     :param low: the lower limit of the data matrix, defaults to -1
     :param high: the upper limit of the data matrix, defaults to 1
     :param period: the period of the sine and cosine square equation, defaults to 4*pi
-
     :return: the data matrix and a response array
     """
     u = gen_x_unif(num_samp, num_dim, low=low, high=high)
@@ -453,14 +421,12 @@ def square_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=-
 def two_parab_sim(num_samp, num_dim, noise=2, low=-1, high=1, prob=0.5):
     """
     Function for generating a two parabolas simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 2
     :param low: the lower limit of the data matrix, defaults to -1
     :param high: the upper limit of the data matrix, defaults to 1
     :param prob: the binomial probability, defaults to 0.5
-
     :return: the data matrix and a response array
     """
     x = gen_x_unif(num_samp, num_dim, low=low, high=high)
@@ -481,16 +447,13 @@ def two_parab_sim(num_samp, num_dim, noise=2, low=-1, high=1, prob=0.5):
 def circle_sim(num_samp, num_dim, noise=0.4, low=-1, high=1, radius=1):
     """
     Function for generating a circle or ellipse simulation.
-
     Note: For producing circle or ellipse simulations, change the ``radius`` to 1 or 5.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param noise: noise level of the simulation, defaults to 0.4
     :param low: the lower limit of the data matrix, defaults to -1
     :param high: the upper limit of the data matrix, defaults to 1
     :param radius: the radius of the circle or ellipse, defaults to 1
-
     :return: the data matrix and a response array
     """
     if num_dim > 1:
@@ -520,10 +483,8 @@ def circle_sim(num_samp, num_dim, noise=0.4, low=-1, high=1, radius=1):
 def multi_noise_sim(num_samp, num_dim):
     """
     Function for generating a multiplicative noise simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
-
     :return: the data matrix and a response array
     """
     sig = np.diag(np.ones(shape=(num_dim)))
@@ -540,13 +501,11 @@ def multi_noise_sim(num_samp, num_dim):
 def multi_indep_sim(num_samp, num_dim, prob=0.5, sep1=3, sep2=2):
     """
     Function for generating a multimodal independence simulation.
-
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
     :param prob: the binomial probability, defaults to 0.5
     :param sep1: determines the size and separation of clusters, defaults to 3
     :param sep2: determines the size and separation of clusters, defaults to 2
-
     :return: the data matrix and a response array
     """
     sig = np.diag(np.ones(shape=(num_dim)))
