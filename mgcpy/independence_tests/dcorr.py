@@ -4,7 +4,7 @@ from statistics import mean, stdev
 
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
-from mgcpy.independence_tests.mgc.distance_transform import \
+from mgcpy.independence_tests.utils.distance_transform import \
     transform_distance_matrix
 from scipy.stats import norm, t
 

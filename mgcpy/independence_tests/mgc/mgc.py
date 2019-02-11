@@ -3,13 +3,13 @@
 """
 import math
 import warnings
-from statistics import stdev, mean
+from statistics import mean, stdev
 
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
-from mgcpy.independence_tests.mgc.local_correlation import local_correlations
-from mgcpy.independence_tests.mgc.threshold_smooth import (smooth_significant_local_correlations,
-                                                           threshold_local_correlations)
+from mgcpy.independence_tests.utils.local_correlation import local_correlations
+from mgcpy.independence_tests.utils.threshold_smooth import (smooth_significant_local_correlations,
+                                                             threshold_local_correlations)
 from scipy.stats import norm
 
 
@@ -170,7 +170,7 @@ class MGC(IndependenceTest):
 
         # approximate the null distribution by normal distribution
         sigma = stdev(test_statistic_sub_sampling) / num_samples
-        mu = max(0, mean(test_statistic_sub_sampling));
+        mu = max(0, mean(test_statistic_sub_sampling))
 
         # compute the observed statistic
         mgc_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
