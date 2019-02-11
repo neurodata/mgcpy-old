@@ -76,15 +76,15 @@ def power(independence_test, sample_generator, num_samples=100, num_dimensions=1
         r_matrix = np.dot(a, data_matrix.T)
         long_matrix = transform_matrices(data_matrix.T, r_matrix)[0]
         label_matrix = transform_matrices(data_matrix.T, r_matrix)[1]
-        matrix_X = long_matrix.T
-        matrix_Y = label_matrix.T
-        matrix_Y = matrix_Y[:,np.newaxis]
+        mat_X = long_matrix.T
+        mat_Y = label_matrix.T
+        mat_Y = mat_Y[:,np.newaxis]
         # permutation test
-        permuted_y = np.random.permutation(matrix_Y)
+        permuted_y = np.random.permutation(mat_Y)
         test_stats_null[rep], _ = independence_test.test_statistic(
-            matrix_X, permuted_y)
+            mat_X, permuted_y)
         test_stats_alternative[rep], _ = independence_test.test_statistic(
-            matrix_X, matrix_Y)
+            mat_X, mat_Y)
 
         '''
         # if the test is pearson, use absolute value of the test statistic
