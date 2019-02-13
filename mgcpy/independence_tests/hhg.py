@@ -49,14 +49,10 @@ class HHG(IndependenceTest):
         row_Y, columns_Y = matrix_Y.shape[0], matrix_Y.shape[1]
 
         # use the matrix shape and diagonal elements to determine if the given data is a distance matrix or not
-        if row_X != columns_X or sum(matrix_X.diagonal()**2) > 0:
-            dist_mtx_X = distance_matrix(matrix_X, matrix_X)
-        else:
-            dist_mtx_X = matrix_X
-        if row_Y != columns_Y or sum(matrix_Y.diagonal()**2) > 0:
-            dist_mtx_Y = distance_matrix(matrix_Y, matrix_Y)
-        else:
-            dist_mtx_Y = matrix_Y
+        if matrix_X.shape[0] != matrix_X.shape[1] or sum(matrix_X.diagonal()**2) > 0:
+            matrix_X = self.compute_distance_matrix(matrix_X)
+        if matrix_Y.shape[0] != matrix_Y.shape[1] or sum(matrix_Y.diagonal()**2) > 0:
+            matrix_Y = self.compute_distance_matrix(matrix_Y)
 
         n = dist_mtx_X.shape[0]
         S = np.zeros((n, n))
