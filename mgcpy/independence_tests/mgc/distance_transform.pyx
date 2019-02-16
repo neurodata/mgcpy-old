@@ -95,6 +95,14 @@ cpdef center_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix, str
     elif base_global_correlation == "mantel":
         expected_distance_matrix = np.array(distance_matrix.sum() / (n * (n-1)))
 
+    # paired two sample distance transform
+    elif base_global_correlation == "paired_two_sample":
+        mid = distance_matrix.shape[0] // 2
+        xx, yy = distance_matrix[:mid, :mid], distance_matrix[mid:, mid:]
+        yx, xy = distance_matrix[mid:, :mid], distance_matrix[:mid, mid:]
+        expected_distance_matrix = (xx.sum() / (n * (n-1))) + (yy.sum() / (n * (n-1))) \
+                                  - 2 * (xy.diagonal.sum() / n ) \
+
     cdef np.ndarray centered_distance_matrix = distance_matrix - expected_distance_matrix
 
     # the diagonal entries are excluded for unbiased and mgc centering, but not

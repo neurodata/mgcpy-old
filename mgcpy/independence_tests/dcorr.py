@@ -20,8 +20,8 @@ class DCorr(IndependenceTest):
         :type which_test: string
         '''
         IndependenceTest.__init__(self)
-        if which_test not in ['unbiased', 'biased', 'mantel']:
-            raise ValueError('which_test must be unbiased, biased, or mantel')
+        if which_test not in ['unbiased', 'biased', 'mantel', 'paired_two_sample']:
+            raise ValueError('which_test must be unbiased, biased, mantel, or paired_two_sample')
         self.which_test = which_test
 
     def test_statistic(self, matrix_X, matrix_Y, is_fast=False, fast_dcorr_data={}):

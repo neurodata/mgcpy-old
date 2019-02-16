@@ -1,4 +1,5 @@
 import numpy as np
+from mgcpy.independence_tests.dcorr import DCorr
 from sklearn import preprocessing
 
 
@@ -48,15 +49,7 @@ def k_sample_transform(x, y, is_y_categorical=False):
 
 def paired_two_sample_transform(x, y):
     '''
-    Transform to represent a paired two-sample test as an independence test
-
-    Steps:
-
-        - combine x and y to get the joint_distribution
-        - sample n pairs from the joint_distribution
-        - compute the eucledian distance between the sampled n pairs, which is ``randomly_sampled_pairs_distance``
-        - compute the eucledian distance between the actual x and y, which is ``actual_pairs_distance``
-        - compute the two sample transformed matrices of ``randomly_sampled_pairs_distance`` and ``actual_pairs_distance``
+    Transform x and y to represent a paired two-sample test for DCorr
 
     :param X: is interpreted as either:
 
@@ -70,25 +63,34 @@ def paired_two_sample_transform(x, y):
         - a ``[n*p]`` data matrix, a matrix with n samples in p dimensions
     :type Y: 2D numpy.array
 
-    :return:
-
-        - :u: a data matrix of dimensions ``[2*n, p]``
-        - :v: a label matrix for ``u``, which indicates to which category each data entry in ``u`` belongs to
-    :rtype: list
+    :return: a data matrix of dimensions ``[2*n, p]``
+    :rtype: np.ndarray
     '''
     assert x.shape == y.shape, "Matrices X and Y need to be of same dimensions [n, p]"
 
-    joint_distribution = np.concatenate([x, y], axis=0)  # (2n, p) shape
+    return np.concatenate([x, y], axis=0)  # (2n, p) shape
 
-    pairwise_sampled_xy = np.array([joint_distribution[np.random.randint(joint_distribution.shape[0], size=2), :]
-                                    for _ in range(x.shape[0])])  # (n, 2, p) shape
-    pairwise_sampled_x = pairwise_sampled_xy[:, 0]  # (n, p) shape
-    pairwise_sampled_y = pairwise_sampled_xy[:, 1]  # (n, p) shape
 
-    # compute the eucledian distances
-    randomly_sampled_pairs_distance = np.linalg.norm(pairwise_sampled_x - pairwise_sampled_y, axis=1)
-    actual_pairs_distance = np.linalg.norm(x - y, axis=1)
+def paired_two_sample_test_dcorr(x, y, compute_distance_matrix=None):
+    '''
+    Compute paired two sample test's DCorr test_statistic
 
-    u, v = k_sample_transform(randomly_sampled_pairs_distance, actual_pairs_distance)
+    :param X: is interpreted as either:
 
-    return u, v
+        - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for n samples OR
+        - a ``[n*p]`` data matrix, a matrix with n samples in p dimensions
+    :type X: 2D numpy.array
+
+    :param Y: is interpreted as either:
+
+        - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for n samples OR
+        - a ``[n*p]`` data matrix, a matrix with n samples in p dimensions
+    :type Y: 2D numpy.array
+
+    :return: paired two sample DCorr test_statistic
+    :rtype: float
+    '''
+    xy = paired_two_sample_transform(x, y)
+    dcorr = DCorr(which_test='paired_two_sample', compute_distance_matrix=compute_distance_matrix)
+
+    return dcorr.test_statistic(xy, xy)
