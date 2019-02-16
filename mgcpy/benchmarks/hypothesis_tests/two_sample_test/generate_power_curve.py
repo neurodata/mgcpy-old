@@ -104,7 +104,7 @@ def plot_all_curves(base_path):
                     power[0:3] = np.nan
                 col.plot(x_axis, power, label=test)
                 # col.set_xlabel("num_samples")
-                col.set_ylim(0, 1)
+                col.set_ylim(0, 1.2)
                 col.set_yticks([0, 1])
                 col.set_title(sim_name)
 

@@ -2,7 +2,7 @@ function GenerateSimulatedData()
     % number of simulations
     num_dims = 1;
     num_rep = 1000;
-    mkdir("data")
+    mkdir('data');
 
     num_sim = 20;
     num_samples = 100;

@@ -19,7 +19,7 @@ def power_given_data(base_path, independence_test, simulation_type, num_samples,
 
     # rotation transform matrix
     c, s = np.cos(math.radians(60)), np.sin(math.radians(60))
-    rotation_matrix = np.matrix([[c, s], [-s, c]])
+    rotation_matrix = np.array([[c, s], [-s, c]])
 
     for rep in range(repeats):
         matrix_X = all_matrix_X[rep, :, :]
