@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from mgcpy.independence_tests.mgc.local_correlation import local_correlations
+from mgcpy.independence_tests.utils.local_correlation import local_correlations
 
 
 def test_local_correlations():

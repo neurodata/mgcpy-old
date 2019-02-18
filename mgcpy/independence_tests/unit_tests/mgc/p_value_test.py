@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from mgcpy.independence_tests.mgc.mgc import MGC
+from mgcpy.independence_tests.mgc import MGC
 
 
 def test_mgc_test_linear():

@@ -1,6 +1,6 @@
 import numpy as np
-from mgcpy.independence_tests.mdmr.mdmr import MDMR
-from mgcpy.independence_tests.mdmr.mdmrfunctions import compute_distance_matrix
+from mgcpy.independence_tests.mdmr import MDMR
+from mgcpy.independence_tests.utils.mdmr_functions import compute_distance_matrix
 
 
 def test_mdmr():
