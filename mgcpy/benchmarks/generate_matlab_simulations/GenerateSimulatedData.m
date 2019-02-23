@@ -20,7 +20,7 @@ function GenerateSimulatedData()
                 x_mtx(rep, :, :) = x;
                 y_mtx(rep, :, :) = y;
             end
-            base_path = "../hypothesis_tests/two_sample_test/sample_data_power_sample_sizes/";
+            base_path = '../hypothesis_tests/two_sample_test/sample_data_power_sample_sizes/';
             X_name = strcat(base_path, 'type_', num2str(type), '_size_', num2str(n), '_X.mat');
             Y_name = strcat(base_path, 'type_', num2str(type), '_size_', num2str(n), '_Y.mat');
             save(X_name, 'x_mtx');
