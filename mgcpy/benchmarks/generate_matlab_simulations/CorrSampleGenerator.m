@@ -38,7 +38,8 @@ switch type % In total 20 types of dependency + the type 0 outlier model
         y=xA+1*noise*eps;
     case 2 %Exponential
         x=unifrnd(0,3,n,d);
-        y=exp(x*A)+10*noise*eps;
+%         y=exp(x*A)+10*noise*eps;
+        y=exp(7*x*A)+10*noise*eps;
         if dependent==0
             x=unifrnd(0,3,n,d);
         end
@@ -81,7 +82,8 @@ switch type % In total 20 types of dependency + the type 0 outlier model
             x=mvnrnd(zeros(n, d),eye(d));
         end
     case 11 %Fourth root
-        y=abs(xA).^(0.25)+noise/4*eps;
+%         y=abs(xA).^(0.25)+noise/4*eps;
+        y=xA.^(0.25)+noise/4*eps;
     case {8,16,17} %Circle & Ecllipse & Spiral
         if d>1
             noise=1;
@@ -109,7 +111,13 @@ switch type % In total 20 types of dependency + the type 0 outlier model
             x(:,i)=x(:,i).*sin(z(:,i+1)*pi);
         end
         x=rx.*x;
-        y=ry.*sin(z(:,1)*pi);
+        
+        if type == 17
+            y=16*ry.*sin(z(:,1)*pi);
+        else
+            y=0.5*ry.*sin(z(:,1)*pi);
+        end
+
         if type==8
             y=y+cc*(dim)*noise*mvnrnd(zeros(n, 1),eye(1));
         else
@@ -155,18 +163,18 @@ switch type % In total 20 types of dependency + the type 0 outlier model
         u=repmat(unifrnd(-1,1,n,1),1,d);
         v=repmat(unifrnd(-1,1,n,1),1,d);
         if type==14
-            theta=-pi/8;
+            theta=0;
         else
             theta=-pi/4;
         end
         eps=0.05*(d)*mvnrnd(zeros(n,d),eye(d),n);
-        x=u*cos(theta)+v*sin(theta)+eps;
+        x=u*cos(theta)+v*sin(theta)+noise*eps;
         y=-u*sin(theta)+v*cos(theta);
         if dependent==0
             u=repmat(unifrnd(-1,1,n,1),1,d);
             v=repmat(unifrnd(-1,1,n,1),1,d);
             eps=0.05*(d)*mvnrnd(zeros(n,d),eye(d),n);
-            x=u*cos(theta)+v*sin(theta)+eps;
+            x=u*cos(theta)+v*sin(theta)+noise*eps;
         end
     case 15 %Two Parabolas
         y=( xA.^2  + 2*noise*unifrnd(0,1,n,1)).*(binornd(1,0.5,n,1)-0.5);
