@@ -87,7 +87,7 @@ def paired_two_sample_transform(x, y):
     return u, v
 
 
-def paired_two_sample_test_dcorr(x, y, compute_distance_matrix=None, is_fast=False):
+def paired_two_sample_test_dcorr(x, y, which_test="biased", compute_distance_matrix=None, is_fast=False):
     '''
     Compute paired two sample test's DCorr test_statistic
 
@@ -108,7 +108,6 @@ def paired_two_sample_test_dcorr(x, y, compute_distance_matrix=None, is_fast=Fal
     '''
     assert x.shape == y.shape, "Matrices X and Y need to be of same dimensions [n, p]"
 
-    xy = np.concatenate([x, y], axis=0)  # (2n, p) shape
-    dcorr = DCorr(which_test='paired_two_sample', compute_distance_matrix=compute_distance_matrix)
+    dcorr = DCorr(which_test=which_test, compute_distance_matrix=compute_distance_matrix)
 
-    return dcorr.p_value(xy, xy, is_fast=is_fast)
+    return dcorr.p_value(x, y, is_fast=is_fast)
