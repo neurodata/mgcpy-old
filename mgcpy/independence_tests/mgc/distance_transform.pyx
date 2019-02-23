@@ -100,8 +100,8 @@ cpdef center_distance_matrix(np.ndarray[np.float_t, ndim=2] distance_matrix, str
         mid = distance_matrix.shape[0] // 2
         xx, yy = distance_matrix[:mid, :mid], distance_matrix[mid:, mid:]
         yx, xy = distance_matrix[mid:, :mid], distance_matrix[:mid, mid:]
-        expected_distance_matrix = (xx.sum() / (n * (n-1))) + (yy.sum() / (n * (n-1))) \
-                                  - 2 * (xy.diagonal.sum() / n ) \
+        expected_distance_matrix = np.array((xx.sum() / (n * (n-1))) + (yy.sum() / (n * (n-1))) \
+                                             - 2 * (xy.diagonal().sum() / n))
 
     cdef np.ndarray centered_distance_matrix = distance_matrix - expected_distance_matrix
 
