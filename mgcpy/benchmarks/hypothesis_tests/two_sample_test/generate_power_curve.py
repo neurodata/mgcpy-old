@@ -14,11 +14,10 @@ from mgcpy.independence_tests.mdmr.mdmrfunctions import compute_distance_matrix
 from mgcpy.independence_tests.mgc.mgc import MGC
 from mgcpy.independence_tests.rv_corr import RVCorr
 
-simulations = {'joint_normal': (joint_sim, 4), 'sine_4pi': (sin_sim, 12), 'sine_16pi': (sin_sim, 13), 'multi_noise': (multi_noise_sim, 19),
-               'step': (step_sim, 5), 'spiral': (spiral_sim, 8), 'circle': (circle_sim, 16), 'ellipse': (circle_sim, 17), 'diamond': (square_sim, 18),
-               'log': (log_sim, 10), 'quadratic': (quad_sim, 6), 'w_shape': (w_sim, 7), 'two_parabolas': (two_parab_sim, 15), 'fourth_root': (root_sim, 11),
-               'multi_indept': (multi_indep_sim, 20), 'bernoulli': (ubern_sim, 9), 'square': (square_sim, 14),
-               'linear': (linear_sim, 1), 'exponential': (exp_sim, 2), 'cubic': (cub_sim, 3)}
+simulations = {'linear': (linear_sim, 1), 'exponential': (exp_sim, 2), 'cubic': (cub_sim, 3), 'joint_normal': (joint_sim, 4), 'step': (step_sim, 5),
+               'quadratic': (quad_sim, 6), 'w_shape': (w_sim, 7), 'spiral': (spiral_sim, 8), 'bernoulli': (ubern_sim, 9), 'log': (log_sim, 10),
+               'fourth_root': (root_sim, 11), 'sine_4pi': (sin_sim, 12), 'sine_16pi': (sin_sim, 13), 'square': (square_sim, 14), 'two_parabolas': (two_parab_sim, 15),
+               'circle': (circle_sim, 16), 'ellipse': (circle_sim, 17), 'diamond': (square_sim, 18), 'multi_noise': (multi_noise_sim, 19), 'multi_indept': (multi_indep_sim, 20)}
 
 
 def fill_params_dict_list_sample_sizes(base_path, do_fast_mgc=False):
@@ -81,10 +80,10 @@ def power_vs_sample_size_parallel(params_dict):
 # for any additional test, add the name of the test (as defined in the `get_name` function in the class)
 # in the list `tests` in the following function
 def plot_all_curves(base_path):
-    simulation_names = ['linear', 'exponential', 'cubic', 'joint_normal', 'step', 'quadratic', 'w_shape', 'spiral',
-                        'bernoulli', 'log', 'fourth_root', 'sine_4pi',
-                        'sine_16pi', 'square', 'two_parabolas', 'circle', 'ellipse', 'diamond', 'multi_noise',
-                        'multi_indept']
+    simulation_names = ['linear', 'exponential', 'cubic', 'joint_normal', 'step',
+                        'quadratic', 'w_shape', 'spiral', 'bernoulli', 'log',
+                        'fourth_root', 'sine_4pi', 'sine_16pi', 'square', 'two_parabolas',
+                        'circle', 'ellipse', 'diamond', 'multi_noise', 'multi_indept']
 
     fig, ax = plt.subplots(nrows=4, ncols=5, figsize=(14, 12))
     simulation_type = 0
@@ -94,7 +93,6 @@ def plot_all_curves(base_path):
             simulation_type += 1
             tests = ['mgc', 'unbiased', 'biased', 'mantel', 'pearson', 'mdmr', 'fast_mgc']
             dir_name = os.path.join(base_path, 'python_power_curves_sample_size/')
-            mgc_power = np.genfromtxt(dir_name + '{}_mgc_sample_size.csv'.format(simulation_type), delimiter=',')
 
             for test in tests:
                 power = np.genfromtxt(dir_name + '{}_{}_sample_size.csv'.format(simulation_type, test), delimiter=',')
