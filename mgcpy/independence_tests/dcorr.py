@@ -20,11 +20,11 @@ class DCorr(IndependenceTest):
         :type which_test: string
         '''
         IndependenceTest.__init__(self)
-        if which_test not in ['unbiased', 'biased', 'mantel', 'paired_two_sample']:
-            raise ValueError('which_test must be unbiased, biased, mantel, or paired_two_sample')
+        if which_test not in ['unbiased', 'biased', 'mantel']:
+            raise ValueError('which_test must be unbiased, biased, or mantel')
         self.which_test = which_test
 
-    def test_statistic(self, matrix_X, matrix_Y, is_fast=False, fast_dcorr_data={}):
+    def test_statistic(self, matrix_X, matrix_Y, is_paired=False, is_fast=False, fast_dcorr_data={}):
         """
         Computes the distance correlation between two datasets.
 
@@ -96,7 +96,12 @@ class DCorr(IndependenceTest):
             if variance_X <= 0 or variance_Y <= 0:
                 correlation = 0
             else:
-                correlation = covariance/np.real(np.sqrt(variance_X*variance_Y))
+                if is_paired:
+                    n = transformed_dist_mtx_X.shape[0]
+                    correlation = (variance_X/n/(n-1)) + (variance_Y/n/(n-1)) \
+                        - 2*np.sum(np.multiply(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_Y)).diagonal())/n
+                else:
+                    correlation = covariance/np.real(np.sqrt(variance_X*variance_Y))
 
             # store the variance of X, variance of Y and the covariace as metadata
             test_statistic_metadata = {'variance_X': variance_X, 'variance_Y': variance_Y, 'covariance': covariance}
