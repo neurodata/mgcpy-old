@@ -114,7 +114,7 @@ def plot_all_curves(base_path):
 
 
 if __name__ == '__main__':
-    base_path = "/Users/pikachu/OneDrive - Johns Hopkins University/Mac Desktop/NDD I/mgcpy/mgcpy/benchmarks/hypothesis_tests/two_sample_test/"
+    base_path = "/root/code/mgcpy/benchmarks/hypothesis_tests/two_sample_test"
 
     start_time = time.time()
     params_dict = fill_params_dict_list_sample_sizes(base_path, do_fast_mgc=True)
