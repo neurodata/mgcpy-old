@@ -108,6 +108,6 @@ def paired_two_sample_test_dcorr(x, y, which_test="biased", compute_distance_mat
     '''
     assert x.shape == y.shape, "Matrices X and Y need to be of same dimensions [n, p]"
 
-    dcorr = DCorr(which_test=which_test, compute_distance_matrix=compute_distance_matrix)
+    dcorr = DCorr(is_paired=True, which_test=which_test, compute_distance_matrix=compute_distance_matrix)
 
     return dcorr.p_value(x, y, is_fast=is_fast)
