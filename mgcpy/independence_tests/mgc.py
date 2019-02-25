@@ -6,11 +6,14 @@ import warnings
 from statistics import mean, stdev
 
 import numpy as np
+from scipy.stats import norm
+
 from mgcpy.independence_tests.abstract_class import IndependenceTest
+from mgcpy.independence_tests.utils.fast_functions import (_fast_pvalue,
+                                                           _sample_atrr)
 from mgcpy.independence_tests.utils.local_correlation import local_correlations
 from mgcpy.independence_tests.utils.threshold_smooth import (smooth_significant_local_correlations,
                                                              threshold_local_correlations)
-from scipy.stats import norm
 
 
 class MGC(IndependenceTest):
@@ -147,18 +150,7 @@ class MGC(IndependenceTest):
                     - :mu: computed mean for computing the p-value next.
         :rtype: list
         """
-        total_samples = matrix_Y.shape[0]
-        num_samples = total_samples // sub_samples
-
-        # if full data size (total_samples) is not more than 4 times of sub_samples, split to 4 samples
-        # too few samples will fail the normal approximation and cause the test to be invalid
-
-        if total_samples < 4 * sub_samples:
-            sub_samples = total_samples // 4
-            num_samples = 4
-
-        # the observed statistics by subsampling
-        test_statistic_sub_sampling = np.zeros(num_samples)
+        num_samples, sub_samples, test_statistic_sub_sampling = _sample_atrr(matrix_Y, sub_samples)
 
         # subsampling computation
         permuted_Y = np.random.permutation(matrix_Y)
@@ -281,11 +273,7 @@ class MGC(IndependenceTest):
         :rtype: list
         '''
         mgc_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y, is_fast=True, fast_mgc_data={"sub_samples": sub_samples})
-        sigma = test_statistic_metadata["sigma"]
-        mu = test_statistic_metadata["mu"]
-
-        # compute p value
-        p_value = 1 - norm.cdf(mgc_statistic, mu, sigma)
+        p_value = _fast_pvalue(mgc_statistic, test_statistic_metadata)
 
         # The results are not statistically significant
         if p_value > 0.05:
