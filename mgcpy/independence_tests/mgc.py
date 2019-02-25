@@ -9,8 +9,11 @@ import numpy as np
 from scipy.stats import norm
 
 from mgcpy.independence_tests.abstract_class import IndependenceTest
-from mgcpy.independence_tests.utils.fast_functions import (_fast_pvalue,
-                                                           _sample_atrr)
+from mgcpy.independence_tests.utils.compute_distance_matrix import compute_dist
+from mgcpy.independence_tests.utils.fast_functions import (_approx_null_dist,
+                                                           _fast_pvalue,
+                                                           _sample_atrr,
+                                                           _sub_sample)
 from mgcpy.independence_tests.utils.local_correlation import local_correlations
 from mgcpy.independence_tests.utils.threshold_smooth import (smooth_significant_local_correlations,
                                                              threshold_local_correlations)
@@ -85,9 +88,7 @@ class MGC(IndependenceTest):
         if is_fast:
             mgc_statistic, test_statistic_metadata = self._fast_mgc_test_statistic(matrix_X, matrix_Y, **fast_mgc_data)
         else:
-            # compute all local correlations
-            distance_matrix_X = self.compute_distance_matrix(matrix_X)
-            distance_matrix_Y = self.compute_distance_matrix(matrix_Y)
+            distance_matrix_X, distance_matrix_Y = compute_dist(matrix_X, matrix_Y, self.compute_distance_matrix)
             local_correlation_matrix = local_correlations(distance_matrix_X, distance_matrix_Y,
                                                           base_global_correlation=self.base_global_correlation)["local_correlation_matrix"]
             m, n = local_correlation_matrix.shape
@@ -152,17 +153,8 @@ class MGC(IndependenceTest):
         """
         num_samples, sub_samples, test_statistic_sub_sampling = _sample_atrr(matrix_Y, sub_samples)
 
-        # subsampling computation
-        permuted_Y = np.random.permutation(matrix_Y)
-        for i in range(num_samples):
-            sub_matrix_X = matrix_X[(sub_samples*i):sub_samples*(i+1), :]
-            sub_matrix_Y = permuted_Y[(sub_samples*i):sub_samples*(i+1), :]
-
-            test_statistic_sub_sampling[i], _ = self.test_statistic(sub_matrix_X, sub_matrix_Y)
-
-        # approximate the null distribution by normal distribution
-        sigma = stdev(test_statistic_sub_sampling) / num_samples
-        mu = max(0, mean(test_statistic_sub_sampling))
+        test_statistic_sub_sampling = _sub_sample(matrix_X, matrix_Y, self.test_statistic, num_samples, sub_samples, test_statistic_sub_sampling, self.which_test)
+        sigma, mu = _approx_null_dist(num_samples, test_statistic_sub_sampling, self.which_test)
 
         # compute the observed statistic
         mgc_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)

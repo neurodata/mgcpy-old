@@ -6,10 +6,13 @@ import numpy as np
 from scipy.stats import norm, t
 
 from mgcpy.independence_tests.abstract_class import IndependenceTest
+from mgcpy.independence_tests.utils.compute_distance_matrix import compute_dist
 from mgcpy.independence_tests.utils.distance_transform import \
     transform_distance_matrix
-from mgcpy.independence_tests.utils.fast_functions import (_fast_pvalue,
-                                                           _sample_atrr)
+from mgcpy.independence_tests.utils.fast_functions import (_approx_null_dist,
+                                                           _fast_pvalue,
+                                                           _sample_atrr,
+                                                           _sub_sample)
 
 
 class DCorr(IndependenceTest):
@@ -77,11 +80,7 @@ class DCorr(IndependenceTest):
         if is_fast:
             test_statistic, test_statistic_metadata = self._fast_dcorr_test_statistic(matrix_X, matrix_Y, **fast_dcorr_data)
         else:
-            # use the matrix shape and diagonal elements to determine if the given data is a distance matrix or not
-            if matrix_X.shape[0] != matrix_X.shape[1] or sum(matrix_X.diagonal()**2) > 0:
-                matrix_X = self.compute_distance_matrix(matrix_X)
-            if matrix_Y.shape[0] != matrix_Y.shape[1] or sum(matrix_Y.diagonal()**2) > 0:
-                matrix_Y = self.compute_distance_matrix(matrix_Y)
+            matrix_X, matrix_Y = compute_dist(matrix_X, matrix_Y, self.compute_distance_matrix)
 
             # perform distance transformation
             # transformed_dist_mtx_X, transformed_dist_mtx_Y = dist_transform(matrix_X, matrix_Y, self.which_test)
@@ -150,17 +149,8 @@ class DCorr(IndependenceTest):
         '''
         num_samples, sub_samples, test_statistic_sub_sampling = _sample_atrr(matrix_Y, sub_samples)
 
-        # subsampling computation
-        permuted_Y = matrix_Y
-        for i in range(num_samples):
-            sub_matrix_X = matrix_X[(sub_samples*i):sub_samples*(i+1), :]
-            sub_matrix_Y = permuted_Y[(sub_samples*i):sub_samples*(i+1), :]
-
-            test_statistic_sub_sampling[i], _ = self.test_statistic(sub_matrix_X, sub_matrix_Y)
-
-        # approximate the null distribution by normal distribution
-        sigma = stdev(test_statistic_sub_sampling) / math.sqrt(num_samples)
-        mu = 0
+        test_statistic_sub_sampling = _sub_sample(matrix_X, matrix_Y, self.test_statistic, num_samples, sub_samples, test_statistic_sub_sampling, self.which_test)
+        sigma, mu = _approx_null_dist(num_samples, test_statistic_sub_sampling, self.which_test)
 
         # compute the test statistic
         test_statistic = mean(test_statistic_sub_sampling)

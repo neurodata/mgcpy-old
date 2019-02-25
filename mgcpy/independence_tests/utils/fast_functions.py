@@ -27,3 +27,27 @@ def _fast_pvalue(test_statistic, test_statistic_metadata):
     p_value = 1 - norm.cdf(test_statistic, mu, sigma)
 
     return p_value
+
+
+def _sub_sample(matrix_X, matrix_Y, test_statistic, num_samples, sub_samples, test_statistic_sub_sampling, which_test):
+    if which_test == 'mgc':
+        permuted_Y = np.random.permutation(matrix_Y)
+    else:
+        permuted_Y = matrix_Y
+    for i in range(num_samples):
+        sub_matrix_X = matrix_X[(sub_samples*i):sub_samples*(i+1), :]
+        sub_matrix_Y = permuted_Y[(sub_samples*i):sub_samples*(i+1), :]
+
+        test_statistic_sub_sampling[i], _ = test_statistic(sub_matrix_X, sub_matrix_Y)
+
+    return test_statistic_sub_sampling
+
+def _approx_null_dist(num_samples, test_statistic_sub_sampling, which_test):
+    if which_test == 'mgc':
+        sigma = stdev(test_statistic_sub_sampling) / num_samples
+        mu = max(0, mean(test_statistic_sub_sampling))
+    else:
+        sigma = stdev(test_statistic_sub_sampling) / math.sqrt(num_samples)
+        mu = 0
+
+    return sigma, mu
