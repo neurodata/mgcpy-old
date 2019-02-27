@@ -1,3 +1,6 @@
+import math
+from statistics import mean, stdev
+
 import numpy as np
 from scipy.stats import norm
 
