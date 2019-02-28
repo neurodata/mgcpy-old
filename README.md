@@ -13,6 +13,9 @@
 
 `mgcpy` is a Python package containing tools for independence testing using multiscale graph correlation and other statistical tests, that is capable of dealing with high dimensional and multivariate data.
 
+The R version is available on CRAN and https://github.com/neurodata/mgc.
+The MATLAB version is available at https://github.com/neurodata/mgc-matlab.
+
 - [Overview](#overview)
 - [Documentation](#documentation)
 - [System Requirements](#system-requirements)
