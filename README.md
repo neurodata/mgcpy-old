@@ -1,3 +1,5 @@
+The R version is available on CRAN and https://github.com/neurodata/mgc. The MATLAB version is available at https://github.com/neurodata/mgc-matlab.
+
 # mgcpy
 
 [![Coverage Status](https://coveralls.io/repos/github/neurodata/mgcpy/badge.svg?branch=master)](https://coveralls.io/github/neurodata/mgcpy?branch=master)
@@ -12,9 +14,6 @@
 [![Code Climate](https://api.codeclimate.com/v1/badges/51ac28d51f1474bf3567/maintainability)](https://codeclimate.com/github/neurodata/mgcpy/maintainability)
 
 `mgcpy` is a Python package containing tools for independence testing using multiscale graph correlation and other statistical tests, that is capable of dealing with high dimensional and multivariate data.
-
-The R version is available on CRAN and https://github.com/neurodata/mgc.
-The MATLAB version is available at https://github.com/neurodata/mgc-matlab.
 
 - [Overview](#overview)
 - [Documentation](#documentation)
