@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from mgcpy.independence_tests.mgc import MGC
 
 
