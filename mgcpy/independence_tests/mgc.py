@@ -9,14 +9,16 @@ import numpy as np
 from scipy.stats import norm
 
 from mgcpy.independence_tests.abstract_class import IndependenceTest
-from mgcpy.independence_tests.utils.compute_distance_matrix import compute_dist
+from mgcpy.independence_tests.mgc_utils.local_correlation import \
+    local_correlations
+from mgcpy.independence_tests.mgc_utils.threshold_smooth import (smooth_significant_local_correlations,
+                                                                 threshold_local_correlations)
+from mgcpy.independence_tests.utils.compute_distance_matrix import \
+    compute_distance
 from mgcpy.independence_tests.utils.fast_functions import (_approx_null_dist,
                                                            _fast_pvalue,
                                                            _sample_atrr,
                                                            _sub_sample)
-from mgcpy.independence_tests.utils.local_correlation import local_correlations
-from mgcpy.independence_tests.utils.threshold_smooth import (smooth_significant_local_correlations,
-                                                             threshold_local_correlations)
 
 
 class MGC(IndependenceTest):
@@ -88,7 +90,7 @@ class MGC(IndependenceTest):
         if is_fast:
             mgc_statistic, test_statistic_metadata = self._fast_mgc_test_statistic(matrix_X, matrix_Y, **fast_mgc_data)
         else:
-            distance_matrix_X, distance_matrix_Y = compute_dist(matrix_X, matrix_Y, self.compute_distance_matrix)
+            distance_matrix_X, distance_matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
             local_correlation_matrix = local_correlations(distance_matrix_X, distance_matrix_Y,
                                                           base_global_correlation=self.base_global_correlation)["local_correlation_matrix"]
             m, n = local_correlation_matrix.shape

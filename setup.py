@@ -64,7 +64,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7'
     ],
-    ext_modules=cythonize(["mgcpy/independence_tests/utils/local_correlation.pyx",
+    ext_modules=cythonize(["mgcpy/independence_tests/mgc_utils/local_correlation.pyx",
                            "mgcpy/independence_tests/utils/distance_transform.pyx"],
                           compiler_directives={'embedsignature': True}),
     include_dirs=[numpy.get_include()],

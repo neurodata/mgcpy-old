@@ -4,13 +4,14 @@
 
 import numpy as np
 import scipy.spatial as scp
+
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 from mgcpy.independence_tests.utils.mdmr_functions import (calc_ftest,
-                                                         check_rank,
-                                                         fperms_to_pvals,
-                                                         gen_H2_perms,
-                                                         gen_IH_perms,
-                                                         gower_center_many)
+                                                           check_rank,
+                                                           fperms_to_pvals,
+                                                           gen_H2_perms,
+                                                           gen_IH_perms,
+                                                           gower_center_many)
 
 
 class MDMR(IndependenceTest):

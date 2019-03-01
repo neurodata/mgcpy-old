@@ -6,7 +6,8 @@ import numpy as np
 from scipy.stats import norm, t
 
 from mgcpy.independence_tests.abstract_class import IndependenceTest
-from mgcpy.independence_tests.utils.compute_distance_matrix import compute_dist
+from mgcpy.independence_tests.utils.compute_distance_matrix import \
+    compute_distance
 from mgcpy.independence_tests.utils.distance_transform import \
     transform_distance_matrix
 from mgcpy.independence_tests.utils.fast_functions import (_approx_null_dist,
@@ -80,7 +81,7 @@ class DCorr(IndependenceTest):
         if is_fast:
             test_statistic, test_statistic_metadata = self._fast_dcorr_test_statistic(matrix_X, matrix_Y, **fast_dcorr_data)
         else:
-            matrix_X, matrix_Y = compute_dist(matrix_X, matrix_Y, self.compute_distance_matrix)
+            matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
 
             # perform distance transformation
             # transformed_dist_mtx_X, transformed_dist_mtx_Y = dist_transform(matrix_X, matrix_Y, self.which_test)
