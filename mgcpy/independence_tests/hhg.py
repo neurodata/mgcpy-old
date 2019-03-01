@@ -1,6 +1,7 @@
 import numpy as np
-from mgcpy.independence_tests.abstract_class import IndependenceTest
 from scipy.spatial import distance_matrix
+
+from mgcpy.independence_tests.abstract_class import IndependenceTest
 
 
 class HHG(IndependenceTest):
@@ -45,14 +46,11 @@ class HHG(IndependenceTest):
         >>> hhg = HHG()
         >>> hhg_test_stat = hhg.test_statistic(X, Y)
         """
-        row_X, columns_X = matrix_X.shape[0], matrix_X.shape[1]
-        row_Y, columns_Y = matrix_Y.shape[0], matrix_Y.shape[1]
-
         # use the matrix shape and diagonal elements to determine if the given data is a distance matrix or not
         if matrix_X.shape[0] != matrix_X.shape[1] or sum(matrix_X.diagonal()**2) > 0:
-            matrix_X = self.compute_distance_matrix(matrix_X)
+            dist_mtx_X = self.compute_distance_matrix(matrix_X)
         if matrix_Y.shape[0] != matrix_Y.shape[1] or sum(matrix_Y.diagonal()**2) > 0:
-            matrix_Y = self.compute_distance_matrix(matrix_Y)
+            dist_mtx_Y = self.compute_distance_matrix(matrix_Y)
 
         n = dist_mtx_X.shape[0]
         S = np.zeros((n, n))
