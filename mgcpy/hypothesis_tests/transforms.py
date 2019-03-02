@@ -30,14 +30,17 @@ def k_sample_transform(x, y, is_y_categorical=False):
         - :v: a label matrix for ``u``, which indicates to which category each data entry in ``u`` belongs to
     :rtype: list
     '''
-    assert x.shape == y.shape, "Matrices X and Y need to be of same dimensions [n, p]"
+    if not is_y_categorical:
+        assert x.shape == y.shape, "Matrices X and Y need to be of same dimensions [n, p]"
+    else:
+        assert x.shape[0] == y.shape[0] and y.shape[1] == 1, "Matrices X and Y need to be of dimensions [n, p], [n, 1]"
 
     if not is_y_categorical:
         u = np.concatenate([x, y], axis=0)
         v = np.concatenate([np.repeat(1, x.shape[0]), np.repeat(2, y.shape[0])], axis=0)
     else:
         u = x
-        v = preprocessing.LabelEncoder().fit_transform(y) + 1
+        v = preprocessing.LabelEncoder().fit_transform(y.flatten()) + 1
 
     if len(u.shape) == 1:
         u = u[..., np.newaxis]
