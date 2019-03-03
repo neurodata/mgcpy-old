@@ -17,7 +17,7 @@ def generate_three_two_d_gaussians(epsilon, num_samples, type=1):
     if type == 2:
         mean_one, mean_two, mean_three = [0, 0], [0, 0], [0, epsilon]
     elif type == 3:
-        mean_one, mean_two, mean_three = [0, (np.sqrt(3)/3)*epsilon], [-epsilon/2, -(np.sqrt(3)/6)*epsilon], [epsilon/2, -(np.sqrt(3)/6)*epsilon], [0, (np.sqrt(3)/3)*epsilon]
+        mean_one, mean_two, mean_three = [0, (np.sqrt(3)/3)*epsilon], [-epsilon/2, -(np.sqrt(3)/6)*epsilon], [epsilon/2, -(np.sqrt(3)/6)*epsilon]
 
     cov = [[1, 0], [0, 1]]  # identity matrix
     one = np.random.multivariate_normal(mean_one, cov, num_samples)
