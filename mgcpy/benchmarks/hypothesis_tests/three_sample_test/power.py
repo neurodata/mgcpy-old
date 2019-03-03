@@ -8,8 +8,8 @@ def generate_three_two_d_gaussians(epsilon, num_samples, type=1):
     Three 2D Gaussians:
         - Type 1: all with same mean and covariance. mean = [0, 0] and cov = I
         - Type 2: two with same mean and covariance. mean = [0, 0] and cov = I; thrid: mean = [0, epsilon], cov = I
-        - Type 3: mean1 = [0, 0], mean2 = [0, epsilon], mean3 = [(sqrt(3)*epsilon)/2, epsilon/2]
-                  means 1, 2, and 3 should form an equvilateral triangle in 2d plane with cov = I.
+        - Type 3: means 1, 2, and 3 should form an equvilateral triangle on a circle
+                  with center (0, 0) and radius `epsilon` in 2d plane with cov = I.
     '''
     # default mean zeros
     mean_one, mean_two, mean_three = [0, epsilon], [0, epsilon], [0, epsilon]
@@ -17,7 +17,7 @@ def generate_three_two_d_gaussians(epsilon, num_samples, type=1):
     if type == 2:
         mean_one, mean_two, mean_three = [0, 0], [0, 0], [0, epsilon]
     elif type == 3:
-        mean_one, mean_two, mean_three = [0, 0], [0, epsilon], [(np.sqrt(3)*epsilon)/2, epsilon/2]
+        mean_one, mean_two, mean_three = [0, (np.sqrt(3)/3)*epsilon], [-epsilon/2, -(np.sqrt(3)/6)*epsilon], [epsilon/2, -(np.sqrt(3)/6)*epsilon], [0, (np.sqrt(3)/3)*epsilon]
 
     cov = [[1, 0], [0, 1]]  # identity matrix
     one = np.random.multivariate_normal(mean_one, cov, num_samples)

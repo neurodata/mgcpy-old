@@ -35,7 +35,7 @@ def power_vs_epsilon_parallel(params_dict):
     '''
     Generate power of a 3 sample test given a simulation for a range of epsilon values
     '''
-    epsilons = list(np.arange(0, 3, 0.15))
+    epsilons = list(np.arange(0, 2, 0.1))
     estimated_power = np.zeros(len(epsilons))
     test = params_dict['independence_test']
     sim = params_dict['simulation_type']
@@ -69,7 +69,7 @@ def plot_all_curves(base_path):
 
         for test in tests:
             power = np.genfromtxt(dir_name + '{}_{}_epsilon.csv'.format(simulation_type, test), delimiter=',')
-            x_axis = list(np.arange(0, 3, 0.15))
+            x_axis = list(np.arange(0, 2, 0.1))
             col.plot(x_axis, power, label=test)
             # col.set_xlabel("epsilon")
             col.set_ylim(0, 1.2)
