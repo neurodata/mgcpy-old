@@ -17,7 +17,7 @@ from mgcpy.independence_tests.utils.mdmr_functions import (calc_ftest,
 
 
 class MDMR(IndependenceTest):
-    def __init__(self, compute_distance_matrix):
+    def __init__(self, compute_distance_matrix=None):
         '''
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
         :type compute_distance_matrix: ``FunctionType`` or ``callable()``
