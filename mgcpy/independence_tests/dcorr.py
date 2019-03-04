@@ -148,9 +148,9 @@ class DCorr(IndependenceTest):
                     - :mu: computed mean for computing the p-value next.
         :rtype: list
         '''
-        num_samples, sub_samples, test_statistic_sub_sampling = _sample_atrr(matrix_Y, sub_samples)
+        num_samples, sub_samples = _sample_atrr(matrix_Y, sub_samples)
 
-        test_statistic_sub_sampling = _sub_sample(matrix_X, matrix_Y, self.test_statistic, num_samples, sub_samples, test_statistic_sub_sampling, self.which_test)
+        test_statistic_sub_sampling = _sub_sample(matrix_X, matrix_Y, self.test_statistic, num_samples, sub_samples, self.which_test)
         sigma, mu = _approx_null_dist(num_samples, test_statistic_sub_sampling, self.which_test)
 
         # compute the test statistic
