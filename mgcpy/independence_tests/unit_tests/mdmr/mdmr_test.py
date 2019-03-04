@@ -1,6 +1,6 @@
 import numpy as np
+
 from mgcpy.independence_tests.mdmr import MDMR
-from mgcpy.independence_tests.utils.mdmr_functions import compute_distance_matrix
 
 
 def test_mdmr():
@@ -9,7 +9,7 @@ def test_mdmr():
 
     Y = np.genfromtxt('./mgcpy/independence_tests/unit_tests/mdmr/data/Y_mdmr.csv', delimiter=",")
 
-    mdmr = MDMR(compute_distance_matrix)
+    mdmr = MDMR()
     a, results1 = mdmr.test_statistic(X, Y, individual=1)
     b, c = mdmr.p_value(X, Y)
     results2 = mdmr.ind_p_value(X, Y)
