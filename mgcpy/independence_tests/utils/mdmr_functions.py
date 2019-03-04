@@ -27,14 +27,10 @@ def compute_distance_matrix(X, disttype):
     """
     Computes the distance matrix of the input data matrix.
 
-    :param X: is interpreted as:
-
-        - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
+    :param X: is interpreted as a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
     :type X: 2D `numpy.array`
 
-    :param disttype: is interpreted as:
-
-        - a `string` from the scipy options for types of distance calculation
+    :param disttype: is interpreted as a `string` from the scipy options for types of distance calculation
     :type disttype: `string`
 
     :return: returns vector form of the distance matrix.

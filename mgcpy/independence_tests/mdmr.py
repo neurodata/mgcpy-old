@@ -6,6 +6,8 @@ import numpy as np
 import scipy.spatial as scp
 
 from mgcpy.independence_tests.abstract_class import IndependenceTest
+from mgcpy.independence_tests.utils.compute_distance_matrix import \
+    compute_distance
 from mgcpy.independence_tests.utils.mdmr_functions import (calc_ftest,
                                                            check_rank,
                                                            fperms_to_pvals,
@@ -61,7 +63,7 @@ class MDMR(IndependenceTest):
         Y = matrix_Y
 
         # calculate distance matrix of Y
-        D = self.compute_distance_matrix(Y, disttype)
+        D, _ = compute_distance(Y, np.identity(1), self.compute_distance_matrix)
         D = scp.distance.squareform(D)
         a = D.shape[0]**2
         D = D.reshape((a, 1))
