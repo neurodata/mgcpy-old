@@ -64,7 +64,6 @@ class MDMR(IndependenceTest):
 
         # calculate distance matrix of Y
         D, _ = compute_distance(Y, np.identity(1), self.compute_distance_matrix)
-        D = scp.distance.squareform(D)
         a = D.shape[0]**2
         D = D.reshape((a, 1))
 
