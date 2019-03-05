@@ -11,7 +11,7 @@ from scipy.stats import norm, t
 
 class CDCV(IndependenceTest):
 
-    def __init__(self, compute_distance_matrix=None, which_test='unbiased', max_lag=None):
+    def __init__(self, compute_distance_matrix=None, which_test='unbiased', max_lag=0):
         '''
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
         :type compute_distance_matrix: FunctionType or callable()
@@ -55,7 +55,7 @@ class CDCV(IndependenceTest):
 
         :return: returns a list of two items, that contains:
 
-            - :test_statistic: the sample dcorr statistic within [-1, 1]
+            - :test_statistic: the sample cdcv statistic (not necessarily within [-1,1])
             - :test_statistic_metadata: a ``dict`` of metadata with the following keys:
                     - :dist_mtx_X: the distance matrix of sample X
                     - :dist_mtx_Y: the distance matrix of sample X
@@ -103,8 +103,8 @@ class CDCV(IndependenceTest):
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
             test_statistic += ((1 - j/(p*(M+1)))**2)*(self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y))/(n-j-bias_correct)
 
-            dist_mtx_X <- matrix_X[0:(n-j),0:(n-j)]
-            dist_mtx_Y <- matrix_Y[j:n,j:n]
+            dist_mtx_X = matrix_X[0:(n-j),0:(n-j)]
+            dist_mtx_Y = matrix_Y[j:n,j:n]
             test_statistic += ((1 - j/(p*(M+1)))**2)*(self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y))/(n-j-bias_correct)
 
         test_statistic_metadata = {'dist_mtx_X' : matrix_X, 'dist_mtx_Y' : matrix_Y}
@@ -263,7 +263,7 @@ class CDCV(IndependenceTest):
         #    return p_value, p_value_metadata
         #else:
 
-        # Stationary boostrap
+        # Block bootstrap
         n = matrix_X.shape[0]
         block_size = int(np.ceil(np.sqrt(n)))
         test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
