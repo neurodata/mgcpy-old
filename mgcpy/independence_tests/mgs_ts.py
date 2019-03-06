@@ -1,15 +1,18 @@
 import math
 import warnings
-from statistics import stdev, mean
+from statistics import mean, stdev
 
 import numpy as np
-from mgcpy.independence_tests.abstract_class import IndependenceTest
-from mgcpy.independence_tests.mgc.local_correlation import local_correlations
-from mgcpy.independence_tests.mgc.threshold_smooth import (smooth_significant_local_correlations,
-                                                           threshold_local_correlations)
-from mgcpy.independence_tests.mgc.mgc import MGC
-
 from scipy.stats import norm
+
+from mgcpy.independence_tests.abstract_class import IndependenceTest
+from mgcpy.independence_tests.utils.compute_distance_matrix import \
+    compute_distance
+from mgcpy.independence_tests.utils.fast_functions import (_approx_null_dist,
+                                                           _fast_pvalue,
+                                                           _sample_atrr,
+                                                           _sub_sample)
+from mgcpy.independence_tests.mgc import MGC
 
 
 class MGC_TS(IndependenceTest):
@@ -86,18 +89,14 @@ class MGC_TS(IndependenceTest):
         #if is_fast:
         #    mgc_statistic, test_statistic_metadata = self._fast_mgc_test_statistic(matrix_X, matrix_Y, **fast_mgc_data)
         #else:
-        # compute all local correlations
+
         n = matrix_X.shape[0]
         if len(matrix_X.shape) == 1:
             matrix_X = matrix_X.reshape((n,1))
         if len(matrix_Y.shape) == 1:
             matrix_Y = matrix_Y.reshape((n,1))
-        if n != matrix_X.shape[1] or sum(matrix_X.diagonal()**2) > 0:
-            matrix_X = self.compute_distance_matrix(matrix_X)
-        if n != matrix_Y.shape[1] or sum(matrix_Y.diagonal()**2) > 0:
-            matrix_Y = self.compute_distance_matrix(matrix_Y)
-        local_correlation_matrix = local_correlations(matrix_X, matrix_Y,
-                                                      base_global_correlation=self.base_global_correlation)["local_correlation_matrix"]
+        matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
+
         p = math.sqrt(n)
         M = self.max_lag if self.max_lag is not None else math.ceil(math.sqrt(n))
         mgc = self.mgc_object

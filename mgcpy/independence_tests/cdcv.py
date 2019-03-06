@@ -1,13 +1,12 @@
 import math
 import warnings
 from statistics import mean, stdev
+from scipy.stats import norm, t
 
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
-from mgcpy.independence_tests.mgc.distance_transform import \
-    transform_distance_matrix
-from scipy.stats import norm, t
-
+from mgcpy.independence_tests.utils.compute_distance_matrix import compute_distance
+from mgcpy.independence_tests.utils.distance_transform import transform_distance_matrix
 
 class CDCV(IndependenceTest):
 
@@ -88,10 +87,7 @@ class CDCV(IndependenceTest):
             matrix_X = matrix_X.reshape((n,1))
         if len(matrix_Y.shape) == 1:
             matrix_Y = matrix_Y.reshape((n,1))
-        if n != matrix_X.shape[1] or sum(matrix_X.diagonal()**2) > 0:
-            matrix_X = self.compute_distance_matrix(matrix_X)
-        if n != matrix_Y.shape[1] or sum(matrix_Y.diagonal()**2) > 0:
-            matrix_Y = self.compute_distance_matrix(matrix_Y)
+        matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
 
         # TO DO: parallelize.
         p = math.sqrt(n)
