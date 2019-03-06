@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
 import pytest
+
 from mgcpy.hypothesis_tests.transforms import k_sample_transform
-from mgcpy.independence_tests.mgc.mgc import MGC
+from mgcpy.independence_tests.mgc import MGC
 
 
 def test_k_sample():

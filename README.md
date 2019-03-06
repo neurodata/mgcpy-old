@@ -1,3 +1,5 @@
+The R version is available on CRAN and https://github.com/neurodata/mgc-r. The MATLAB version is available at https://github.com/neurodata/mgc-matlab.
+
 # mgcpy
 
 [![Coverage Status](https://coveralls.io/repos/github/neurodata/mgcpy/badge.svg?branch=master)](https://coveralls.io/github/neurodata/mgcpy?branch=master)
