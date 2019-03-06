@@ -12,10 +12,10 @@ from mgcpy.independence_tests.manova import Manova
 
 
 def fill_params_dict_list_epsilons(base_path, do_fast_mgc=False):
-    dcorr = DCorr(which_test='biased')
+    mcorr = DCorr(which_test='unbiased')
     mgc = MGC()
     manova = Manova()
-    independence_tests = [manova, dcorr, mgc]
+    independence_tests = [manova, mcorr, mgc]
     three_sample_simulation_types = [1, 2, 3]
 
     params_dict_list = []
@@ -64,7 +64,7 @@ def plot_all_curves(base_path):
     for i, col in enumerate(ax):
         sim_name = simulation_names[simulation_type]
         simulation_type += 1
-        tests = ['mgc', 'biased', 'fast_mgc', 'manova']
+        tests = ['mgc', 'unbiased', 'fast_mgc', 'manova']
         dir_name = os.path.join(base_path, 'python_power_curves_epsilon/')
 
         for test in tests:
