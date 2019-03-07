@@ -16,7 +16,7 @@ from mgcpy.independence_tests.mgc import MGC
 
 
 class MGC_TS(IndependenceTest):
-    def __init__(self, compute_distance_matrix=None, base_global_correlation='mgc', max_lag = 1):
+    def __init__(self, compute_distance_matrix=None, max_lag = 1):
         '''
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
         :type compute_distance_matrix: ``FunctionType`` or ``callable()``
@@ -31,8 +31,6 @@ class MGC_TS(IndependenceTest):
         '''
 
         IndependenceTest.__init__(self, compute_distance_matrix)
-        self.which_test = "mgc"
-        self.base_global_correlation = base_global_correlation
         self.max_lag = max_lag
         self.mgc_object = MGC()
 
