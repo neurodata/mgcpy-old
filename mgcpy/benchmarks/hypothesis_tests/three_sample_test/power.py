@@ -34,6 +34,9 @@ def power_given_epsilon(independence_test, simulation_type, epsilon, repeats=100
     # test statistic under the alternative
     test_stats_alternative = np.zeros(repeats)
 
+    # direct p values on permutation (now, only for fast_mgc)
+    p_values = np.zeros(repeats)
+
     for rep in range(repeats):
         matrix_X, matrix_Y, matrix_Z = generate_three_two_d_gaussians(epsilon, 100, simulation_type)
 
@@ -43,18 +46,24 @@ def power_given_epsilon(independence_test, simulation_type, epsilon, repeats=100
         matrix_U, matrix_V = k_sample_transform(data, labels, is_y_categorical=True)
 
         # permutation test
-        permuted_V = np.random.permutation(matrix_V)
-        test_stats_null[rep], _ = independence_test.test_statistic(
-            matrix_U, permuted_V, **additional_params)
-        test_stats_alternative[rep], _ = independence_test.test_statistic(
-            matrix_U, matrix_V, **additional_params)
+        if additional_params and additional_params["is_fast"]:
+            p_values.append(independence_test.p_value(matrix_U, matrix_V, **additional_params)[0])
+        else:
+            permuted_V = np.random.permutation(matrix_V)
+            test_stats_null[rep], _ = independence_test.test_statistic(
+                matrix_U, permuted_V, **additional_params)
+            test_stats_alternative[rep], _ = independence_test.test_statistic(
+                matrix_U, matrix_V, **additional_params)
 
-    # the cutoff is determined so that 1-alpha of the test statistics under the null distribution
-    # is less than the cutoff
-    cutoff = np.sort(test_stats_null)[math.ceil(repeats*(1-alpha))]
+    if additional_params and additional_params["is_fast"]:
+        empirical_power = np.where(p_values <= alpha)[0].shape[0] / repeats
+    else:
+        # the cutoff is determined so that 1-alpha of the test statistics under the null distribution
+        # is less than the cutoff
+        cutoff = np.sort(test_stats_null)[math.ceil(repeats*(1-alpha))]
 
-    # the proportion of test statistics under the alternative which is no less than the cutoff (in which case
-    # the null is rejected) is the empirical power
-    empirical_power = np.where(test_stats_alternative >= cutoff)[0].shape[0] / repeats
+        # the proportion of test statistics under the alternative which is no less than the cutoff (in which case
+        # the null is rejected) is the empirical power
+        empirical_power = np.where(test_stats_alternative >= cutoff)[0].shape[0] / repeats
 
     return empirical_power
