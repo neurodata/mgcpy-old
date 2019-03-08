@@ -47,7 +47,7 @@ def power_given_epsilon(independence_test, simulation_type, epsilon, repeats=100
 
         # permutation test
         if additional_params and additional_params["is_fast"]:
-            p_values.append(independence_test.p_value(matrix_U, matrix_V, **additional_params)[0])
+            p_values[rep], _ = independence_test.p_value(matrix_U, matrix_V, **additional_params)
         else:
             permuted_V = np.random.permutation(matrix_V)
             test_stats_null[rep], _ = independence_test.test_statistic(
