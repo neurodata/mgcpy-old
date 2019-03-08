@@ -10,7 +10,7 @@ cimport numpy as np
 from scipy.spatial.distance import pdist, squareform
 import warnings
 
-from mgcpy.independence_tests.mgc.distance_transform import transform_distance_matrix
+from mgcpy.independence_tests.utils.distance_transform import transform_distance_matrix
 
 
 cpdef local_covariance(np.ndarray[np.float_t, ndim=2] distance_matrix_A,

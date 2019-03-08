@@ -1,24 +1,27 @@
 
 # coding: utf-8
 
-import numpy as np
-from numpy import genfromtxt
-import multiprocessing as mp
-import scipy.io
 import math
+import multiprocessing as mp
 import time
 
-# In[2]:
+import numpy as np
+import scipy.io
+from numpy import genfromtxt
 
 from mgcpy.benchmarks.power import power, power_given_data
 from mgcpy.benchmarks.simulations import *
 from mgcpy.independence_tests.dcorr import DCorr
-from mgcpy.independence_tests.mgc.mgc import MGC
-from mgcpy.independence_tests.rv_corr import RVCorr
 from mgcpy.independence_tests.hhg import HHG
 from mgcpy.independence_tests.kendall_spearman import KendallSpearman
-from mgcpy.independence_tests.mdmr.mdmr import MDMR
-from mgcpy.independence_tests.mdmr.mdmrfunctions import compute_distance_matrix
+from mgcpy.independence_tests.mdmr import MDMR
+from mgcpy.independence_tests.mgc import MGC
+from mgcpy.independence_tests.rv_corr import RVCorr
+from mgcpy.independence_tests.utils.mdmr_functions import \
+    compute_distance_matrix
+
+# In[2]:
+
 
 
 # In[5]:
