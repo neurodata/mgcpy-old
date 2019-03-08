@@ -11,6 +11,9 @@ def power_given_data(base_path, independence_test, simulation_type, num_samples,
     # test statistic under the alternative
     test_stats_alternative = np.zeros(repeats)
 
+    # direct p values on permutation (now, only for fast_mgc)
+    p_values = np.zeros(repeats)
+
     # absolute path to the benchmark directory
     file_name_prefix = os.path.join(base_path, 'sample_data_power_sample_sizes/type_{}_size_{}'.format(simulation_type, num_samples))
 
@@ -31,11 +34,14 @@ def power_given_data(base_path, independence_test, simulation_type, num_samples,
         matrix_U, matrix_V = k_sample_transform(data_matrix, rotated_data_matrix)
 
         # permutation test
-        permuted_V = np.random.permutation(matrix_V)
-        test_stats_null[rep], _ = independence_test.test_statistic(
-            matrix_U, permuted_V, **additional_params)
-        test_stats_alternative[rep], _ = independence_test.test_statistic(
-            matrix_U, matrix_V, **additional_params)
+        if additional_params and additional_params["is_fast"]:
+            p_values.append(independence_test.p_value(matrix_U, matrix_V, **additional_params)[0])
+        else:
+            permuted_V = np.random.permutation(matrix_V)
+            test_stats_null[rep], _ = independence_test.test_statistic(
+                matrix_U, permuted_V, **additional_params)
+            test_stats_alternative[rep], _ = independence_test.test_statistic(
+                matrix_U, matrix_V, **additional_params)
 
         # if the test is pearson, use absolute value of the test statistic
         # so the more extreme test statistic is still in a one-sided interval
@@ -43,13 +49,15 @@ def power_given_data(base_path, independence_test, simulation_type, num_samples,
             test_stats_null[rep] = abs(test_stats_null[rep])
             test_stats_alternative[rep] = abs(test_stats_alternative[rep])
 
-    # the cutoff is determined so that 1-alpha of the test statistics under the null distribution
-    # is less than the cutoff
-    cutoff = np.sort(test_stats_null)[math.ceil(repeats*(1-alpha))]
+    if additional_params and additional_params["is_fast"]:
+        empirical_power = np.where(p_values <= alpha)[0].shape[0] / repeats
+    else:
+        # the cutoff is determined so that 1-alpha of the test statistics under the null distribution
+        # is less than the cutoff
+        cutoff = np.sort(test_stats_null)[math.ceil(repeats*(1-alpha))]
 
-    # the proportion of test statistics under the alternative which is no less than the cutoff (in which case
-    # the null is rejected) is the empirical power
-    empirical_power = np.where(test_stats_alternative >= cutoff)[
-        0].shape[0] / repeats
+        # the proportion of test statistics under the alternative which is no less than the cutoff (in which case
+        # the null is rejected) is the empirical power
+        empirical_power = np.where(test_stats_alternative >= cutoff)[0].shape[0] / repeats
 
     return empirical_power
