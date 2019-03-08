@@ -84,10 +84,6 @@ class MGC_TS(IndependenceTest):
         """
         assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be equal to q"
 
-        #if is_fast:
-        #    mgc_statistic, test_statistic_metadata = self._fast_mgc_test_statistic(matrix_X, matrix_Y, **fast_mgc_data)
-        #else:
-
         n = matrix_X.shape[0]
         if len(matrix_X.shape) == 1:
             matrix_X = matrix_X.reshape((n,1))
@@ -98,18 +94,18 @@ class MGC_TS(IndependenceTest):
         p = math.sqrt(n)
         M = self.max_lag if self.max_lag is not None else math.ceil(math.sqrt(n))
         mgc = self.mgc_object
-        mgc_statistic, _ = mgc.test_statistic(matrix_X, matrix_Y)
+        mgc_statistic, _ = mgc.test_statistic(matrix_X, matrix_Y, is_fast, fast_mgc_data)
         test_statistic = n*mgc_statistic
 
         for j in range(1,M+1):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
-            mgc_statistic, _ = mgc.test_statistic(dist_mtx_X, dist_mtx_Y)
+            mgc_statistic, _ = mgc.test_statistic(dist_mtx_X, dist_mtx_Y, is_fast, fast_mgc_data)
             test_statistic += ((1 - j/(p*(M+1)))**2)*mgc_statistic*(n-j)
 
             dist_mtx_X = matrix_X[0:(n-j),0:(n-j)]
             dist_mtx_Y = matrix_Y[j:n,j:n]
-            mgc_statistic, _ = mgc.test_statistic(dist_mtx_X, dist_mtx_Y)
+            mgc_statistic, _ = mgc.test_statistic(dist_mtx_X, dist_mtx_Y, is_fast, fast_mgc_data)
             test_statistic += ((1 - j/(p*(M+1)))**2)*mgc_statistic*(n-j)
 
         test_statistic_metadata = {'dist_mtx_X' : matrix_X, 'dist_mtx_Y' : matrix_Y}
@@ -171,17 +167,10 @@ class MGC_TS(IndependenceTest):
         """
         assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be equal to q"
 
-        #if is_fast:
-        #    p_value, p_value_metadata = self._fast_dcorr_p_value(matrix_X, matrix_Y, **fast_dcorr_data)
-        #    self.p_value_ = p_value
-        #    self.p_value_metadata_ = p_value_metadata
-        #    return p_value, p_value_metadata
-        #else:
-
         # Block bootstrap
         n = matrix_X.shape[0]
         block_size = int(np.ceil(np.sqrt(n)))
-        test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
+        test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y, is_fast, fast_mgc_data)
         matrix_X = test_statistic_metadata['dist_mtx_X']
         matrix_Y = test_statistic_metadata['dist_mtx_Y']
 
@@ -192,7 +181,7 @@ class MGC_TS(IndependenceTest):
             permuted_Y = matrix_Y[permuted_indices,:][:, permuted_indices] # TO DO: See if there is a better way to permute
 
             # Compute test statistic
-            test_stats_null[rep], _ = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_Y)
+            test_stats_null[rep], _ = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_Y, is_fast=is_fast, fast_mgc_data=fast_mgc_data)
 
         p_value = np.where(test_stats_null >= test_statistic)[0].shape[0] / replication_factor
         p_value_metadata = {'test_stats_null' : test_stats_null}
