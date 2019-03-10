@@ -148,6 +148,11 @@ class IndependenceTest(ABC):
             p_value = np.where(test_stats_null >= test_statistic)[0].shape[0] / replication_factor
             p_value_metadata = {}
 
+        # The number of permutations is low
+        if replication_factor < 1000:
+            warnings.warn("The number of replications is low (under 1000), and p value calculations may be unreliable.\n" +
+                          "Use the p-value result, with caution!")
+
         # The results are not statistically significant
         if p_value > 0.05:
             warnings.warn("The p-value is greater than 0.05, implying that the results are not statistically significant.\n" +
