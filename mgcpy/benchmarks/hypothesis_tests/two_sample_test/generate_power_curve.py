@@ -9,9 +9,8 @@ from mgcpy.benchmarks.hypothesis_tests.two_sample_test.power import \
 from mgcpy.benchmarks.simulations import *
 from mgcpy.independence_tests.dcorr import DCorr
 from mgcpy.independence_tests.hhg import HHG
-from mgcpy.independence_tests.mdmr.mdmr import MDMR
-from mgcpy.independence_tests.mdmr.mdmrfunctions import compute_distance_matrix
-from mgcpy.independence_tests.mgc.mgc import MGC
+from mgcpy.independence_tests.mdmr import MDMR
+from mgcpy.independence_tests.mgc import MGC
 from mgcpy.independence_tests.rv_corr import RVCorr
 
 simulations = {'linear': (linear_sim, 1), 'exponential': (exp_sim, 2), 'cubic': (cub_sim, 3), 'joint_normal': (joint_sim, 4), 'step': (step_sim, 5),
@@ -27,7 +26,7 @@ def fill_params_dict_list_sample_sizes(base_path, do_fast_mgc=False):
     mgc = MGC()
     hhg = HHG()
     pearson = RVCorr(which_test='pearson')
-    mdmr = MDMR(compute_distance_matrix=compute_distance_matrix)
+    mdmr = MDMR()
     independence_tests = [mcorr, dcorr, mantel, mgc, hhg, pearson, mdmr]
 
     params_dict_list = []

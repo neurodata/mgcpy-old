@@ -7,7 +7,7 @@ import numpy as np
 from mgcpy.benchmarks.hypothesis_tests.three_sample_test.power import \
     power_given_epsilon
 from mgcpy.independence_tests.dcorr import DCorr
-from mgcpy.independence_tests.mgc.mgc import MGC
+from mgcpy.independence_tests.mgc import MGC
 from mgcpy.independence_tests.manova import Manova
 
 

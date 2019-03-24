@@ -1,10 +1,7 @@
-import math
 import warnings
-from statistics import mean, stdev
+from statistics import mean
 
 import numpy as np
-from scipy.stats import norm, t
-
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 from mgcpy.independence_tests.utils.compute_distance_matrix import \
     compute_distance
