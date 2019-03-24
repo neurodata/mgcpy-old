@@ -23,27 +23,6 @@ def check_rank(X):
         raise Exception("matrix is rank deficient (rank %i vs cols %i)" % (rank, X.shape[1]))
 
 
-def compute_distance_matrix(X, disttype):
-    """
-    Computes the distance matrix of the input data matrix.
-
-    :param X: is interpreted as:
-
-        - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``d`` dimensions
-    :type X: 2D `numpy.array`
-
-    :param disttype: is interpreted as:
-
-        - a `string` from the scipy options for types of distance calculation
-    :type disttype: `string`
-
-    :return: returns vector form of the distance matrix.
-    :rtype: 1D `numpy.array`
-    """
-    D = scp.distance.pdist(X, disttype)
-    return D
-
-
 def hatify(X):
     """
     Calculates the "hat" matrix.
