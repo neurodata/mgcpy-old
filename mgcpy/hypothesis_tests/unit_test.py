@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
 import pytest
-from mgcpy.hypothesis_tests.transforms import k_sample_transform
-from mgcpy.independence_tests.mgc.mgc import MGC
+from mgcpy.hypothesis_tests.transforms import (k_sample_transform,
+                                               paired_two_sample_test_dcorr,
+                                               paired_two_sample_transform)
+from mgcpy.independence_tests.mgc import MGC
 
 
 def test_k_sample():
@@ -21,7 +23,7 @@ def test_k_sample():
 
     # k sample case
     salaries = salary_data["Current Annual Salary"].values
-    department_labels = salary_data["Department"].values
+    department_labels = salary_data["Department"].values.reshape(-1, 1)
     u, v = k_sample_transform(salaries[:100], department_labels[:100], is_y_categorical=True)
     mgc = MGC()
     p_value, p_value_metadata = mgc.p_value(u, v)
@@ -41,9 +43,63 @@ def test_k_sample():
                   0.22417797,  0.45241074, -1.03024521,  0.6615743,  0.27216365, 2.4188678,  0.20561134,  0.71095061, -1.02478312,  0.54512964,
                   0.16582386, -0.39648338, -0.77905918, -0.33196771,  0.69407125, -0.81484451,  3.01568098, -0.49053868, -0.60987204,  1.72967348])
     # assign half of them as samples from 1 and the other half as samples from 2
-    y = np.concatenate([np.repeat(1, 50), np.repeat(2, 50)], axis=0)
+    y = np.concatenate([np.repeat(1, 50), np.repeat(2, 50)], axis=0).reshape(-1, 1)
 
     u, v = k_sample_transform(x, y, is_y_categorical=True)
     mgc = MGC()
     p_value, p_value_metadata = mgc.p_value(u, v)
     assert np.allclose(p_value, 0.819, atol=0.1)
+
+
+def test_paired_two_sample_transform():
+    np.random.seed(1234)
+    constant = 0.3
+
+    # case 1: paired data
+    paired_X = np.random.normal(0, 1, 1000).reshape(-1, 1)
+    paired_Y = paired_X + constant
+
+    # use MGC to perform independence test on "unpaired" data
+    u, v = paired_two_sample_transform(paired_X, paired_Y)
+    mgc = MGC()
+    p_value, p_value_metadata = mgc.p_value(u, v, is_fast=True)
+
+    print(p_value, p_value_metadata)
+    # assert np.allclose(p_value, 1.0, atol=0.1)
+
+    # case 2: unpaired data
+    unpaired_X = np.random.normal(0, 1, 1000).reshape(-1, 1)
+    unpaired_Y = np.random.normal(constant, 1, 1000).reshape(-1, 1)
+
+    # use MGC to perform independence test on "unpaired" data
+    u, v = paired_two_sample_transform(unpaired_X, unpaired_Y)
+    mgc = MGC()
+    p_value, p_value_metadata = mgc.p_value(u, v, is_fast=True)
+
+    print(p_value, p_value_metadata)
+    # assert np.allclose(p_value, 0.0, atol=0.1)
+
+
+def test_paired_two_sample_dcorr():
+    np.random.seed(1234)
+    constant = 0.3
+
+    # case 1: paired data
+    paired_X = np.random.normal(0, 1, 1000).reshape(-1, 1)
+    paired_Y = paired_X + constant
+
+    # use DCorr to perform independence test on "paired" data
+    p_value, p_value_metadata = paired_two_sample_test_dcorr(paired_X, paired_Y)
+
+    print(p_value, p_value_metadata)
+    # assert np.allclose(p_value, 1.0, atol=0.1)
+
+    # case 2: unpaired data
+    unpaired_X = np.random.normal(0, 1, 1000).reshape(-1, 1)
+    unpaired_Y = np.random.normal(constant, 1, 1000).reshape(-1, 1)
+
+    # use DCorr to perform independence test on "unpaired" data
+    p_value, p_value_metadata = paired_two_sample_test_dcorr(unpaired_X, unpaired_Y)
+
+    print(p_value, p_value_metadata)
+    # assert np.allclose(p_value, 0.0, atol=0.1)

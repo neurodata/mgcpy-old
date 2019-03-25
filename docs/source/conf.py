@@ -25,7 +25,7 @@ copyright = '2018, Satish Palaniappan, Bear Xiong, Sambit Panda, Sandhya Ramacha
 author = 'Satish Palaniappan, Bear Xiong, Sambit Panda, Sandhya Ramachandran, Ananya Swaminathan, Richard Guo'
 
 # The short X.Y version
-version = 'v0.2.1'
+version = 'v0.3.0'
 # The full version, including alpha/beta/rc tags
 release = 'beta'
 
