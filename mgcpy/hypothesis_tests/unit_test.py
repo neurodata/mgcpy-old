@@ -23,7 +23,7 @@ def test_k_sample():
 
     # k sample case
     salaries = salary_data["Current Annual Salary"].values
-    department_labels = salary_data["Department"].values
+    department_labels = salary_data["Department"].values.reshape(-1, 1)
     u, v = k_sample_transform(salaries[:100], department_labels[:100], is_y_categorical=True)
     mgc = MGC()
     p_value, p_value_metadata = mgc.p_value(u, v)
@@ -43,7 +43,7 @@ def test_k_sample():
                   0.22417797,  0.45241074, -1.03024521,  0.6615743,  0.27216365, 2.4188678,  0.20561134,  0.71095061, -1.02478312,  0.54512964,
                   0.16582386, -0.39648338, -0.77905918, -0.33196771,  0.69407125, -0.81484451,  3.01568098, -0.49053868, -0.60987204,  1.72967348])
     # assign half of them as samples from 1 and the other half as samples from 2
-    y = np.concatenate([np.repeat(1, 50), np.repeat(2, 50)], axis=0)
+    y = np.concatenate([np.repeat(1, 50), np.repeat(2, 50)], axis=0).reshape(-1, 1)
 
     u, v = k_sample_transform(x, y, is_y_categorical=True)
     mgc = MGC()
