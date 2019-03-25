@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.spatial as scp
 
 DTYPE = np.float64
 ITYPE = np.int32

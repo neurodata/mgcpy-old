@@ -2,6 +2,7 @@
     **Common Distance Calculation Matrix**
 """
 
+
 def compute_distance(matrix_X, matrix_Y, _compute_distance):
     """
     Computes the distance matrix among both independence tests

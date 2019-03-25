@@ -1,6 +1,5 @@
 import numpy as np
 import math
-from mgcpy.independence_tests.dcorr import DCorr
 from mgcpy.independence_tests.utils.transform_matrices import \
     transform_matrices
 import scipy.io
