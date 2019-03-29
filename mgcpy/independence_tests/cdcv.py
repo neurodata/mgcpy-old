@@ -93,17 +93,27 @@ class CDCV(IndependenceTest):
         p = math.sqrt(n)
         M = self.max_lag if self.max_lag is not None else math.ceil(math.sqrt(n))
         bias_correct = 0 if self.which_test == 'biased' else 3
-        test_statistic = (self.cross_covariance_sum(matrix_X, matrix_Y))/(n-bias_correct)
+
+        # Collect the test statistic by lag, and sum them for the full test statistic.
+        test_stats_by_lag = np.zeros(M+1)
+        test_stats_by_lag[0] = (self.cross_covariance_sum(matrix_X, matrix_Y))/(n-bias_correct)
         for j in range(1,M+1):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
-            test_statistic += ((1 - j/(p*(M+1)))**2)*(self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y))/(n-j-bias_correct)
+            test_stats_by_lag[j] = ((1 - j/(p*(M+1)))**2)*(self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y))/(n-j-bias_correct)
 
-            dist_mtx_X = matrix_X[0:(n-j),0:(n-j)]
-            dist_mtx_Y = matrix_Y[j:n,j:n]
-            test_statistic += ((1 - j/(p*(M+1)))**2)*(self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y))/(n-j-bias_correct)
+            # In asymmetric test, we do not add the following terms.
+            # dist_mtx_X = matrix_X[0:(n-j),0:(n-j)]
+            # dist_mtx_Y = matrix_Y[j:n,j:n]
+            # test_statistic += ((1 - j/(p*(M+1)))**2)*(self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y))/(n-j-bias_correct)
+        test_statistic = test_stats_by_lag.sum()
 
-        test_statistic_metadata = {'dist_mtx_X' : matrix_X, 'dist_mtx_Y' : matrix_Y}
+        # Reporting optimal lag
+        test_stats_by_lag = np.divide(test_stats_by_lag, np.array(range(1, M+2)))
+        optimal_lag = np.argmax(test_stats_by_lag)
+        test_statistic_metadata = { 'dist_mtx_X' : matrix_X,
+                                    'dist_mtx_Y' : matrix_Y,
+                                    'optimal_lag' : optimal_lag }
         self.test_statistic_ = test_statistic
         self.test_statistic_metadata_ = test_statistic_metadata
         return test_statistic, test_statistic_metadata
