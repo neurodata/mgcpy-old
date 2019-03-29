@@ -1,24 +1,25 @@
 
 # coding: utf-8
 
-import numpy as np
-from numpy import genfromtxt
-import multiprocessing as mp
-import scipy.io
 import math
+import multiprocessing as mp
 import time
 
-# In[2]:
+import numpy as np
+import scipy.io
+from numpy import genfromtxt
 
 from mgcpy.benchmarks.power import power, power_given_data
 from mgcpy.benchmarks.simulations import *
 from mgcpy.independence_tests.dcorr import DCorr
-from mgcpy.independence_tests.mgc.mgc import MGC
-from mgcpy.independence_tests.rv_corr import RVCorr
 from mgcpy.independence_tests.hhg import HHG
 from mgcpy.independence_tests.kendall_spearman import KendallSpearman
-from mgcpy.independence_tests.mdmr.mdmr import MDMR
-from mgcpy.independence_tests.mdmr.mdmrfunctions import compute_distance_matrix
+from mgcpy.independence_tests.mdmr import MDMR
+from mgcpy.independence_tests.mgc import MGC
+from mgcpy.independence_tests.rv_corr import RVCorr
+
+# In[2]:
+
 
 
 # In[5]:
@@ -102,7 +103,7 @@ def fill_params_dict_list_dimensions(do_fast_mgc=False):
     rv_corr = RVCorr(which_test='rv')
     hhg = HHG()
     cca = RVCorr(which_test='cca')
-    mdmr = MDMR(compute_distance_matrix=compute_distance_matrix)
+    mdmr = MDMR()
     independence_tests = []  # [mgc, mcorr, dcorr, mantel, rv_corr, cca]
 
     params_dict_list = []
@@ -112,7 +113,7 @@ def fill_params_dict_list_dimensions(do_fast_mgc=False):
             params_dict_list.append(params_dict)
         if do_fast_mgc:
             fast_mgc = MGC()
-            additional_params = {"is_fast": True, "fast_mgc_data": {"null_only": False}}
+            additional_params = {"is_fast": True}
             params_dict = {'independence_test': fast_mgc, 'simulation_type': sim_func[1], 'dim': find_dim(sim_name), 'additional_params': additional_params}
             params_dict_list.append(params_dict)
 
@@ -165,7 +166,7 @@ def fill_params_dict_list_sample_sizes(do_fast_mgc=False):
     mgc = MGC()
     hhg = HHG()
     pearson = RVCorr(which_test='pearson')
-    mdmr = MDMR(compute_distance_matrix=compute_distance_matrix)
+    mdmr = MDMR()
     independence_tests = []
 
     params_dict_list = []
@@ -175,7 +176,7 @@ def fill_params_dict_list_sample_sizes(do_fast_mgc=False):
             params_dict_list.append(params_dict)
         if do_fast_mgc:
             fast_mgc = MGC()
-            additional_params = {"is_fast": True, "fast_mgc_data": {"null_only": False}}
+            additional_params = {"is_fast": True}
             params_dict = {'independence_test': fast_mgc, 'simulation_type': sim_func[1], 'additional_params': additional_params}
             params_dict_list.append(params_dict)
     return params_dict_list

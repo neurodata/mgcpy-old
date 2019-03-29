@@ -6,3 +6,7 @@ show_missing = True
 omit =
     mgcpy/benchmarks/figure_2_power_curve.py
     mgcpy/benchmarks/power_two_sample.py
+    mgcpy/benchmarks/hypothesis_tests/two_sample_test/generate_power_curve.py
+    mgcpy/benchmarks/hypothesis_tests/two_sample_test/power.py
+    mgcpy/benchmarks/hypothesis_tests/three_sample_test/generate_power_curve.py
+    mgcpy/benchmarks/hypothesis_tests/three_sample_test/power.py
