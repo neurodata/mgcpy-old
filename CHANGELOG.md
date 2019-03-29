@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.1.1] - 2019-01-12
+- Port repo from `NeuroDataDesign` to `neurodata` org
+- Assert dims of input matrices
+- Fixing other issues ...
+
 ## [0.1.0] - 2018-12-14
 ### Added
 - Port [MGC](https://github.com/neurodata/mgc)/[FastMGC](https://github.com/neurodata/mgc-matlab) into the package, by [@tpsatish95](https://github.com/tpsatish95)
