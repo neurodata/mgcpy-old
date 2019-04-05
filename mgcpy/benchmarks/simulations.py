@@ -88,8 +88,8 @@ def exp_sim(num_samp, num_dim, noise=3, indep=False, low=0, high=3):
     return x, y
 
 
-def cub_sim(num_samp, num_dim, noise=10, indep=False, low=-1, high=1,
-            cub_coeff=np.array([10, 20, 20]), scale=1/3):
+def cub_sim(num_samp, num_dim, noise=15, indep=False, low=-1, high=1,
+            cub_coeff=np.array([50, 10, 100]), scale=1/100000):
     """
     Function for generating a cubic simulation.
 
@@ -131,7 +131,7 @@ def joint_sim(num_samp, num_dim, noise=0.5):
 
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
-    :param noise: noise level of the simulation, defaults to 80
+    :param noise: noise level of the simulation, defaults to 0.5
 
     :return: the data matrix and a response array
     """
@@ -163,7 +163,7 @@ def step_sim(num_samp, num_dim, noise=0.1, indep=False, low=-1, high=1):
 
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
-    :param noise: noise level of the simulation, defaults to 1
+    :param noise: noise level of the simulation, defaults to 0.1
     :param indep: whether to sample x and y independently, defaults to false
     :param low: the lower limit of the data matrix, defaults to -1
     :param high: the upper limit of the data matrix, defaults to 1
@@ -562,3 +562,9 @@ def multi_indep_sim(num_samp, num_dim, prob=0.5, sep1=3, sep2=2):
     y = v/sep1 + sep2*v_2 - 1
 
     return x, y
+
+import matplotlib.pyplot as plt
+x_noise, y_noise = cub_sim(100, 1)
+x_no_noise, y_no_noise = cub_sim(1000, 1, noise=0)
+plt.scatter(x_noise, y_noise)
+plt.scatter(x_no_noise, y_no_noise)
