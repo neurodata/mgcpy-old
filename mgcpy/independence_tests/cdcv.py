@@ -96,12 +96,12 @@ class CDCV(IndependenceTest):
 
         # Collect the test statistic by lag, and sum them for the full test statistic.
         dependence_by_lag = np.zeros(M+1)
-        dependence_by_lag[0] = (self.cross_covariance_sum(matrix_X, matrix_Y))/(n-bias_correct)
+        dependence_by_lag[0] = np.maximum(0.0, self.cross_covariance_sum(matrix_X, matrix_Y))/(n-bias_correct)
         test_statistic = dependence_by_lag[0]
         for j in range(1,M+1):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
-            dependence_by_lag[j] = ((1 - j/(p*(M+1)))**2)*(self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y))/(n-j-bias_correct)
+            dependence_by_lag[j] = ((1 - j/(p*(M+1)))**2)*(np.maximum(0.0, self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y)))/(n-j-bias_correct)
             test_statistic += dependence_by_lag[j]
 
             # In asymmetric test, we do not add the following terms.
@@ -114,7 +114,7 @@ class CDCV(IndependenceTest):
         test_statistic_metadata = { 'dist_mtx_X' : matrix_X,
                                     'dist_mtx_Y' : matrix_Y,
                                     'optimal_lag' : optimal_lag }
-        self.test_statistic_ = test_statistic
+        self.test_statistic_ = test_statistic / ((M+1)*n)
         self.test_statistic_metadata_ = test_statistic_metadata
         return test_statistic, test_statistic_metadata
 

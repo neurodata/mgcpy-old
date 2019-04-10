@@ -98,13 +98,13 @@ class MGC_TS(IndependenceTest):
         # Collect the test statistic by lag, and sum them for the full test statistic.
         dependence_by_lag = np.zeros(M+1)
         mgc_statistic, _ = mgc.test_statistic(matrix_X, matrix_Y, is_fast, fast_mgc_data)
-        dependence_by_lag[0] = n*np.absolute(mgc_statistic)
+        dependence_by_lag[0] = n*np.absolute(np.maximum(0.0, mgc_statistic))
         test_statistic = dependence_by_lag[0]
         for j in range(1,M+1):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
             mgc_statistic, _ = mgc.test_statistic(dist_mtx_X, dist_mtx_Y, is_fast, fast_mgc_data)
-            dependence_by_lag[j] = ((1 - j/(p*(M+1)))**2)*(n-j)*np.absolute(mgc_statistic)
+            dependence_by_lag[j] = ((1 - j/(p*(M+1)))**2)*(n-j)*np.absolute(np.maximum(0.0, mgc_statistic))
             test_statistic += dependence_by_lag[j]
 
             # In asymmetric test, we do not add the following terms.
@@ -118,7 +118,7 @@ class MGC_TS(IndependenceTest):
         test_statistic_metadata = { 'dist_mtx_X' : matrix_X,
                                     'dist_mtx_Y' : matrix_Y,
                                     'optimal_lag' : optimal_lag }
-        self.test_statistic_ = test_statistic
+        self.test_statistic_ = test_statistic / ((M+1)*n)
         self.test_statistic_metadata_ = test_statistic_metadata
         return test_statistic, test_statistic_metadata
 
