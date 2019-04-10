@@ -103,7 +103,6 @@ class CDCV(IndependenceTest):
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
             dependence_by_lag[j] = ((1 - j/(p*(M+1)))**2)*(self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y))/(n-j-bias_correct)
             test_statistic += dependence_by_lag[j]
-            dependence_by_lag[j] += dependence_by_lag[j-1]
 
             # In asymmetric test, we do not add the following terms.
             # dist_mtx_X = matrix_X[0:(n-j),0:(n-j)]
@@ -111,7 +110,6 @@ class CDCV(IndependenceTest):
             # test_statistic += ((1 - j/(p*(M+1)))**2)*(self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y))/(n-j-bias_correct)
 
         # Reporting optimal lag
-        dependence_by_lag = np.divide(dependence_by_lag, np.array(range(1, M+2)))
         optimal_lag = np.argmax(dependence_by_lag)
         test_statistic_metadata = { 'dist_mtx_X' : matrix_X,
                                     'dist_mtx_Y' : matrix_Y,

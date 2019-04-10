@@ -96,25 +96,25 @@ class MGC_TS(IndependenceTest):
         mgc = self.mgc_object
 
         # Collect the test statistic by lag, and sum them for the full test statistic.
-        test_stats_by_lag = np.zeros(M+1)
+        dependence_by_lag = np.zeros(M+1)
         mgc_statistic, _ = mgc.test_statistic(matrix_X, matrix_Y, is_fast, fast_mgc_data)
-        test_stats_by_lag[0] = n*np.absolute(mgc_statistic)
+        dependence_by_lag[0] = n*np.absolute(mgc_statistic)
+        test_statistic = dependence_by_lag[0]
         for j in range(1,M+1):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
             mgc_statistic, _ = mgc.test_statistic(dist_mtx_X, dist_mtx_Y, is_fast, fast_mgc_data)
-            test_stats_by_lag[j] += ((1 - j/(p*(M+1)))**2)*(n-j)*np.absolute(mgc_statistic)
+            dependence_by_lag[j] = ((1 - j/(p*(M+1)))**2)*(n-j)*np.absolute(mgc_statistic)
+            test_statistic += dependence_by_lag[j]
 
             # In asymmetric test, we do not add the following terms.
             # dist_mtx_X = matrix_X[0:(n-j),0:(n-j)]
             # dist_mtx_Y = matrix_Y[j:n,j:n]
             # mgc_statistic, _ = mgc.test_statistic(dist_mtx_X, dist_mtx_Y, is_fast, fast_mgc_data)
             # test_statistic += ((1 - j/(p*(M+1)))**2)*(n-j)*np.absolute(mgc_statistic)
-        test_statistic = test_stats_by_lag.sum()
 
         # Reporting optimal lag
-        test_stats_by_lag = np.divide(test_stats_by_lag, np.array(range(1, M+2)))
-        optimal_lag = np.argmax(test_stats_by_lag)
+        optimal_lag = np.argmax(dependence_by_lag)
         test_statistic_metadata = { 'dist_mtx_X' : matrix_X,
                                     'dist_mtx_Y' : matrix_Y,
                                     'optimal_lag' : optimal_lag }
