@@ -34,7 +34,7 @@ class MGC_TS(IndependenceTest):
         self.max_lag = max_lag
         self.mgc_object = MGC()
 
-    def test_statistic(self, matrix_X, matrix_Y, is_fast=False, fast_mgc_data={}):
+    def test_statistic(self, matrix_X, matrix_Y):
         """
         Computes the MGC_TS measure between two time series datasets.
 
@@ -52,15 +52,6 @@ class MGC_TS(IndependenceTest):
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
             - a ``[n*q]`` data matrix, a matrix with ``n`` samples in ``q`` dimensions
         :type matrix_Y: 2D numpy.array
-
-        :param is_fast: is a boolean flag which specifies if the test_statistic should be computed (approximated)
-                        using the fast version of mgc. This defaults to False.
-        :type is_fast: boolean
-
-        :param fast_mgc_data: a ``dict`` of fast mgc params, refer: self._fast_mgc_test_statistic
-
-            - :sub_samples: specifies the number of subsamples.
-        :type fast_mgc_data: dictonary
 
         :return: returns a list of two items, that contains:
 
@@ -91,7 +82,7 @@ class MGC_TS(IndependenceTest):
             matrix_Y = matrix_Y.reshape((n,1))
         matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
 
-        p = math.sqrt(n)
+        p = 3*(n**(0.2))
         M = self.max_lag if self.max_lag is not None else math.ceil(math.sqrt(n))
         mgc = self.mgc_object
 
@@ -104,7 +95,7 @@ class MGC_TS(IndependenceTest):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
             mgc_statistic, _ = mgc.test_statistic(dist_mtx_X, dist_mtx_Y, is_fast, fast_mgc_data)
-            dependence_by_lag[j] = ((1 - j/(p*(M+1)))**2)*(n-j)*np.absolute(np.maximum(0.0, mgc_statistic))
+            dependence_by_lag[j] = (self.kernel(j, p)**2)*(n-j)*np.absolute(np.maximum(0.0, mgc_statistic))
             test_statistic += dependence_by_lag[j]
 
             # In asymmetric test, we do not add the following terms.
@@ -118,11 +109,20 @@ class MGC_TS(IndependenceTest):
         test_statistic_metadata = { 'dist_mtx_X' : matrix_X,
                                     'dist_mtx_Y' : matrix_Y,
                                     'optimal_lag' : optimal_lag }
-        self.test_statistic_ = test_statistic / ((M+1)*n)
+        self.test_statistic_ = test_statistic / n
         self.test_statistic_metadata_ = test_statistic_metadata
         return test_statistic, test_statistic_metadata
 
-    def p_value(self, matrix_X, matrix_Y, replication_factor=1000, is_fast=False, fast_mgc_data={}):
+    def kernel(self, j, p):
+        '''
+        Helper function: Compute the Bartlett kernel at bandwidth p.
+        '''
+        if j < p:
+            return(1.0 - j/p)
+        else:
+            return 0.0
+
+    def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
         """
         Tests independence between two datasets using MGC_TS and block permutation test.
 
@@ -141,15 +141,6 @@ class MGC_TS(IndependenceTest):
         :param replication_factor: specifies the number of replications to use for
                                    the permutation test. Defaults to ``1000``.
         :type replication_factor: integer
-
-        :param is_fast: is a boolean flag which specifies if the p_value should be computed (approximated)
-                        using the fast version of mgc. This defaults to False.
-        :type is_fast: boolean
-
-        :param fast_mgc_data: a ``dict`` of fast mgc params, , refer: self._fast_mgc_p_value
-
-            - :sub_samples: specifies the number of subsamples.
-        :type fast_mgc_data: dictonary
 
         :return: returns a list of two items, that contains:
 
@@ -186,7 +177,8 @@ class MGC_TS(IndependenceTest):
         test_stats_null = np.zeros(replication_factor)
         for rep in range(replication_factor):
             # Generate new time series sample for Y
-            permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.permutation((n // block_size) + 1)]].flatten()[:n]
+            permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
+            permuted_indices = np.mod(permuted_indices, n)
             permuted_Y = matrix_Y[permuted_indices,:][:, permuted_indices] # TO DO: See if there is a better way to permute
 
             # Compute test statistic

@@ -88,7 +88,7 @@ class CDCV(IndependenceTest):
         for j in range(1,M+1):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
-            dependence_by_lag[j] = ((1 - j/p)**2)*(np.maximum(0.0, self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y)))/(n-j-bias_correct)
+            dependence_by_lag[j] = (self.kernel(j, p)**2)*(np.maximum(0.0, self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y)))/(n-j-bias_correct)
             test_statistic += dependence_by_lag[j]
 
             # In asymmetric test, we do not add the following terms.
@@ -101,7 +101,7 @@ class CDCV(IndependenceTest):
         test_statistic_metadata = { 'dist_mtx_X' : matrix_X,
                                     'dist_mtx_Y' : matrix_Y,
                                     'optimal_lag' : optimal_lag }
-        self.test_statistic_ = test_statistic / ((M+1)*n)
+        self.test_statistic_ = test_statistic / n
         self.test_statistic_metadata_ = test_statistic_metadata
         return test_statistic, test_statistic_metadata
 
@@ -126,6 +126,14 @@ class CDCV(IndependenceTest):
 
         return np.sum(np.multiply(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_Y)))
 
+    def kernel(self, j, p):
+        '''
+        Helper function: Compute the Bartlett kernel at bandwidth p.
+        '''
+        if j < p:
+            return(1.0 - j/p)
+        else:
+            return 0.0
 
     def p_value(self, matrix_X, matrix_Y, replication_factor=1000, is_fast=False, fast_dcorr_data={}):
         '''
@@ -182,7 +190,8 @@ class CDCV(IndependenceTest):
         test_stats_null = np.zeros(replication_factor)
         for rep in range(replication_factor):
             # Generate new time series sample for Y
-            permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.permutation((n // block_size) + 1)]].flatten()[:n]
+            permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
+            permuted_indices = np.mod(permuted_indices, n)
             permuted_Y = matrix_Y[permuted_indices,:][:, permuted_indices] # TO DO: See if there is a better way to permute
 
             # Compute test statistic
