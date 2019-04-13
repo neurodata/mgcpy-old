@@ -27,7 +27,7 @@ class CDCV(IndependenceTest):
         self.which_test = which_test
         self.max_lag = max_lag
 
-    def test_statistic(self, matrix_X, matrix_Y, is_fast=False, fast_dcorr_data={}):
+    def test_statistic(self, matrix_X, matrix_Y):
         """
         Computes the (summed across lags) cross distance covariance estimate between two time series.
 
@@ -42,15 +42,6 @@ class CDCV(IndependenceTest):
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
             - a ``[n*q]`` data matrix, a matrix with ``n`` samples in ``q`` dimensions
         :type matrix_Y: 2D numpy.array
-
-        :param is_fast: is a boolean flag which specifies if the test_statistic should be computed (approximated)
-                        using the fast version of dcorr. This defaults to False.
-        :type is_fast: boolean
-
-        :param fast_dcorr_data: a ``dict`` of fast dcorr params, refer: self._fast_dcorr_test_statistic
-
-            - :sub_samples: specifies the number of subsamples.
-        :type fast_dcorr_data: dictonary
 
         :return: returns a list of two items, that contains:
 
@@ -76,10 +67,6 @@ class CDCV(IndependenceTest):
         if self.which_test == "unbiased" and matrix_X.shape[0] <= 3:
             raise ValueError('Cannot use unbiased estimator of CDCV with n <= 3.')
 
-        # TO DO: fast CDCV.
-        #if is_fast:
-        #    test_statistic, test_statistic_metadata = self._fast_dcorr_test_statistic(matrix_X, matrix_Y, **fast_dcorr_data)
-        #else:
         # Represent univariate data as matrices.
         # Use the matrix shape and diagonal elements to determine if the given data is a distance matrix or not.
         n = matrix_X.shape[0]
@@ -89,8 +76,8 @@ class CDCV(IndependenceTest):
             matrix_Y = matrix_Y.reshape((n,1))
         matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
 
-        # TO DO: parallelize.
-        p = math.sqrt(n)
+        # TO DO: parallelize?
+        p = 3*(n**(0.2))
         M = self.max_lag if self.max_lag is not None else math.ceil(math.sqrt(n))
         bias_correct = 0 if self.which_test == 'biased' else 3
 
@@ -101,7 +88,7 @@ class CDCV(IndependenceTest):
         for j in range(1,M+1):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
-            dependence_by_lag[j] = ((1 - j/(p*(M+1)))**2)*(np.maximum(0.0, self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y)))/(n-j-bias_correct)
+            dependence_by_lag[j] = ((1 - j/p)**2)*(np.maximum(0.0, self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y)))/(n-j-bias_correct)
             test_statistic += dependence_by_lag[j]
 
             # In asymmetric test, we do not add the following terms.
@@ -118,74 +105,6 @@ class CDCV(IndependenceTest):
         self.test_statistic_metadata_ = test_statistic_metadata
         return test_statistic, test_statistic_metadata
 
-    """
-    def _fast_dcorr_test_statistic(self, matrix_X, matrix_Y, sub_samples=10):
-        '''
-        Fast Dcor or Hsic test by subsampling that runs in O(ns*n), based on:
-        Q. Zhang, S. Filippi, A. Gretton, and D. Sejdinovic, “Large-scale kernel methods for independence testing,”
-        Statistics and Computing, vol. 28, no. 1, pp. 113–130, 2018.
-
-        Faster version of DCorr's test_statistic function
-
-        :param matrix_X: is interpreted as either:
-
-            - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
-            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``p`` dimensions
-        :type matrix_X: 2D numpy.array
-
-        :param matrix_Y: is interpreted as either:
-
-            - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
-            - a ``[n*d]`` data matrix, a matrix with ``n`` samples in ``q`` dimensions
-        :type matrix_Y: 2D numpy.array
-
-        :param sub_samples: specifies the number of subsamples.
-                            generally total_samples/sub_samples should be more than 4,
-                            and ``sub_samples`` should be large than 10.
-        :type sub_samples: integer
-
-        :return: returns a list of two items, that contains:
-
-            - :test_statistic: the sample DCorr statistic within [-1, 1]
-            - :independence_test_metadata: a ``dict`` of metadata with the following keys:
-                    - :sigma: computed standard deviation for computing the p-value next.
-                    - :mu: computed mean for computing the p-value next.
-        :rtype: list
-        '''
-
-        total_samples = matrix_Y.shape[0]
-        num_samples = total_samples // sub_samples
-
-        # if full data size (total_samples) is not more than 4 times of sub_samples, split to 4 samples
-        # too few samples will fail the normal approximation and cause the test to be invalid
-
-        if total_samples < 4 * sub_samples:
-            sub_samples = total_samples // 4
-            num_samples = 4
-
-        # the observed statistics by subsampling
-        test_statistic_sub_sampling = np.zeros(num_samples)
-
-        # subsampling computation
-        permuted_Y = matrix_Y
-        for i in range(num_samples):
-            sub_matrix_X = matrix_X[(sub_samples*i):sub_samples*(i+1), :]
-            sub_matrix_Y = permuted_Y[(sub_samples*i):sub_samples*(i+1), :]
-
-            test_statistic_sub_sampling[i], _ = self.test_statistic(sub_matrix_X, sub_matrix_Y)
-
-        # approximate the null distribution by normal distribution
-        sigma = stdev(test_statistic_sub_sampling) / math.sqrt(num_samples)
-        mu = 0
-
-        # compute the test statistic
-        test_statistic = mean(test_statistic_sub_sampling)
-
-        test_statistic_metadata = {"sigma": sigma,
-                                   "mu": mu}
-
-        return test_statistic, test_statistic_metadata
-    """
     def cross_covariance_sum(self, dist_mtx_X, dist_mtx_Y):
         '''
         Helper function: Compute the sum of element-wise distances products
@@ -230,15 +149,6 @@ class CDCV(IndependenceTest):
                                    the permutation test. Defaults to ``1000``.
         :type replication_factor: integer
 
-        :param is_fast: is a boolean flag which specifies if the test_statistic should be computed (approximated)
-                        using the fast version of dcorr. This defaults to False.
-        :type is_fast: boolean
-
-        :param fast_dcorr_data: a ``dict`` of fast dcorr params, refer: self._fast_dcorr_test_statistic
-
-            - :sub_samples: specifies the number of subsamples.
-        :type fast_dcorr_data: dictonary
-
         :return: p-value of distance correlation
         :rtype: numpy.float
         :return: returns a list of two items, that contains:
@@ -262,13 +172,6 @@ class CDCV(IndependenceTest):
         '''
         assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be equal to q"
 
-        #if is_fast:
-        #    p_value, p_value_metadata = self._fast_dcorr_p_value(matrix_X, matrix_Y, **fast_dcorr_data)
-        #    self.p_value_ = p_value
-        #    self.p_value_metadata_ = p_value_metadata
-        #    return p_value, p_value_metadata
-        #else:
-
         # Block bootstrap
         n = matrix_X.shape[0]
         block_size = int(np.ceil(np.sqrt(n)))
@@ -291,53 +194,3 @@ class CDCV(IndependenceTest):
         self.p_value_ = p_value
         self.p_value_metadata_ = p_value_metadata
         return p_value, p_value_metadata
-    """
-    def _fast_dcorr_p_value(self, matrix_X, matrix_Y, sub_samples=10):
-        '''
-        Fast Dcor or Hsic test by subsampling that runs in O(ns*n), based on:
-        Q. Zhang, S. Filippi, A. Gretton, and D. Sejdinovic, “Large-scale kernel methods for independence testing,”
-        Statistics and Computing, vol. 28, no. 1, pp. 113–130, 2018.
-
-        DCorr test statistic computation and permutation test by fast subsampling.
-
-        :param matrix_X: is interpreted as either:
-
-            - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a ``[n*p]`` data matrix, a matrix with n samples in p dimensions
-        :type matrix_X: 2D numpy.array
-
-        :param matrix_Y: is interpreted as either:
-
-            - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for n samples OR
-            - a ``[n*q]`` data matrix, a matrix with n samples in q dimensions
-        :type matrix_Y: 2D numpy.array
-
-        :param sub_samples: specifies the number of subsamples.
-                            generally total_samples/sub_samples should be more than 4,
-                            and ``sub_samples`` should be large than 10.
-        :type sub_samples: integer
-
-        :return: returns a list of two items, that contains:
-
-            - :p_value: P-value of DCorr
-            - :metadata: a ``dict`` of metadata with the following keys:
-
-                    - :test_statistic: the sample DCorr statistic within ``[-1, 1]``
-        :rtype: list
-        '''
-        test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y, is_fast=True, fast_dcorr_data={"sub_samples": sub_samples})
-        sigma = test_statistic_metadata["sigma"]
-        mu = test_statistic_metadata["mu"]
-
-        # compute p value
-        p_value = 1 - norm.cdf(test_statistic, mu, sigma)
-
-        # The results are not statistically significant
-        if p_value > 0.05:
-            warnings.warn("The p-value is greater than 0.05, implying that the results are not statistically significant.\n" +
-                          "Use results such as test_statistic and optimal_scale, with caution!")
-
-        p_value_metadata = {"test_statistic": test_statistic}
-
-        return p_value, p_value_metadata
-        """
