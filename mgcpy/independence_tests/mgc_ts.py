@@ -34,7 +34,7 @@ class MGC_TS(IndependenceTest):
         self.max_lag = max_lag
         self.mgc_object = MGC()
 
-    def test_statistic(self, matrix_X, matrix_Y):
+    def test_statistic(self, matrix_X, matrix_Y, p = None):
         """
         Computes the MGC_TS measure between two time series datasets.
 
@@ -52,6 +52,9 @@ class MGC_TS(IndependenceTest):
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
             - a ``[n*q]`` data matrix, a matrix with ``n`` samples in ``q`` dimensions
         :type matrix_Y: 2D numpy.array
+        
+        :param p: bandwidth parameter for Bartlett Kernel.
+        :type p: float
 
         :return: returns a list of two items, that contains:
 
@@ -82,27 +85,22 @@ class MGC_TS(IndependenceTest):
             matrix_Y = matrix_Y.reshape((n,1))
         matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
 
-        p = 3*(n**(0.2))
+        if p is None:
+            p = 3*(n**(0.2))
         M = self.max_lag if self.max_lag is not None else math.ceil(math.sqrt(n))
         mgc = self.mgc_object
 
         # Collect the test statistic by lag, and sum them for the full test statistic.
         dependence_by_lag = np.zeros(M+1)
-        mgc_statistic, _ = mgc.test_statistic(matrix_X, matrix_Y, is_fast, fast_mgc_data)
-        dependence_by_lag[0] = n*np.absolute(np.maximum(0.0, mgc_statistic))
+        mgc_statistic, _ = mgc.test_statistic(matrix_X, matrix_Y)
+        dependence_by_lag[0] = n*np.maximum(0.0, mgc_statistic)
         test_statistic = dependence_by_lag[0]
         for j in range(1,M+1):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
-            mgc_statistic, _ = mgc.test_statistic(dist_mtx_X, dist_mtx_Y, is_fast, fast_mgc_data)
-            dependence_by_lag[j] = (self.kernel(j, p)**2)*(n-j)*np.absolute(np.maximum(0.0, mgc_statistic))
+            mgc_statistic, _ = mgc.test_statistic(dist_mtx_X, dist_mtx_Y)
+            dependence_by_lag[j] = (self.kernel(j, p)**2)*(n-j)*np.maximum(0.0, mgc_statistic)
             test_statistic += dependence_by_lag[j]
-
-            # In asymmetric test, we do not add the following terms.
-            # dist_mtx_X = matrix_X[0:(n-j),0:(n-j)]
-            # dist_mtx_Y = matrix_Y[j:n,j:n]
-            # mgc_statistic, _ = mgc.test_statistic(dist_mtx_X, dist_mtx_Y, is_fast, fast_mgc_data)
-            # test_statistic += ((1 - j/(p*(M+1)))**2)*(n-j)*np.absolute(mgc_statistic)
 
         # Reporting optimal lag
         optimal_lag = np.argmax(dependence_by_lag)
@@ -170,7 +168,7 @@ class MGC_TS(IndependenceTest):
         # Block bootstrap
         n = matrix_X.shape[0]
         block_size = int(np.ceil(np.sqrt(n)))
-        test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y, is_fast, fast_mgc_data)
+        test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
         matrix_X = test_statistic_metadata['dist_mtx_X']
         matrix_Y = test_statistic_metadata['dist_mtx_Y']
 
@@ -182,7 +180,7 @@ class MGC_TS(IndependenceTest):
             permuted_Y = matrix_Y[permuted_indices,:][:, permuted_indices] # TO DO: See if there is a better way to permute
 
             # Compute test statistic
-            test_stats_null[rep], _ = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_Y, is_fast=is_fast, fast_mgc_data=fast_mgc_data)
+            test_stats_null[rep], _ = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_Y)
 
         p_value = np.where(test_stats_null >= test_statistic)[0].shape[0] / replication_factor
         p_value_metadata = {'test_stats_null' : test_stats_null}
