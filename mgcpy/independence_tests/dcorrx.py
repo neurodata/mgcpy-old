@@ -8,7 +8,7 @@ from mgcpy.independence_tests.abstract_class import IndependenceTest
 from mgcpy.independence_tests.utils.compute_distance_matrix import compute_distance
 from mgcpy.independence_tests.utils.distance_transform import transform_distance_matrix
 
-class CDCV(IndependenceTest):
+class DCorrX(IndependenceTest):
 
     def __init__(self, compute_distance_matrix=None, which_test='unbiased', max_lag=0):
         '''
@@ -25,9 +25,10 @@ class CDCV(IndependenceTest):
         if which_test not in ['unbiased', 'biased']:
             raise ValueError('which_test must be unbiased or biased.')
         self.which_test = which_test
+        self.dcorr = DCorr(which_test = self.which_test)
         self.max_lag = max_lag
 
-    def test_statistic(self, matrix_X, matrix_Y):
+    def test_statistic(self, matrix_X, matrix_Y, p = None):
         """
         Computes the (summed across lags) cross distance covariance estimate between two time series.
 
@@ -42,6 +43,9 @@ class CDCV(IndependenceTest):
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
             - a ``[n*q]`` data matrix, a matrix with ``n`` samples in ``q`` dimensions
         :type matrix_Y: 2D numpy.array
+
+        :param p: bandwidth parameter for Bartlett Kernel.
+        :type p: float
 
         :return: returns a list of two items, that contains:
 
@@ -76,55 +80,29 @@ class CDCV(IndependenceTest):
             matrix_Y = matrix_Y.reshape((n,1))
         matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
 
-        # TO DO: parallelize?
-        p = 3*(n**(0.2))
+        if p is None:
+            p = 3*(n**(0.2))
         M = self.max_lag if self.max_lag is not None else math.ceil(math.sqrt(n))
-        bias_correct = 0 if self.which_test == 'biased' else 3
+        dcorr = self.dcorr
 
         # Collect the test statistic by lag, and sum them for the full test statistic.
         dependence_by_lag = np.zeros(M+1)
-        dependence_by_lag[0] = np.maximum(0.0, self.cross_covariance_sum(matrix_X, matrix_Y))/(n-bias_correct)
-        test_statistic = dependence_by_lag[0]
-        for j in range(1,M+1):
+        dcorr_statistic, _ = dcorr.test_statistic(matrix_X, matrix_Y)
+        dependence_by_lag[0] = np.maximum(0.0, dcorr_statistic)
+
+        # TO DO: parallelize?
+        for j in range(1, M+1):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
-            dependence_by_lag[j] = (self.kernel(j, p)**2)*(np.maximum(0.0, self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y)))/(n-j-bias_correct)
-            test_statistic += dependence_by_lag[j]
-
-            # In asymmetric test, we do not add the following terms.
-            # dist_mtx_X = matrix_X[0:(n-j),0:(n-j)]
-            # dist_mtx_Y = matrix_Y[j:n,j:n]
-            # test_statistic += ((1 - j/(p*(M+1)))**2)*(self.cross_covariance_sum(dist_mtx_X, dist_mtx_Y))/(n-j-bias_correct)
+            dcorr_statistic, _ = dcorr.test_statistic(dist_mtx_X, dist_mtx_Y)
+            dependence_by_lag[j] = (n-j)*(self.kernel(j, p)**2)*np.maximum(0.0, dcorr_statistic) / n
 
         # Reporting optimal lag
         optimal_lag = np.argmax(dependence_by_lag)
-        test_statistic_metadata = { 'dist_mtx_X' : matrix_X,
-                                    'dist_mtx_Y' : matrix_Y,
-                                    'optimal_lag' : optimal_lag }
-        self.test_statistic_ = test_statistic / n
+        test_statistic_metadata = { 'optimal_lag' : optimal_lag, 'dependence_by_lag' : dependence_by_lag }
+        self.test_statistic_ = np.sum(dependence_by_lag)
         self.test_statistic_metadata_ = test_statistic_metadata
         return test_statistic, test_statistic_metadata
-
-    def cross_covariance_sum(self, dist_mtx_X, dist_mtx_Y):
-        '''
-        Helper function: Compute the sum of element-wise distances products
-        Divide by n^2 to compute (biased) global covariance estimate.
-
-        :param dist_mtx_X: a [(n-j)*(n-j)] distance matrix (lag j)
-        :type dist_mtx_X: 2D numpy.array
-
-        :param dist_mtx_Y: a [(n-j)*(n-j)] distance matrix (lag j)
-        :type dist_mtx_Y: 2D numpy.array
-
-        :return: the data covariance or variance based on the distance matrices
-        :rtype: numpy.float
-        '''
-
-        transformed_distance_matrices = transform_distance_matrix(dist_mtx_X, dist_mtx_Y, base_global_correlation=self.which_test, is_ranked=False)
-        transformed_dist_mtx_X = transformed_distance_matrices['centered_distance_matrix_A']
-        transformed_dist_mtx_Y = transformed_distance_matrices['centered_distance_matrix_B']
-
-        return np.sum(np.multiply(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_Y)))
 
     def kernel(self, j, p):
         '''
@@ -134,8 +112,8 @@ class CDCV(IndependenceTest):
             return(1.0 - j/p)
         else:
             return 0.0
-
-    def p_value(self, matrix_X, matrix_Y, replication_factor=1000, is_fast=False, fast_dcorr_data={}):
+            
+    def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
         '''
         Compute the p-value
         if the correlation test is unbiased, p-value can be computed using a t test
@@ -180,26 +158,70 @@ class CDCV(IndependenceTest):
         '''
         assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be equal to q"
 
-        # Block bootstrap
+        # Compute test statistic
         n = matrix_X.shape[0]
-        block_size = int(np.ceil(np.sqrt(n)))
+        if len(matrix_X.shape) == 1:
+            matrix_X = matrix_X.reshape((n,1))
+        if len(matrix_Y.shape) == 1:
+            matrix_Y = matrix_Y.reshape((n,1))
+        matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
         test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
-        matrix_X = test_statistic_metadata['dist_mtx_X']
-        matrix_Y = test_statistic_metadata['dist_mtx_Y']
 
+        # Block bootstrap
+        block_size = int(np.ceil(np.sqrt(n)))
         test_stats_null = np.zeros(replication_factor)
         for rep in range(replication_factor):
             # Generate new time series sample for Y
             permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
             permuted_indices = np.mod(permuted_indices, n)
-            permuted_Y = matrix_Y[permuted_indices,:][:, permuted_indices] # TO DO: See if there is a better way to permute
+            permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
 
             # Compute test statistic
             test_stats_null[rep], _ = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_Y)
 
         p_value = np.where(test_stats_null >= test_statistic)[0].shape[0] / replication_factor
-        p_value_metadata = {'test_stats_null' : test_stats_null}
+        p_value_metadata = {}
 
         self.p_value_ = p_value
         self.p_value_metadata_ = p_value_metadata
         return p_value, p_value_metadata
+    """
+    def dcov(self, dist_mtx_X, dist_mtx_Y):
+        '''
+        Helper function: Compute the distance covariance from distances of X and Y.
+
+        :param dist_mtx_X: a [(n-j)*(n-j)] distance matrix (lag j)
+        :type dist_mtx_X: 2D numpy.array
+
+        :param dist_mtx_Y: a [(n-j)*(n-j)] distance matrix (lag j)
+        :type dist_mtx_Y: 2D numpy.array
+
+        :return: the data covariance or variance based on the distance matrices
+        :rtype: numpy.float
+        '''
+
+        transformed_distance_matrices = transform_distance_matrix(dist_mtx_X, dist_mtx_Y, base_global_correlation=self.which_test, is_ranked=False)
+        transformed_dist_mtx_X = transformed_distance_matrices['centered_distance_matrix_A']
+        transformed_dist_mtx_Y = transformed_distance_matrices['centered_distance_matrix_B']
+
+        covariance = self.compute_global_covariance(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_Y))
+        variance_X = self.compute_global_covariance(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_X))
+        variance_Y = self.compute_global_covariance(transformed_dist_mtx_Y, np.transpose(transformed_dist_mtx_Y))
+
+        return np.sum(np.multiply(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_Y)))
+
+    def compute_global_covariance(self, dist_mtx_X, dist_mtx_Y):
+        '''
+        Helper function: Compute the global covariance using distance matrix A and B
+
+        :param dist_mtx_X: a [n*n] distance matrix
+        :type dist_mtx_X: 2D numpy.array
+
+        :param dist_mtx_Y: a [n*n] distance matrix
+        :type dist_mtx_Y: 2D numpy.array
+
+        :return: the data covariance or variance based on the distance matrices
+        :rtype: numpy.float
+        '''
+        return np.sum(np.multiply(dist_mtx_X, dist_mtx_Y))
+    """

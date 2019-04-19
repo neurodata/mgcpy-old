@@ -15,7 +15,7 @@ from mgcpy.independence_tests.utils.fast_functions import (_approx_null_dist,
 from mgcpy.independence_tests.mgc import MGC
 
 
-class MGC_TS(IndependenceTest):
+class MGCX(IndependenceTest):
     def __init__(self, compute_distance_matrix=None, max_lag = 1):
         '''
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
@@ -32,11 +32,11 @@ class MGC_TS(IndependenceTest):
 
         IndependenceTest.__init__(self, compute_distance_matrix)
         self.max_lag = max_lag
-        self.mgc_object = MGC()
+        self.mgc = MGC()
 
     def test_statistic(self, matrix_X, matrix_Y, p = None):
         """
-        Computes the MGC_TS measure between two time series datasets.
+        Computes the MGCX measure between two time series datasets.
 
             - It first computes all the local correlations
             - Then, it returns the maximal statistic among all local correlations based on thresholding.
@@ -52,7 +52,7 @@ class MGC_TS(IndependenceTest):
             - a ``[n*n]`` distance matrix, a square matrix with zeros on diagonal for ``n`` samples OR
             - a ``[n*q]`` data matrix, a matrix with ``n`` samples in ``q`` dimensions
         :type matrix_Y: 2D numpy.array
-        
+
         :param p: bandwidth parameter for Bartlett Kernel.
         :type p: float
 
@@ -88,26 +88,24 @@ class MGC_TS(IndependenceTest):
         if p is None:
             p = 3*(n**(0.2))
         M = self.max_lag if self.max_lag is not None else math.ceil(math.sqrt(n))
-        mgc = self.mgc_object
+        mgc = self.mgc
 
         # Collect the test statistic by lag, and sum them for the full test statistic.
         dependence_by_lag = np.zeros(M+1)
         mgc_statistic, _ = mgc.test_statistic(matrix_X, matrix_Y)
         dependence_by_lag[0] = n*np.maximum(0.0, mgc_statistic)
-        test_statistic = dependence_by_lag[0]
+
+        # TO DO: parallelize?
         for j in range(1,M+1):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
             mgc_statistic, _ = mgc.test_statistic(dist_mtx_X, dist_mtx_Y)
-            dependence_by_lag[j] = (self.kernel(j, p)**2)*(n-j)*np.maximum(0.0, mgc_statistic)
-            test_statistic += dependence_by_lag[j]
+            dependence_by_lag[j] = (n-j)*(self.kernel(j, p)**2)*np.maximum(0.0, mgc_statistic) / n
 
         # Reporting optimal lag
         optimal_lag = np.argmax(dependence_by_lag)
-        test_statistic_metadata = { 'dist_mtx_X' : matrix_X,
-                                    'dist_mtx_Y' : matrix_Y,
-                                    'optimal_lag' : optimal_lag }
-        self.test_statistic_ = test_statistic / n
+        test_statistic_metadata = { 'optimal_lag' : optimal_lag, 'dependence_by_lag' : dependence_by_lag }
+        self.test_statistic_ = np.sum(dependence_by_lag)
         self.test_statistic_metadata_ = test_statistic_metadata
         return test_statistic, test_statistic_metadata
 
@@ -165,25 +163,29 @@ class MGC_TS(IndependenceTest):
         """
         assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be equal to q"
 
-        # Block bootstrap
+        # Compute test statistic
         n = matrix_X.shape[0]
-        block_size = int(np.ceil(np.sqrt(n)))
+        if len(matrix_X.shape) == 1:
+            matrix_X = matrix_X.reshape((n,1))
+        if len(matrix_Y.shape) == 1:
+            matrix_Y = matrix_Y.reshape((n,1))
+        matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
         test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
-        matrix_X = test_statistic_metadata['dist_mtx_X']
-        matrix_Y = test_statistic_metadata['dist_mtx_Y']
 
+        # Block bootstrap
+        block_size = int(np.ceil(np.sqrt(n)))
         test_stats_null = np.zeros(replication_factor)
         for rep in range(replication_factor):
             # Generate new time series sample for Y
             permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
             permuted_indices = np.mod(permuted_indices, n)
-            permuted_Y = matrix_Y[permuted_indices,:][:, permuted_indices] # TO DO: See if there is a better way to permute
+            permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
 
             # Compute test statistic
             test_stats_null[rep], _ = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_Y)
 
         p_value = np.where(test_stats_null >= test_statistic)[0].shape[0] / replication_factor
-        p_value_metadata = {'test_stats_null' : test_stats_null}
+        p_value_metadata = {}
 
         self.p_value_ = p_value
         self.p_value_metadata_ = p_value_metadata
