@@ -92,11 +92,11 @@ class MGCX(IndependenceTest):
 
         # Collect the test statistic by lag, and sum them for the full test statistic.
         dependence_by_lag = np.zeros(M+1)
-        mgc_statistic, _ = mgc.test_statistic(matrix_X, matrix_Y)
+        mgc_statistic, mgc_metadata = mgc.test_statistic(matrix_X, matrix_Y)
         dependence_by_lag[0] = n*np.maximum(0.0, mgc_statistic)
         max_dependence = dependence_by_lag[0]
         optimal_lag = 0
-        optimal_scale = [1, 1]
+        optimal_scale = mgc_metadata['optimal_scale']
 
         # TO DO: parallelize?
         for j in range(1,M+1):
@@ -107,16 +107,15 @@ class MGCX(IndependenceTest):
             if dependence_by_lag[j] > max_dependence:
                 max_dependence = dependence_by_lag[j]
                 optimal_lag = j
-                optimal_scale = mgc_metadata['optimal_lag']
+                optimal_scale = mgc_metadata['optimal_scale']
 
 
         # Reporting optimal lag
-        test_statistic_metadata = { 'optimal_lag' : optimal_lag,
+        self.test_statistic_metadata_ = { 'optimal_lag' : optimal_lag,
                                     'optimal_scale' : optimal_scale,
                                     'dependence_by_lag' : dependence_by_lag }
         self.test_statistic_ = np.sum(dependence_by_lag)
-        self.test_statistic_metadata_ = test_statistic_metadata
-        return test_statistic, test_statistic_metadata
+        return self.test_statistic_, self.test_statistic_metadata_
 
     def kernel(self, j, p):
         '''
@@ -191,11 +190,9 @@ class MGCX(IndependenceTest):
             permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
 
             # Compute test statistic
-            test_stats_null[rep], _ = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_Y)
+            test_stats_null[rep], _ = self.test_statistic(matrix_X, permuted_Y)
 
-        p_value = np.where(test_stats_null >= test_statistic)[0].shape[0] / replication_factor
-        p_value_metadata = {}
+        self.p_value_ = np.sum(np.greater(test_stats_null, test_statistic)) / replication_factor
+        self.p_value_metadata_ = {}
 
-        self.p_value_ = p_value
-        self.p_value_metadata_ = p_value_metadata
-        return p_value, p_value_metadata
+        return self.p_value_, self.p_value_metadata_

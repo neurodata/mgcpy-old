@@ -5,6 +5,7 @@ from scipy.stats import norm, t
 
 import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
+from mgcpy.independence_tests.dcorr import DCorr
 from mgcpy.independence_tests.utils.compute_distance_matrix import compute_distance
 from mgcpy.independence_tests.utils.distance_transform import transform_distance_matrix
 
@@ -102,7 +103,7 @@ class DCorrX(IndependenceTest):
         test_statistic_metadata = { 'optimal_lag' : optimal_lag, 'dependence_by_lag' : dependence_by_lag }
         self.test_statistic_ = np.sum(dependence_by_lag)
         self.test_statistic_metadata_ = test_statistic_metadata
-        return test_statistic, test_statistic_metadata
+        return self.test_statistic_, test_statistic_metadata
 
     def kernel(self, j, p):
         '''
@@ -165,7 +166,7 @@ class DCorrX(IndependenceTest):
         if len(matrix_Y.shape) == 1:
             matrix_Y = matrix_Y.reshape((n,1))
         matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
-        test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
+        observed_test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
 
         # Block bootstrap
         block_size = int(np.ceil(np.sqrt(n)))
@@ -177,51 +178,9 @@ class DCorrX(IndependenceTest):
             permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
 
             # Compute test statistic
-            test_stats_null[rep], _ = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_Y)
+            test_stats_null[rep], _ = self.test_statistic(matrix_X, permuted_Y)
 
-        p_value = np.where(test_stats_null >= test_statistic)[0].shape[0] / replication_factor
-        p_value_metadata = {}
+        self.p_value_ = np.sum(np.greater(test_stats_null, observed_test_statistic)) / replication_factor
+        self.p_value_metadata_ = {}
 
-        self.p_value_ = p_value
-        self.p_value_metadata_ = p_value_metadata
-        return p_value, p_value_metadata
-    """
-    def dcov(self, dist_mtx_X, dist_mtx_Y):
-        '''
-        Helper function: Compute the distance covariance from distances of X and Y.
-
-        :param dist_mtx_X: a [(n-j)*(n-j)] distance matrix (lag j)
-        :type dist_mtx_X: 2D numpy.array
-
-        :param dist_mtx_Y: a [(n-j)*(n-j)] distance matrix (lag j)
-        :type dist_mtx_Y: 2D numpy.array
-
-        :return: the data covariance or variance based on the distance matrices
-        :rtype: numpy.float
-        '''
-
-        transformed_distance_matrices = transform_distance_matrix(dist_mtx_X, dist_mtx_Y, base_global_correlation=self.which_test, is_ranked=False)
-        transformed_dist_mtx_X = transformed_distance_matrices['centered_distance_matrix_A']
-        transformed_dist_mtx_Y = transformed_distance_matrices['centered_distance_matrix_B']
-
-        covariance = self.compute_global_covariance(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_Y))
-        variance_X = self.compute_global_covariance(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_X))
-        variance_Y = self.compute_global_covariance(transformed_dist_mtx_Y, np.transpose(transformed_dist_mtx_Y))
-
-        return np.sum(np.multiply(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_Y)))
-
-    def compute_global_covariance(self, dist_mtx_X, dist_mtx_Y):
-        '''
-        Helper function: Compute the global covariance using distance matrix A and B
-
-        :param dist_mtx_X: a [n*n] distance matrix
-        :type dist_mtx_X: 2D numpy.array
-
-        :param dist_mtx_Y: a [n*n] distance matrix
-        :type dist_mtx_Y: 2D numpy.array
-
-        :return: the data covariance or variance based on the distance matrices
-        :rtype: numpy.float
-        '''
-        return np.sum(np.multiply(dist_mtx_X, dist_mtx_Y))
-    """
+        return self.p_value_, self.p_value_metadata_
