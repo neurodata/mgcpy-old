@@ -94,17 +94,26 @@ class MGCX(IndependenceTest):
         dependence_by_lag = np.zeros(M+1)
         mgc_statistic, _ = mgc.test_statistic(matrix_X, matrix_Y)
         dependence_by_lag[0] = n*np.maximum(0.0, mgc_statistic)
+        max_dependence = dependence_by_lag[0]
+        optimal_lag = 0
+        optimal_scale = [1, 1]
 
         # TO DO: parallelize?
         for j in range(1,M+1):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
-            mgc_statistic, _ = mgc.test_statistic(dist_mtx_X, dist_mtx_Y)
+            mgc_statistic, mgc_metadata = mgc.test_statistic(dist_mtx_X, dist_mtx_Y)
             dependence_by_lag[j] = (n-j)*(self.kernel(j, p)**2)*np.maximum(0.0, mgc_statistic) / n
+            if dependence_by_lag[j] > max_dependence:
+                max_dependence = dependence_by_lag[j]
+                optimal_lag = j
+                optimal_scale = mgc_metadata['optimal_lag']
+
 
         # Reporting optimal lag
-        optimal_lag = np.argmax(dependence_by_lag)
-        test_statistic_metadata = { 'optimal_lag' : optimal_lag, 'dependence_by_lag' : dependence_by_lag }
+        test_statistic_metadata = { 'optimal_lag' : optimal_lag,
+                                    'optimal_scale' : optimal_scale,
+                                    'dependence_by_lag' : dependence_by_lag }
         self.test_statistic_ = np.sum(dependence_by_lag)
         self.test_statistic_metadata_ = test_statistic_metadata
         return test_statistic, test_statistic_metadata
