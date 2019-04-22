@@ -70,7 +70,7 @@ class DCorrX(IndependenceTest):
         """
         assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be different from q"
         if self.which_test == "unbiased" and matrix_X.shape[0] <= 3:
-            raise ValueError('Cannot use unbiased estimator of CDCV with n <= 3.')
+            raise ValueError('Cannot use unbiased estimator of distance covariance with n <= 3.')
 
         # Represent univariate data as matrices.
         # Use the matrix shape and diagonal elements to determine if the given data is a distance matrix or not.
@@ -113,7 +113,7 @@ class DCorrX(IndependenceTest):
             return(1.0 - j/p)
         else:
             return 0.0
-            
+
     def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
         '''
         Compute the p-value
