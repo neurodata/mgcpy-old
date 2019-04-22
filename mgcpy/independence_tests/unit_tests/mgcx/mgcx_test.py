@@ -12,13 +12,6 @@ def test_mgcx():
     mgcx = MGCX(max_lag = 3)
     assert np.allclose(mgcx.test_statistic(X, Y)[0], 0)
 
-    # test if n <= 3 for mgcx estimator.
-    X = np.array([1, 2])[:, np.newaxis]
-    Y = np.array([1, 2])[:, np.newaxis]
-    mgcx = MGCX(max_lag = 0)
-    with pytest.raises(ValueError):
-        mgcx.test_statistic(X, Y)
-
     dir_name = './mgcpy/independence_tests/unit_tests/dcorr/data/'
     X = np.genfromtxt(dir_name + 'test_stat_X_mtx.csv', delimiter=',')
     Y = np.genfromtxt(dir_name + 'test_stat_Y_mtx.csv', delimiter=',')
@@ -29,16 +22,15 @@ def test_mgcx():
     # test get_name
     assert mgcx.get_name() == 'mgcx'
 
-    # test statistic
     assert np.allclose(mgcx.test_statistic(X, Y)[0], mgc.test_statistic(X, Y)[0], atol=1e-4)
-
+    
     '''
     Generate independent random variables and ensure that the test is valid with hypothesis test.
     '''
     random.seed(123)
-    mgcx = MGCX(which_test='mgcx', max_lag = 2)
-    n = 25
-    num_sims = 30
+    mgcx = MGCX(max_lag = 2)
+    n = 20
+    num_sims = 20
     alpha = 0.05
     num_rejects = 0
 
@@ -48,6 +40,4 @@ def test_mgcx():
         if mgcx.p_value(X, Y, replication_factor = 100)[0] < alpha:
             num_rejects += 1
 
-    # p value
     assert np.allclose(num_rejects, num_sims*alpha, atol=1.96*num_sims*alpha*(1-alpha))
-    

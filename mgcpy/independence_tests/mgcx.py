@@ -94,7 +94,7 @@ class MGCX(IndependenceTest):
         # Collect the test statistic by lag, and sum them for the full test statistic.
         dependence_by_lag = np.zeros(M+1)
         mgc_statistic, mgc_metadata = mgc.test_statistic(matrix_X, matrix_Y)
-        dependence_by_lag[0] = n*np.maximum(0.0, mgc_statistic)
+        dependence_by_lag[0] = np.maximum(0.0, mgc_statistic)
         max_dependence = dependence_by_lag[0]
         optimal_lag = 0
         optimal_scale = mgc_metadata['optimal_scale']
