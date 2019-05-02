@@ -95,8 +95,8 @@ def plot_all_curves(base_path):
     plt.subplots_adjust(hspace=.65)
 
     # fig.suptitle('Three Sample Test Power Curve for 3 Simulated 2-D Gaussians')
-    plt.savefig(os.path.join(base_path, 'power_curves_epsilon'), bbox_inches='tight')
-    plt.savefig(os.path.join(base_path, 'power_curves_epsilon.eps'), bbox_inches='tight')
+    plt.savefig(os.path.join(base_path, 'three_sample_power_vs_epsilon'), bbox_inches='tight')
+    plt.savefig(os.path.join(base_path, 'three_sample_power_vs_epsilon.eps'), bbox_inches='tight')
 
 
 if __name__ == '__main__':
