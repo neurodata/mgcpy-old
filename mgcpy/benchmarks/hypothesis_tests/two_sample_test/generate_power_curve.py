@@ -89,11 +89,6 @@ def power_vs_sample_size_parallel(params_dict):
 # for any additional test, add the name of the test (as defined in the `get_name` function in the class)
 # in the list `tests` in the following function
 def plot_all_curves(base_path):
-    simulation_names = ['linear', 'exponential', 'cubic', 'joint_normal', 'step',
-                        'quadratic', 'w_shape', 'spiral', 'bernoulli', 'log',
-                        'fourth_root', 'sine_4pi', 'sine_16pi', 'square', 'two_parabolas',
-                        'circle', 'ellipse', 'diamond', 'multi_noise', 'multi_indept']
-
     fig, ax = plt.subplots(nrows=4, ncols=5, figsize=(28, 24), sharex=True, sharey=True)
     simulation_type = 0
     for i, row in enumerate(ax):
@@ -104,11 +99,15 @@ def plot_all_curves(base_path):
 
             for test_num, test in enumerate(tests):
                 power = np.genfromtxt(dir_name + '{}_{}_sample_size.csv'.format(simulation_type+1, test), delimiter=',')
+                mgc_power = np.genfromtxt(dir_name + '{}_mgc_sample_size.csv'.format(simulation_type+1), delimiter=',')
+
                 x_axis = [i for i in range(5, 101, 5)]
+
                 # fast mgc is invalid for sample size less than 20
                 if test == 'fast_mgc':
                     power[0:3] = np.nan
 
+                power = power - mgc_power
                 if test == 'mgc':
                     col.plot(x_axis, power, label=test_names[test_num], lw=4, color='red')
                 elif test == 'fast_mgc':
@@ -120,8 +119,8 @@ def plot_all_curves(base_path):
 
                 col.set_title(plot_titles[simulation_type], fontsize=35)
                 col.set_xticks([x_axis[0], x_axis[-1]])
-                col.set_ylim(0, 1.1)
-                col.set_yticks([0, 1])
+                col.set_ylim(-1.1, 1.1)
+                col.set_yticks([-1, 0, 1])
 
             simulation_type += 1
 
