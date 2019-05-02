@@ -4,11 +4,15 @@ import time
 
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 from mgcpy.benchmarks.hypothesis_tests.three_sample_test.power import \
     power_given_epsilon
 from mgcpy.independence_tests.dcorr import DCorr
 from mgcpy.independence_tests.mgc import MGC
 from mgcpy.independence_tests.manova import Manova
+
+sns.color_palette('Set1')
+sns.set(color_codes=True, style='white', context='talk', font_scale=1.2)
 
 
 def fill_params_dict_list_epsilons(base_path, do_fast_mgc=False):
@@ -59,32 +63,45 @@ def power_vs_epsilon_parallel(params_dict):
 def plot_all_curves(base_path):
     simulation_names = ['Case 1', 'Case 2', 'Case 3']
 
-    fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(14, 4))
+    fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(14, 3))
     simulation_type = 0
     for i, col in enumerate(ax):
         sim_name = simulation_names[simulation_type]
         simulation_type += 1
-        tests = ['mgc', 'unbiased', 'fast_mgc', 'manova']
+        tests = ['mgc', 'fast_mgc', 'unbiased', 'manova']
+        test_names = ['MGC', 'Fast MGC', 'Unbiased Dcorr', 'Manova']
         dir_name = os.path.join(base_path, 'python_power_curves_epsilon/')
 
-        for test in tests:
+        for test_num, test in enumerate(tests):
             power = np.genfromtxt(dir_name + '{}_{}_epsilon.csv'.format(simulation_type, test), delimiter=',')
             x_axis = list(np.arange(0, 1, 0.05))
-            col.plot(x_axis, power, label=test)
-            # col.set_xlabel("epsilon")
-            col.set_ylim(0, 1.2)
+
+            if test == 'mgc':
+                col.plot(x_axis, power, label=test_names[test_num], lw=4, color='red')
+            elif test == 'fast_mgc':
+                col.plot(x_axis, power, label=test_names[test_num], lw=4, color='red', linestyle=':')
+            elif test == 'unbiased':
+                col.plot(x_axis, power, label=test_names[test_num], lw=3, color='blue')
+            else:
+                col.plot(x_axis, power, label=test_names[test_num], lw=3)
+
+            col.set_ylim(0, 1.1)
             col.set_yticks([0, 1])
+            col.set_xticks([0, 1])
             col.set_title(sim_name)
 
-    plt.legend(bbox_to_anchor=(1.42, 0.5), loc="center right")
-    plt.subplots_adjust(hspace=.75)
+    leg = plt.legend(bbox_to_anchor=(0.5, 0.018), bbox_transform=plt.gcf().transFigure, ncol=5, loc='upper center')
+    leg.get_frame().set_linewidth(0.0)
+    plt.subplots_adjust(hspace=.65)
 
-    fig.suptitle('Three Sample Test Power Curve for 3 Simulated 2-D Gaussians')
-    plt.savefig(os.path.join(base_path, 'power_curves_epsilon'))
+    # fig.suptitle('Three Sample Test Power Curve for 3 Simulated 2-D Gaussians')
+    plt.savefig(os.path.join(base_path, 'power_curves_epsilon'), bbox_inches='tight')
+    plt.savefig(os.path.join(base_path, 'power_curves_epsilon.eps'), bbox_inches='tight')
 
 
 if __name__ == '__main__':
     base_path = "/root/code/mgcpy/benchmarks/hypothesis_tests/three_sample_test"
+    # base_path = "/Users/pikachu/OneDrive - Johns Hopkins University/Mac Desktop/NDD I/mgcpy/mgcpy/benchmarks/hypothesis_tests/three_sample_test"
 
     start_time = time.time()
     params_dict = fill_params_dict_list_epsilons(base_path, do_fast_mgc=True)
