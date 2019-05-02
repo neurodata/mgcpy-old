@@ -128,7 +128,8 @@ def plot_all_curves(base_path):
     plt.subplots_adjust(hspace=.65)
 
     # fig.suptitle('Two Sample Test Power Curve for 20 Simulated 1-Dimensional Settings')
-    plt.savefig(os.path.join(base_path, 'power_curves_sample_size.eps'), bbox_inches='tight')
+    # plt.savefig(os.path.join(base_path, 'power_curves_sample_size.eps'), bbox_inches='tight')
+    plt.savefig(os.path.join(base_path, 'power_curves_sample_size'), bbox_inches='tight')
 
 
 if __name__ == '__main__':
