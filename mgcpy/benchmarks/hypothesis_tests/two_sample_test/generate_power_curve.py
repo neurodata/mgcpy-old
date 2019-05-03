@@ -99,7 +99,7 @@ def plot_all_curves(base_path):
 
             for test_num, test in enumerate(tests):
                 power = np.genfromtxt(dir_name + '{}_{}_sample_size.csv'.format(simulation_type+1, test), delimiter=',')
-                mgc_power = np.genfromtxt(dir_name + '{}_mgc_sample_size.csv'.format(simulation_type+1), delimiter=',')
+                # mgc_power = np.genfromtxt(dir_name + '{}_mgc_sample_size.csv'.format(simulation_type+1), delimiter=',')
 
                 x_axis = [i for i in range(5, 101, 5)]
 
@@ -107,7 +107,7 @@ def plot_all_curves(base_path):
                 if test == 'fast_mgc':
                     power[0:3] = np.nan
 
-                power = power - mgc_power
+                # power = power - mgc_power
                 if test == 'mgc':
                     col.plot(x_axis, power, label=test_names[test_num], lw=4, color='red')
                 elif test == 'fast_mgc':
@@ -119,8 +119,10 @@ def plot_all_curves(base_path):
 
                 col.set_title(plot_titles[simulation_type], fontsize=35)
                 col.set_xticks([x_axis[0], x_axis[-1]])
-                col.set_ylim(-1.1, 1.1)
-                col.set_yticks([-1, 0, 1])
+                # col.set_ylim(-1.1, 1.1)
+                # col.set_yticks([-1, 0, 1])
+                col.set_ylim(0, 1.1)
+                col.set_yticks([0, 1])
 
             simulation_type += 1
 
