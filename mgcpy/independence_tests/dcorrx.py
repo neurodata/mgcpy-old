@@ -96,7 +96,7 @@ class DCorrX(IndependenceTest):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
             dcorr_statistic, _ = dcorr.test_statistic(dist_mtx_X, dist_mtx_Y)
-            dependence_by_lag[j] = (n-j)*(self.kernel(j, p)**2)*np.maximum(0.0, dcorr_statistic) / n
+            dependence_by_lag[j] = (n-j)*np.maximum(0.0, dcorr_statistic) / n
 
         # Reporting optimal lag
         optimal_lag = np.argmax(dependence_by_lag)
@@ -142,7 +142,7 @@ class DCorrX(IndependenceTest):
 
             - :p_value: ta ``numpy.float`` containing the p-value of the observed test statistic.
             - :p_value_metadata: a ``dict`` of metadata with the following keys:
-                    - :test_stat_nulls: the estimated (discrete) distribution of the test statistic
+                    - :null_distribution: the estimated (discrete) distribution of the test statistic
         :rtype: list
 
         **Example:**
@@ -181,6 +181,6 @@ class DCorrX(IndependenceTest):
             test_stats_null[rep], _ = self.test_statistic(matrix_X, permuted_Y)
 
         self.p_value_ = np.sum(np.greater(test_stats_null, observed_test_statistic)) / replication_factor
-        self.p_value_metadata_ = {}
+        self.p_value_metadata_ = { 'null_distribution' : test_stats_null }
 
         return self.p_value_, self.p_value_metadata_

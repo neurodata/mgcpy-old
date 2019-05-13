@@ -104,7 +104,7 @@ class MGCX(IndependenceTest):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
             mgc_statistic, mgc_metadata = mgc.test_statistic(dist_mtx_X, dist_mtx_Y)
-            dependence_by_lag[j] = (n-j)*(self.kernel(j, p)**2)*np.maximum(0.0, mgc_statistic) / n
+            dependence_by_lag[j] = (n-j)*np.maximum(0.0, mgc_statistic) / n
             if dependence_by_lag[j] > max_dependence:
                 max_dependence = dependence_by_lag[j]
                 optimal_lag = j
@@ -151,11 +151,7 @@ class MGCX(IndependenceTest):
 
             - :p_value: P-value of MGC
             - :metadata: a ``dict`` of metadata with the following keys:
-
-                    - :test_statistic: the sample MGC statistic within ``[-1, 1]``
-                    - :p_local_correlation_matrix: a 2D matrix of the P-values of the local correlations
-                    - :local_correlation_matrix: a 2D matrix of all local correlations within ``[-1,1]``
-                    - :optimal_scale: the estimated optimal scale as an ``[x, y]`` pair.
+                    - :null_distribution: numpy array representing distribution of test statistic under null.
         :rtype: list
 
         **Example:**
@@ -194,6 +190,6 @@ class MGCX(IndependenceTest):
             test_stats_null[rep], _ = self.test_statistic(matrix_X, permuted_Y)
 
         self.p_value_ = np.sum(np.greater(test_stats_null, test_statistic)) / replication_factor
-        self.p_value_metadata_ = {}
+        self.p_value_metadata_ = { 'null_distribution' : test_stats_null }
 
         return self.p_value_, self.p_value_metadata_
