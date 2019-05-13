@@ -86,8 +86,6 @@ class MGCX(IndependenceTest):
             matrix_Y = matrix_Y.reshape((n,1))
         matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
 
-        if p is None:
-            p = 3*(n**(0.2))
         M = self.max_lag if self.max_lag is not None else math.ceil(math.sqrt(n))
         mgc = self.mgc
 
@@ -117,15 +115,6 @@ class MGCX(IndependenceTest):
                                     'dependence_by_lag' : dependence_by_lag }
         self.test_statistic_ = np.sum(dependence_by_lag)
         return self.test_statistic_, self.test_statistic_metadata_
-
-    def kernel(self, j, p):
-        '''
-        Helper function: Compute the Bartlett kernel at bandwidth p.
-        '''
-        if j < p:
-            return(1.0 - j/p)
-        else:
-            return 0.0
 
     def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
         """

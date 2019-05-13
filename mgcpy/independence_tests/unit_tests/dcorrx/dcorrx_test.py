@@ -6,8 +6,8 @@ from mgcpy.independence_tests.dcorrx import DCorrX
 
 def test_dcorrx():
     # test the special case when one of the dataset has zero variance
-    X = np.array([1, 1, 1, 1])[:, np.newaxis]
-    Y = np.array([1, 2, 3, 4])[:, np.newaxis]
+    X = np.array([1, 1, 1, 1])
+    Y = np.array([1, 2, 3, 4])
     unbiased = DCorrX(which_test='unbiased', max_lag = 0)
     assert np.allclose(unbiased.test_statistic(X, Y)[0], 0)
 
@@ -31,6 +31,11 @@ def test_dcorrx():
     Y = Y[:, np.newaxis]
     unbiased = DCorrX(which_test='unbiased', max_lag = 0)
     biased = DCorrX(which_test='biased', max_lag = 0)
+
+    # test that it must be biased on unbiased.
+    with pytest.raises(ValueError) as excinfo:
+        notbiased = DCorrX(which_test='notbiased', max_lag = 0)
+    assert "which_test" in str(excinfo.value)
 
     # test get_name
     assert unbiased.get_name() == 'unbiased'

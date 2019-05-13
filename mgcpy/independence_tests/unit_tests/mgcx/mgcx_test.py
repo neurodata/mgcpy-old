@@ -7,8 +7,8 @@ from mgcpy.independence_tests.mgc import MGC
 
 def test_mgcx():
     # test zero variance dataset with multiple lags.
-    X = np.array([1, 1, 1, 1, 1, 1, 1])[:, np.newaxis]
-    Y = np.array([1, 2, 3, 4, 5, 6, 7])[:, np.newaxis]
+    X = np.array([1, 1, 1, 1, 1, 1, 1])
+    Y = np.array([1, 2, 3, 4, 5, 6, 7])
     mgcx = MGCX(max_lag = 3)
     assert np.allclose(mgcx.test_statistic(X, Y)[0], 0)
 
@@ -23,7 +23,7 @@ def test_mgcx():
     assert mgcx.get_name() == 'mgcx'
 
     assert np.allclose(mgcx.test_statistic(X, Y)[0], mgc.test_statistic(X, Y)[0], atol=1e-4)
-    
+
     '''
     Generate independent random variables and ensure that the test is valid with hypothesis test.
     '''
