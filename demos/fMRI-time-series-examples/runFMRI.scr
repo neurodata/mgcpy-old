@@ -1,0 +1,22 @@
+#!/bin/bash -l
+
+#SBATCH
+#SBATCH --job-name=mgcx_fmri
+#SBATCH --time=1-0:0:0
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=24
+#SBATCH --partition=shared
+#SBATCH --mail-type=end
+#SBATCH --mail-user=<user email here>
+
+## load python on the system
+module load python
+
+## script.py would be your script and it would run from command line the
+## same way on your computer
+python script.py
+
+#### or we could also do an array job
+#### sbatch --array=1-360^2%150 runMASTER.scr
+####
+## python script.py $SLURM_ARRAY_TASK_ID
