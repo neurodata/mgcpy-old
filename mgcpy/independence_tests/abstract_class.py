@@ -144,6 +144,7 @@ class IndependenceTest(ABC):
             for rep in range(replication_factor):
                 permuted_y = np.random.permutation(matrix_Y)
                 test_stats_null[rep], _ = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_y)
+            test_stats_null[0] = test_statistic
             # p-value is the probability of observing more extreme test statistic under the null
             p_value = np.where(test_stats_null >= test_statistic)[0].shape[0] / replication_factor
             p_value_metadata = {}
