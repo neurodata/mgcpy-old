@@ -62,7 +62,7 @@ def gower_center(Y):
 
 def gower_center_many(Ys):
     """
-    Gower centers each matrix in the input.
+    Gower centers each matrix in the input, which is a special centering process disucssed in detail in Gower (1966).
 
     :param Ys: is interpreted as:
 
