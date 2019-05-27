@@ -8,7 +8,8 @@ from abc import ABC, abstractmethod
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
 from scipy.stats import kendalltau, pearsonr, spearmanr, t
-
+from mgcpy.independence_tests.utils.compute_distance_matrix import \
+    compute_distance
 
 def EUCLIDEAN_DISTANCE(x): return squareform(pdist(x, metric='euclidean'))
 
