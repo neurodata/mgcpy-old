@@ -155,6 +155,7 @@ class MGCX(IndependenceTest):
         >>> mgc_ts = MGC_TS()
         >>> p_value, metadata = mgc_ts.p_value(X, Y, replication_factor = 100)
         """
+        """
         assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be equal to q"
 
         # Compute test statistic
@@ -168,7 +169,7 @@ class MGCX(IndependenceTest):
 
         # Block bootstrap
         block_size = int(np.ceil(np.sqrt(n)))
-        test_stats_null = np.zeros(replication_factor)
+        test_stats_null = np.zeros(replication_factor + 1)
         for rep in range(replication_factor):
             # Generate new time series sample for Y
             permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
@@ -177,8 +178,11 @@ class MGCX(IndependenceTest):
 
             # Compute test statistic
             test_stats_null[rep], _ = self.test_statistic(matrix_X, permuted_Y)
+        test_stats_null[replication_factor] = test_statistic
 
-        self.p_value_ = np.sum(np.greater(test_stats_null, test_statistic)) / replication_factor
+        self.p_value_ = np.sum(np.greater(test_stats_null, test_statistic)) / (replication_factor + 1)
         self.p_value_metadata_ = { 'null_distribution' : test_stats_null }
 
         return self.p_value_, self.p_value_metadata_
+        """
+        return super(MGCX, self).p_value_block(matrix_X, matrix_Y, replication_factor)
