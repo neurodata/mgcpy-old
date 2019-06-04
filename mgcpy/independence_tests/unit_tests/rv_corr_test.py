@@ -38,6 +38,3 @@ def test_local_corr():
     assert np.round(test_stat1, decimals=2) == 0.24
     assert np.round(test_stat2, decimals=2) == 0.49
     assert np.round(test_stat3, decimals=2) == 0.24
-
-
-test_local_corr()
