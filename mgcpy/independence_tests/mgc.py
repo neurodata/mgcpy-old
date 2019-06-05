@@ -1,18 +1,13 @@
 """
     **Main MGC Independence Test Module**
 """
-import math
 import warnings
-from statistics import mean, stdev
-
-import numpy as np
-from scipy.stats import norm
 
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 from mgcpy.independence_tests.mgc_utils.local_correlation import \
     local_correlations
-from mgcpy.independence_tests.mgc_utils.threshold_smooth import (smooth_significant_local_correlations,
-                                                                 threshold_local_correlations)
+from mgcpy.independence_tests.mgc_utils.threshold_smooth import (
+    smooth_significant_local_correlations, threshold_local_correlations)
 from mgcpy.independence_tests.utils.compute_distance_matrix import \
     compute_distance
 from mgcpy.independence_tests.utils.fast_functions import (_approx_null_dist,

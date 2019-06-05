@@ -30,7 +30,7 @@ AUTHOR = 'Satish Palaniappan, Bear Xiong, Sambit Panda, Sandhya Ramachandran, An
 AUTHOR_EMAIL = 'spalani2@jhu.edu'
 URL = 'https://github.com/neurodata/mgcpy'
 MINIMUM_PYTHON_VERSION = 3, 4  # Minimum of Python 3.4
-VERSION = '0.2.1'
+VERSION = '0.3.0'
 
 
 def check_python_version():

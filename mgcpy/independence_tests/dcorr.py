@@ -1,10 +1,7 @@
-import math
 import warnings
-from statistics import mean, stdev
+from statistics import mean
 
 import numpy as np
-from scipy.stats import norm, t
-
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 from mgcpy.independence_tests.utils.compute_distance_matrix import \
     compute_distance
@@ -18,7 +15,7 @@ from mgcpy.independence_tests.utils.fast_functions import (_approx_null_dist,
 
 class DCorr(IndependenceTest):
 
-    def __init__(self, compute_distance_matrix=None, which_test='unbiased'):
+    def __init__(self, compute_distance_matrix=None, which_test='unbiased', is_paired=False):
         '''
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
         :type compute_distance_matrix: FunctionType or callable()
@@ -30,6 +27,7 @@ class DCorr(IndependenceTest):
         if which_test not in ['unbiased', 'biased', 'mantel']:
             raise ValueError('which_test must be unbiased, biased, or mantel')
         self.which_test = which_test
+        self.is_paired = is_paired
 
     def test_statistic(self, matrix_X, matrix_Y, is_fast=False, fast_dcorr_data={}):
         """
@@ -99,7 +97,12 @@ class DCorr(IndependenceTest):
             if variance_X <= 0 or variance_Y <= 0:
                 correlation = 0
             else:
-                correlation = covariance/np.real(np.sqrt(variance_X*variance_Y))
+                if self.is_paired:
+                    n = transformed_dist_mtx_X.shape[0]
+                    correlation = (variance_X/n/(n-1)) + (variance_Y/n/(n-1)) \
+                        - 2*np.sum(np.multiply(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_Y)).diagonal())/n
+                else:
+                    correlation = covariance/np.real(np.sqrt(variance_X*variance_Y))
 
             # store the variance of X, variance of Y and the covariace as metadata
             test_statistic_metadata = {'variance_X': variance_X, 'variance_Y': variance_Y, 'covariance': covariance}
