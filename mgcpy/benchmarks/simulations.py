@@ -562,9 +562,3 @@ def multi_indep_sim(num_samp, num_dim, prob=0.5, sep1=3, sep2=2):
     y = v/sep1 + sep2*v_2 - 1
 
     return x, y
-
-import matplotlib.pyplot as plt
-x_noise, y_noise = cub_sim(100, 1)
-x_no_noise, y_no_noise = cub_sim(1000, 1, noise=0)
-plt.scatter(x_noise, y_noise)
-plt.scatter(x_no_noise, y_no_noise)
