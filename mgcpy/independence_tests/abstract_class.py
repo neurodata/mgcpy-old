@@ -65,7 +65,7 @@ class IndependenceTest(ABC):
 
         pass
 
-    def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
+    def p_value(self, matrix_X, matrix_Y, replication_factor=1000, verbose=True):
         """
         Tests independence between two datasets using the independence test and permutation test.
 
@@ -149,7 +149,7 @@ class IndependenceTest(ABC):
             p_value_metadata = {}
 
         # The results are not statistically significant
-        if p_value > 0.05:
+        if p_value > 0.05 and verbose == True:
             warnings.warn("The p-value is greater than 0.05, implying that the results are not statistically significant.\n" +
                           "Use results such as test_statistic and optimal_scale, with caution!")
 

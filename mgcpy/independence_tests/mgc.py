@@ -227,7 +227,7 @@ class MGC(IndependenceTest):
         else:
             return super(MGC, self).p_value(matrix_X, matrix_Y)
 
-    def _fast_mgc_p_value(self, matrix_X, matrix_Y, sub_samples=10):
+    def _fast_mgc_p_value(self, matrix_X, matrix_Y, sub_samples=10, verbose=True):
         '''
         Fast and powerful test by subsampling that runs in O(n^2 log(n)+ns*n), based on
         C. Shen and J. Vogelstein, “Fast and Powerful Testing for Distance-Based Correlations”
@@ -265,7 +265,7 @@ class MGC(IndependenceTest):
         p_value = _fast_pvalue(mgc_statistic, test_statistic_metadata)
 
         # The results are not statistically significant
-        if p_value > 0.05:
+        if p_value > 0.05 and verbose == True:
             warnings.warn("The p-value is greater than 0.05, implying that the results are not statistically significant.\n" +
                           "Use results such as test_statistic and optimal_scale, with caution!")
 

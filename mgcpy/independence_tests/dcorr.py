@@ -271,7 +271,7 @@ class DCorr(IndependenceTest):
         else:
             return super(DCorr, self).p_value(matrix_X, matrix_Y)
 
-    def _fast_dcorr_p_value(self, matrix_X, matrix_Y, sub_samples=10):
+    def _fast_dcorr_p_value(self, matrix_X, matrix_Y, sub_samples=10, verbose=True):
         '''
         Fast Dcor or Hsic test by subsampling that runs in O(ns*n), based on:
         Q. Zhang, S. Filippi, A. Gretton, and D. Sejdinovic, “Large-scale kernel methods for independence testing,”
@@ -308,7 +308,7 @@ class DCorr(IndependenceTest):
         p_value = _fast_pvalue(test_statistic, test_statistic_metadata)
 
         # The results are not statistically significant
-        if p_value > 0.05:
+        if p_value > 0.05 and verbose == True:
             warnings.warn("The p-value is greater than 0.05, implying that the results are not statistically significant.\n" +
                           "Use results such as test_statistic and optimal_scale, with caution!")
 
