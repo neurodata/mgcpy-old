@@ -110,10 +110,10 @@ class IndependenceTest(ABC):
             local_correlation_matrix = independence_test_metadata["local_correlation_matrix"]
 
             p_local_correlation_matrix = np.zeros(local_correlation_matrix.shape)
-            p_value = 0
+            p_value = 1/replication_factor
 
             # compute sample MGC statistic and all local correlations for each set of permuted data
-            for _ in range(replication_factor):
+            for _ in range(replication_factor-1):
                 # use random permutations on the second data set
                 premuted_matrix_Y = np.random.permutation(matrix_Y)
 

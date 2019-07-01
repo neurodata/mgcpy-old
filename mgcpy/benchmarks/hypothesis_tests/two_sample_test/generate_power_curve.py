@@ -29,7 +29,7 @@ plot_titles = ['Linear', 'Exponential', 'Cubic', 'Joint Normal', 'Step', 'Quadra
                'Multimodal\nIndependence']
 
 
-def fill_params_dict_list_sample_sizes(base_path, do_fast_mgc=False):
+def fill_params_dict_list_sample_sizes(base_path, do_fast_mgc=False, do_rf=False):
     mcorr = DCorr(which_test='unbiased')
     dcorr = DCorr(which_test='biased')
     mantel = DCorr(which_test='mantel')
@@ -38,7 +38,7 @@ def fill_params_dict_list_sample_sizes(base_path, do_fast_mgc=False):
     pearson = RVCorr(which_test='pearson')
     cca = RVCorr(which_test='cca')
     mdmr = MDMR()
-    independence_tests = [cca]  # [mcorr, dcorr, mantel, mgc, hhg, pearson, mdmr]
+    independence_tests = [mgc]  # [mcorr, dcorr, mantel, mgc, hhg, pearson, mdmr]
 
     params_dict_list = []
     for sim_name, sim_func in simulations.items():
@@ -51,6 +51,11 @@ def fill_params_dict_list_sample_sizes(base_path, do_fast_mgc=False):
             additional_params = {"is_fast": True}
             #params_dict = {'independence_test': fast_mgc, 'simulation_type': sim_func[1], 'base_path': base_path, 'additional_params': additional_params}
             params_dict = {'independence_test': fast_dcorr, 'simulation_type': sim_func[1], 'base_path': base_path, 'additional_params': additional_params}
+            params_dict_list.append(params_dict)
+        if do_rf:
+            mgc_rf = MGC()
+            additional_params = {"do_rf": True}
+            params_dict = {'independence_test': mgc_rf, 'simulation_type': sim_func[1], 'base_path': base_path, 'additional_params': additional_params}
             params_dict_list.append(params_dict)
     return params_dict_list
 
@@ -65,13 +70,15 @@ def power_vs_sample_size_parallel(params_dict):
     '''
     sample_sizes = [i for i in range(5, 101, 5)]
     estimated_power = np.zeros(len(sample_sizes))
-    test = params_dict['independence_test']
-    sim = params_dict['simulation_type']
+    test = params_dict["independence_test"]
+    sim = params_dict["simulation_type"]
     base_path = params_dict["base_path"]
     additional_params = params_dict['additional_params']
-    if additional_params:
+    if additional_params == "is_fast":
         #test_name = 'fast_mgc'
         test_name = 'fast_dcorr'
+    elif additional_params == 'do_rf':
+        test_name = 'mgc_rf'
     else:
         test_name = test.get_name()
 
@@ -96,8 +103,8 @@ def plot_all_curves(base_path):
     simulation_type = 0
     for i, row in enumerate(ax):
         for j, col in enumerate(row):
-            tests = ['mgc', 'unbiased', 'biased', 'mantel', 'pearson', 'mdmr', 'fast_mgc', 'cca']
-            test_names = ['MGC', 'Unbiased Dcorr', 'Biased Dcorr', 'Mantel', 'Pearson', 'MDMR', 'Fast MGC', 'MANOVA']
+            tests = ['mgc', 'unbiased', 'biased', 'mantel', 'pearson', 'mdmr', 'fast_mgc', 'cca', 'mgc_rf']
+            test_names = ['MGC', 'Unbiased Dcorr', 'Biased Dcorr', 'Mantel', 'Pearson', 'MDMR', 'Fast MGC', 'MANOVA', 'RF MGC']
             dir_name = os.path.join(base_path, 'python_power_curves_sample_size/')
 
             for test_num, test in enumerate(tests):
@@ -143,7 +150,7 @@ if __name__ == '__main__':
     # base_path = "/Users/pikachu/OneDrive - Johns Hopkins University/Mac Desktop/NDD I/mgcpy/mgcpy/benchmarks/hypothesis_tests/two_sample_test"
 
     start_time = time.time()
-    params_dict = fill_params_dict_list_sample_sizes(base_path, do_fast_mgc=False)
+    params_dict = fill_params_dict_list_sample_sizes(base_path, do_fast_mgc=False, do_rf=True)
     print('Finished filling params dict.')
 
     with mp.Pool(mp.cpu_count() - 1) as p:
