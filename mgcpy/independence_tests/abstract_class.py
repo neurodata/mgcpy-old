@@ -110,10 +110,10 @@ class IndependenceTest(ABC):
             local_correlation_matrix = independence_test_metadata["local_correlation_matrix"]
 
             p_local_correlation_matrix = np.zeros(local_correlation_matrix.shape)
-            p_value = 0
+            p_value = 1/replication_factor
 
             # compute sample MGC statistic and all local correlations for each set of permuted data
-            for _ in range(replication_factor):
+            for _ in range(replication_factor-1):
                 # use random permutations on the second data set
                 premuted_matrix_Y = np.random.permutation(matrix_Y)
 
@@ -144,9 +144,15 @@ class IndependenceTest(ABC):
             for rep in range(replication_factor):
                 permuted_y = np.random.permutation(matrix_Y)
                 test_stats_null[rep], _ = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_y)
+            test_stats_null[0] = test_statistic
             # p-value is the probability of observing more extreme test statistic under the null
             p_value = np.where(test_stats_null >= test_statistic)[0].shape[0] / replication_factor
             p_value_metadata = {}
+
+        # The number of permutations is low
+        if replication_factor < 1000:
+            warnings.warn("The number of replications is low (under 1000), and p value calculations may be unreliable.\n" +
+                          "Use the p-value result, with caution!")
 
         # The results are not statistically significant
         if p_value > 0.05:

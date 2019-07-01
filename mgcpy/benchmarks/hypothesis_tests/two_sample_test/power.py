@@ -1,8 +1,28 @@
 import numpy as np
 import math
+from mgcpy.independence_tests.utils.compute_distance_matrix import compute_distance
 from mgcpy.hypothesis_tests.transforms import k_sample_transform
+from rerf.rerfClassifier import rerfClassifier
 import scipy.io
 import os
+
+
+def _proximityMatrix(model, X, normalize=True):
+
+    terminals = model.apply(X)
+    nTrees = terminals.shape[1]
+
+    a = terminals[:,0]
+    proxMat = 1*np.equal.outer(a, a)
+
+    for i in range(1, nTrees):
+        a = terminals[:,i]
+        proxMat += 1*np.equal.outer(a, a)
+
+    if normalize:
+        proxMat = proxMat / nTrees
+
+    return proxMat
 
 
 def power_given_data(base_path, independence_test, simulation_type, num_samples, repeats=1000, alpha=.05, additional_params={}):
@@ -32,6 +52,12 @@ def power_given_data(base_path, independence_test, simulation_type, num_samples,
         data_matrix = np.concatenate([matrix_X, matrix_Y], axis=1)
         rotated_data_matrix = np.dot(rotation_matrix, data_matrix.T).T
         matrix_U, matrix_V = k_sample_transform(data_matrix, rotated_data_matrix)
+
+        if additional_params and additional_params["rf"]:
+            clf = rerfClassifier(projection_matrix="Rerf", n_estimators=500)
+            clf.fit(matrix_U, matrix_V)
+            matrix_U = _proximityMatrix(clf, matrix_U)
+            matrix_V = compute_distance(matrix_U, matrix_V, independence_test._compute_distance)[1]
 
         # permutation test
         if additional_params and additional_params["is_fast"]:

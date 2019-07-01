@@ -39,7 +39,7 @@ def test_dcorr():
     X = X[:, np.newaxis]
     Y = Y[:, np.newaxis]
     assert np.allclose(mantel.test_statistic(X, Y)[0], 0.7115, atol=1e-4)
-    assert np.allclose(mantel.test_statistic(X, Y, is_fast=True)[0], 0.7552, atol=1e-4) # faster version
+    assert np.allclose(mantel.test_statistic(X, Y, is_fast=True)[0], 0.7552, atol=1e-4)  # faster version
 
     '''
     test p value
