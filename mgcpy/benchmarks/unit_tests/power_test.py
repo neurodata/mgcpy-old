@@ -25,7 +25,7 @@ def test_power():
     assert np.allclose(estimated_power, matlab_power, atol=0.2)
 
 
-def test_power_given_data():
+# def test_power_given_data():
     test = DCorr(which_test='unbiased')
     simulation_type = 4
     sample_sizes = [i for i in range(5, 101, 5)]
