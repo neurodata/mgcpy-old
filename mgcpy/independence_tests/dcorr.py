@@ -264,6 +264,8 @@ class DCorr(IndependenceTest):
 
         if is_fast:
             p_value, p_value_metadata = self._fast_dcorr_p_value(matrix_X, matrix_Y, **fast_dcorr_data)
+            if p_value = 0:
+                p_value = 1 / replication_factor
             self.p_value_ = p_value
             self.p_value_metadata_ = p_value_metadata
             return p_value, p_value_metadata

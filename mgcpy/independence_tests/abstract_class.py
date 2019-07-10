@@ -159,6 +159,9 @@ class IndependenceTest(ABC):
             p_value = np.where(test_stats_null >= test_statistic)[0].shape[0] / replication_factor
             p_value_metadata = {tuple(test_stats_null)}
 
+        # Correct for a p_value of 0. This is because, with bootstrapping permutations, a value of 0 is not valid
+        if p_value == 0:
+            p_value = 1 / replication_factor
         self.p_value_ = p_value
         self.p_value_metadata_ = p_value_metadata
         return p_value, p_value_metadata

@@ -219,11 +219,13 @@ class MGC(IndependenceTest):
 
         if is_fast:
             p_value, p_value_metadata = self._fast_mgc_p_value(matrix_X, matrix_Y, **fast_mgc_data)
+            if p_value == 0:
+                p_value = 1 / replication_factor
             self.p_value_ = p_value
             self.p_value_metadata_ = p_value_metadata
             return p_value, p_value_metadata
         else:
-            return super(MGC, self).p_value(matrix_X, matrix_Y)
+            return super(MGC, self).p_value(matrix_X, matrix_Y, replication_factor=replication_factor)
 
     def _fast_mgc_p_value(self, matrix_X, matrix_Y, sub_samples=10):
         '''
