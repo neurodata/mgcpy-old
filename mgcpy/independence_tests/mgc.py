@@ -1,8 +1,6 @@
 """
     **Main MGC Independence Test Module**
 """
-import logging
-
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 from mgcpy.independence_tests.mgc_utils.local_correlation import \
     local_correlations
@@ -263,11 +261,6 @@ class MGC(IndependenceTest):
         '''
         mgc_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y, is_fast=True, fast_mgc_data={"sub_samples": sub_samples})
         p_value = _fast_pvalue(mgc_statistic, test_statistic_metadata)
-
-        # The results are not statistically significant
-        if p_value > 0.05:
-            logging.warning("The p-value is greater than 0.05, implying that the results are not statistically significant.\n" +
-                          "Use results such as test_statistic and optimal_scale, with caution!")
 
         p_value_metadata = {"test_statistic": mgc_statistic,
                             "local_correlation_matrix": test_statistic_metadata["local_correlation_matrix"],

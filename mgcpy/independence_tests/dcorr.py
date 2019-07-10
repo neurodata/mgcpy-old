@@ -1,4 +1,3 @@
-import warnings
 from statistics import mean
 
 import numpy as np
@@ -306,11 +305,6 @@ class DCorr(IndependenceTest):
         '''
         test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y, is_fast=True, fast_dcorr_data={"sub_samples": sub_samples})
         p_value = _fast_pvalue(test_statistic, test_statistic_metadata)
-
-        # The results are not statistically significant
-        if p_value > 0.05:
-            warnings.warn("The p-value is greater than 0.05, implying that the results are not statistically significant.\n" +
-                          "Use results such as test_statistic and optimal_scale, with caution!")
 
         p_value_metadata = {"test_statistic": test_statistic}
 

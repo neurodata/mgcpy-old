@@ -2,7 +2,6 @@
     **Main Independence Test Abstract Class**
 """
 import time
-import warnings
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -159,11 +158,6 @@ class IndependenceTest(ABC):
             # p-value is the probability of observing more extreme test statistic under the null
             p_value = np.where(test_stats_null >= test_statistic)[0].shape[0] / replication_factor
             p_value_metadata = {tuple(test_stats_null)}
-
-        # The results are not statistically significant
-        if p_value > 0.05:
-            warnings.warn("The p-value is greater than 0.05, implying that the results are not statistically significant.\n" +
-                          "Use results such as test_statistic and optimal_scale, with caution!")
 
         self.p_value_ = p_value
         self.p_value_metadata_ = p_value_metadata
