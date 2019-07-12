@@ -64,7 +64,7 @@ class IndependenceTest(ABC):
 
         pass
 
-    def p_value(self, matrix_X, matrix_Y, replication_factor=1000):
+    def p_value(self, matrix_X, matrix_Y, replication_factor=1000, compute_null=False):
         """
         Tests independence between two datasets using the independence test and permutation test.
 
@@ -77,6 +77,9 @@ class IndependenceTest(ABC):
         :param replication_factor: specifies the number of replications to use for
                                    the permutation test. Defaults to ``1000``.
         :type replication_factor: integer
+        
+        :param compute_null: specifies whether to compute the null distribution.
+        :type compute_null: bool
 
         :return: returns a list of two items, that contains:
 
@@ -97,14 +100,15 @@ class IndependenceTest(ABC):
             "The distance correlation t-test of independence in high dimension."
             Journal of Multivariate Analysis 117 (2013): 193-213.
             '''
-            null_distribution = []
-            for _ in range(replication_factor):
-                # use random permutations on the second data set
-                premuted_matrix_Y = np.random.permutation(matrix_Y)
+            null_distribution = np.zeros(replication_factor)
+            if compute_null:
+               for ind in range(replication_factor):
+                   # use random permutations on the second data set
+                   premuted_matrix_Y = np.random.permutation(matrix_Y)
 
-                temp_mgc_statistic, temp_independence_test_metadata = self.test_statistic(
-                    matrix_X, premuted_matrix_Y)
-                null_distribution.append(temp_mgc_statistic)
+                   temp_mgc_statistic, temp_independence_test_metadata = self.test_statistic(
+                       matrix_X, premuted_matrix_Y)
+                   null_distribution[ind] = temp_mgc_statistic
 
             T, df = self.unbiased_T(matrix_X=matrix_X, matrix_Y=matrix_Y)
             # p-value is the probability of obtaining values more extreme than the test statistic
@@ -122,14 +126,14 @@ class IndependenceTest(ABC):
             p_value = 0
 
             # compute sample MGC statistic and all local correlations for each set of permuted data
-            null_distribution = []
-            for _ in range(replication_factor):
+            null_distribution = zeros(replication_factor)
+            for ind in range(replication_factor):
                 # use random permutations on the second data set
                 premuted_matrix_Y = np.random.permutation(matrix_Y)
 
                 temp_mgc_statistic, temp_independence_test_metadata = self.test_statistic(
                     matrix_X, premuted_matrix_Y)
-                null_distribution.append(temp_mgc_statistic)
+                null_distribution[ind] = temp_mgc_statistic
                 temp_local_correlation_matrix = temp_independence_test_metadata["local_correlation_matrix"]
 
                 p_value += ((temp_mgc_statistic >= test_statistic) * (1/replication_factor))
