@@ -9,7 +9,8 @@ from scipy.spatial.distance import pdist, squareform
 from scipy.stats import kendalltau, pearsonr, spearmanr, t
 
 
-def EUCLIDEAN_DISTANCE(x): return squareform(pdist(x, metric='euclidean'))
+def EUCLIDEAN_DISTANCE(x):
+    return squareform(pdist(x, metric="euclidean"))
 
 
 class IndependenceTest(ABC):
@@ -37,10 +38,10 @@ class IndependenceTest(ABC):
         super().__init__()
 
     def get_name(self):
-        '''
+        """
         :return: the name of the independence test
         :rtype: string
-        '''
+        """
         return self.which_test
 
     @abstractmethod
@@ -87,28 +88,30 @@ class IndependenceTest(ABC):
             - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                  that the independence tests computes in the process
         """
-        np.random.seed(int(time.time()))
 
         # calculte the test statistic with the given data
-        test_statistic, independence_test_metadata = self.test_statistic(matrix_X, matrix_Y)
+        test_statistic, independence_test_metadata = self.test_statistic(
+            matrix_X, matrix_Y
+        )
 
         if self.get_name() == "unbiased":
-            '''
+            """
             for the unbiased centering scheme used to compute unbiased dcorr test statistic
             we can use a t-test to compute the p-value
             notation follows from: Székely, Gábor J., and Maria L. Rizzo.
             "The distance correlation t-test of independence in high dimension."
             Journal of Multivariate Analysis 117 (2013): 193-213.
-            '''
+            """
             null_distribution = np.zeros(replication_factor)
             if compute_null:
-               for ind in range(replication_factor):
-                   # use random permutations on the second data set
-                   premuted_matrix_Y = np.random.permutation(matrix_Y)
+                for ind in range(replication_factor):
+                    # use random permutations on the second data set
+                    premuted_matrix_Y = np.random.permutation(matrix_Y)
 
-                   temp_mgc_statistic, temp_independence_test_metadata = self.test_statistic(
-                       matrix_X, premuted_matrix_Y)
-                   null_distribution[ind] = temp_mgc_statistic
+                    temp_mgc_statistic, temp_independence_test_metadata = self.test_statistic(
+                        matrix_X, premuted_matrix_Y
+                    )
+                    null_distribution[ind] = temp_mgc_statistic
 
             T, df = self.unbiased_T(matrix_X=matrix_X, matrix_Y=matrix_Y)
             # p-value is the probability of obtaining values more extreme than the test statistic
@@ -117,10 +120,14 @@ class IndependenceTest(ABC):
                 p_value = t.cdf(T, df=df)
             else:
                 p_value = 1 - t.cdf(T, df=df)
-            p_value_metadata = {"test_statistic": test_statistic,
-                                "null_distribution": null_distribution}
+            p_value_metadata = {
+                "test_statistic": test_statistic,
+                "null_distribution": null_distribution,
+            }
         elif self.get_name() == "mgc":
-            local_correlation_matrix = independence_test_metadata["local_correlation_matrix"]
+            local_correlation_matrix = independence_test_metadata[
+                "local_correlation_matrix"
+            ]
 
             p_local_correlation_matrix = np.zeros(local_correlation_matrix.shape)
             p_value = 0
@@ -132,19 +139,27 @@ class IndependenceTest(ABC):
                 premuted_matrix_Y = np.random.permutation(matrix_Y)
 
                 temp_mgc_statistic, temp_independence_test_metadata = self.test_statistic(
-                    matrix_X, premuted_matrix_Y)
+                    matrix_X, premuted_matrix_Y
+                )
                 null_distribution[ind] = temp_mgc_statistic
-                temp_local_correlation_matrix = temp_independence_test_metadata["local_correlation_matrix"]
+                temp_local_correlation_matrix = temp_independence_test_metadata[
+                    "local_correlation_matrix"
+                ]
 
-                p_value += ((temp_mgc_statistic >= test_statistic) * (1/replication_factor))
-                p_local_correlation_matrix += ((temp_local_correlation_matrix >=
-                                                local_correlation_matrix) * (1/replication_factor))
+                p_value += (temp_mgc_statistic >= test_statistic) * (
+                    1 / replication_factor
+                )
+                p_local_correlation_matrix += (
+                    temp_local_correlation_matrix >= local_correlation_matrix
+                ) * (1 / replication_factor)
 
-            p_value_metadata = {"test_statistic": test_statistic,
-                                "null_distribution": null_distribution,
-                                "p_local_correlation_matrix": p_local_correlation_matrix,
-                                "local_correlation_matrix": local_correlation_matrix,
-                                "optimal_scale": independence_test_metadata["optimal_scale"]}
+            p_value_metadata = {
+                "test_statistic": test_statistic,
+                "null_distribution": null_distribution,
+                "p_local_correlation_matrix": p_local_correlation_matrix,
+                "local_correlation_matrix": local_correlation_matrix,
+                "optimal_scale": independence_test_metadata["optimal_scale"],
+            }
         elif self.get_name() == "kendall":
             p_value = kendalltau(matrix_X, matrix_Y)[1]
             p_value_metadata = {}
@@ -159,11 +174,18 @@ class IndependenceTest(ABC):
             test_stats_null = np.zeros(replication_factor)
             for rep in range(replication_factor):
                 permuted_y = np.random.permutation(matrix_Y)
-                test_stats_null[rep], _ = self.test_statistic(matrix_X=matrix_X, matrix_Y=permuted_y)
+                test_stats_null[rep], _ = self.test_statistic(
+                    matrix_X=matrix_X, matrix_Y=permuted_y
+                )
             # p-value is the probability of observing more extreme test statistic under the null
-            p_value = np.where(test_stats_null >= test_statistic)[0].shape[0] / replication_factor
-            p_value_metadata = {"test_statistic": test_statistic,
-                                "null_distribution": test_statis_null}
+            p_value = (
+                np.where(test_stats_null >= test_statistic)[0].shape[0]
+                / replication_factor
+            )
+            p_value_metadata = {
+                "test_statistic": test_statistic,
+                "null_distribution": test_statis_null,
+            }
 
         # Correct for a p_value of 0. This is because, with bootstrapping permutations, a value of 0 is not valid
         if p_value == 0:
