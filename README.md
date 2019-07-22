@@ -1,4 +1,4 @@
-The R version is available on CRAN and https://github.com/neurodata/mgc-r.
+The R version is available on CRAN and https://github.com/neurodata/r-mgc.
 The MATLAB version is available at https://github.com/neurodata/mgc-matlab.
 
 # mgcpy
@@ -77,7 +77,7 @@ python3 setup.py install
   - Launch the container to go into mgcpy's dev env, `docker run -it --rm --name mgcpy-env mgcpy:latest`
 - Pull image from Dockerhub and run:
   - `docker pull tpsatish95/mgcpy:latest` or `docker pull tpsatish95/mgcpy:development`
-  - `docker run -it --rm -p 8888:8888 --name mgcpy-env tpsatish95/mgcpy:latest`
+  - `docker run -it --rm -p 8888:8888 --name mgcpy-env tpsatish95/mgcpy:latest` or `docker run -it --rm -p 8888:8888 --name mgcpy-env tpsatish95/mgcpy:development`
 
 
 - To run demo notebooks (from within Docker):

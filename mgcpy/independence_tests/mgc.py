@@ -1,8 +1,6 @@
 """
     **Main MGC Independence Test Module**
 """
-import warnings
-
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 from mgcpy.independence_tests.mgc_utils.local_correlation import \
     local_correlations
@@ -221,11 +219,13 @@ class MGC(IndependenceTest):
 
         if is_fast:
             p_value, p_value_metadata = self._fast_mgc_p_value(matrix_X, matrix_Y, **fast_mgc_data)
+            if p_value == 0:
+                p_value = 1 / replication_factor
             self.p_value_ = p_value
             self.p_value_metadata_ = p_value_metadata
             return p_value, p_value_metadata
         else:
-            return super(MGC, self).p_value(matrix_X, matrix_Y)
+            return super(MGC, self).p_value(matrix_X, matrix_Y, replication_factor=replication_factor)
 
     def _fast_mgc_p_value(self, matrix_X, matrix_Y, sub_samples=10):
         '''
@@ -263,11 +263,6 @@ class MGC(IndependenceTest):
         '''
         mgc_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y, is_fast=True, fast_mgc_data={"sub_samples": sub_samples})
         p_value = _fast_pvalue(mgc_statistic, test_statistic_metadata)
-
-        # The results are not statistically significant
-        if p_value > 0.05:
-            warnings.warn("The p-value is greater than 0.05, implying that the results are not statistically significant.\n" +
-                          "Use results such as test_statistic and optimal_scale, with caution!")
 
         p_value_metadata = {"test_statistic": mgc_statistic,
                             "local_correlation_matrix": test_statistic_metadata["local_correlation_matrix"],
