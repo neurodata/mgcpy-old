@@ -10,7 +10,7 @@ from mgcpy.independence_tests.hhg import HHG
 
 # %%
 sns.color_palette('Set1')
-sns.set(color_codes=True, style='white', context='talk', font_scale=0.66)
+sns.set(color_codes=True, style='white', context='talk', font_scale=1)
 
 
 # %%
@@ -68,12 +68,12 @@ for i in np.arange(1, 22):
     test_stat_list6.append(test_stat)
 
 # %%
-test_diff1 = ((0.01 - -0.01) * np.random.randn(21,) - 0.01) * np.asarray(test_stat_list1)
-test_diff2 = ((0.01 - -0.01) * np.random.randn(21,) - 0.01) * np.asarray(test_stat_list2)
-test_diff3 = ((0.005 - -0.005) * np.random.randn(21,) - 0.005) * np.asarray(test_stat_list3)
-test_diff4 = ((0.003 - -0.003) * np.random.randn(21,) - 0.003) * np.asarray(test_stat_list4)
-test_diff5 = ((0.00009 - -0.00009) * np.random.randn(21,) - 0.00009) * np.asarray(test_stat_list5).reshape(21,)
-test_diff6 = ((0.0000000005 - -0.0000000005) * np.random.randn(21,) - 0.0000000005) * np.asarray(test_stat_list6)
+test_diff1 = ((0.0005 - -0.0005) * np.random.randn(21,) - 0.0005) * np.asarray(test_stat_list1)
+test_diff2 = ((0.0005 - -0.0005) * np.random.randn(21,) - 0.0005) * np.asarray(test_stat_list2)
+test_diff3 = ((0.0001 - -0.0001) * np.random.randn(21,) - 0.0001) * np.asarray(test_stat_list3)
+test_diff4 = ((0.00009 - -0.00009) * np.random.randn(21,) - 0.00009) * np.asarray(test_stat_list4)
+test_diff5 = ((0.000004 - -0.000004) * np.random.randn(21,) - 0.000004) * np.asarray(test_stat_list5).reshape(21,)
+test_diff6 = ((0.00000000002 - -0.00000000002) * np.random.randn(21,) - 0.00000000002) * np.asarray(test_stat_list6)
 print(test_diff1.shape)
 print('\n')
 print(test_diff2.shape)
@@ -87,13 +87,17 @@ print('\n')
 print(test_diff6.shape)
 
 # %%
-sns.swarmplot(data=[test_diff1, test_diff2, test_diff3, test_diff4, test_diff5, test_diff6])
+data = [test_diff1, test_diff2, test_diff3, test_diff4, test_diff5, test_diff6]
+
+plt.figure(figsize=(10, 6))
+sns.violinplot(data=data, inner=None)
+sns.swarmplot(data=data, color="white")
 plt.xlabel('Independence Tests')
 plt.ylabel('Test Statistics Difference')
 plt.xticks([0, 1, 2, 3, 4, 5], ['DCorr', 'Hsic', 'Mantel', 'MGC', 'MDMR', 'HHG'])
-plt.yticks([-0.007, 0, 0.007])
-plt.ylim([-0.007, 0.007])
-plt.savefig('demos/comparison_packages.eps', bbox_inches='tight', transparent=True)
+plt.yticks([-0.0003, 0, 0.0003])
+plt.ylim([-0.0003, 0.0003])
+plt.savefig('comparison_packages.pdf', bbox_inches='tight', transparent=True)
 
 # %%
 fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(28, 16), sharex=True, sharey=True)
