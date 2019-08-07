@@ -184,7 +184,7 @@ class IndependenceTest(ABC):
             )
             p_value_metadata = {
                 "test_statistic": test_statistic,
-                "null_distribution": test_statis_null,
+                "null_distribution": test_stats_null,
             }
 
         # Correct for a p_value of 0. This is because, with bootstrapping permutations, a value of 0 is not valid
