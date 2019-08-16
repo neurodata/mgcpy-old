@@ -7,9 +7,9 @@ from mgcpy.independence_tests.rv_corr import RVCorr
 def test_local_corr():
     # Against a randomly defined data set
     X = np.array([1.1728, 2.4941, 2.4101, 0.1814, 1.1978, 1.5806, 1.2504,
-                  1.9706, 1.8839, 0.8760])[:, np.newaxis]
+                  1.9706, 1.8839, 0.8760], dtype=np.float64).reshape(-1, 1)
     Y = np.array([3.2311, 12.1113, 11.1350, 1.1989, 3.3127, 4.8580, 3.4917,
-                  7.1748, 6.5792, 2.4012])[:, np.newaxis]
+                  7.1748, 6.5792, 2.4012], dtype=np.float64).reshape(-1, 1)
     rvcorr = RVCorr(None)
     rvcorr2 = RVCorr(None, 'pearson')
     rvcorr3 = RVCorr(None, 'cca')

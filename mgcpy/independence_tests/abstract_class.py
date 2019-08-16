@@ -84,7 +84,7 @@ class IndependenceTest(ABC):
             - :p_value_metadata_: (optional) a ``dict`` of metadata other than the p_value,
                                  that the independence tests computes in the process
         """
-        np.random.seed(int(time.time()))
+        # np.random.seed(int(time.time()))
 
         # calculte the test statistic with the given data
         test_statistic, independence_test_metadata = self.test_statistic(matrix_X, matrix_Y)
@@ -121,6 +121,7 @@ class IndependenceTest(ABC):
             p_local_correlation_matrix = np.zeros(local_correlation_matrix.shape)
             p_value = 1/replication_factor
 
+            null_distribution = []
             # compute sample MGC statistic and all local correlations for each set of permuted data
             for _ in range(replication_factor):
 
