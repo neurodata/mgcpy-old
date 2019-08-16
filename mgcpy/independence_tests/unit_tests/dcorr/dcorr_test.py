@@ -64,5 +64,5 @@ def test_dcorr_p_value():
 
     # p value (faster versions)
     assert np.allclose(unbiased.p_value(X, Y, is_fast=True)[0], 0.7429, atol=0.03)
-    assert np.allclose(biased.p_value(X, Y, is_fast=True)[0], 0, atol=0.03)
-    assert np.allclose(mantel.p_value(X, Y, is_fast=True)[0], 0, atol=0.03)
+    assert np.allclose(biased.p_value(X, Y, is_fast=True)[0], 1/1000, atol=0.03)
+    assert np.allclose(mantel.p_value(X, Y, is_fast=True)[0], 1/1000, atol=0.03)

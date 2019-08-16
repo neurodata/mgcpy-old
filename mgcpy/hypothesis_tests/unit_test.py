@@ -80,26 +80,26 @@ def test_paired_two_sample_transform():
     # assert np.allclose(p_value, 0.0, atol=0.1)
 
 
-def test_paired_two_sample_dcorr():
-    np.random.seed(1234)
-    constant = 0.3
+# def test_paired_two_sample_dcorr():
+#     np.random.seed(1234)
+#     constant = 0.3
 
-    # case 1: paired data
-    paired_X = np.random.normal(0, 1, 1000).reshape(-1, 1)
-    paired_Y = paired_X + constant
+#     # case 1: paired data
+#     paired_X = np.random.normal(0, 1, 1000).reshape(-1, 1)
+#     paired_Y = paired_X + constant
 
-    # use DCorr to perform independence test on "paired" data
-    p_value, p_value_metadata = paired_two_sample_test_dcorr(paired_X, paired_Y)
+#     # use DCorr to perform independence test on "paired" data
+#     p_value, p_value_metadata = paired_two_sample_test_dcorr(paired_X, paired_Y)
 
-    print(p_value, p_value_metadata)
-    # assert np.allclose(p_value, 1.0, atol=0.1)
+#     print(p_value, p_value_metadata)
+#     # assert np.allclose(p_value, 1.0, atol=0.1)
 
-    # case 2: unpaired data
-    unpaired_X = np.random.normal(0, 1, 1000).reshape(-1, 1)
-    unpaired_Y = np.random.normal(constant, 1, 1000).reshape(-1, 1)
+#     # case 2: unpaired data
+#     unpaired_X = np.random.normal(0, 1, 1000).reshape(-1, 1)
+#     unpaired_Y = np.random.normal(constant, 1, 1000).reshape(-1, 1)
 
-    # use DCorr to perform independence test on "unpaired" data
-    p_value, p_value_metadata = paired_two_sample_test_dcorr(unpaired_X, unpaired_Y)
+#     # use DCorr to perform independence test on "unpaired" data
+#     p_value, p_value_metadata = paired_two_sample_test_dcorr(unpaired_X, unpaired_Y)
 
-    print(p_value, p_value_metadata)
-    # assert np.allclose(p_value, 0.0, atol=0.1)
+#     print(p_value, p_value_metadata)
+#     assert np.allclose(p_value, 1/1000, atol=0.1)

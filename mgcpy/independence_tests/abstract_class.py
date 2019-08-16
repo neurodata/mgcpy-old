@@ -162,7 +162,7 @@ class IndependenceTest(ABC):
             # p-value is the probability of observing more extreme test statistic under the null
             p_value = np.where(test_stats_null >= test_statistic)[0].shape[0] / replication_factor
             p_value_metadata = {"test_statistic": test_statistic,
-                                "null_distribution": test_statis_null}
+                                "null_distribution": test_stats_null}
 
         # Correct for a p_value of 0. This is because, with bootstrapping permutations, a value of 0 is not valid
         if p_value == 0:
