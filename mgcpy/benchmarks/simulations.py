@@ -60,7 +60,7 @@ def linear_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     return x, y
 
 
-def exp_sim(num_samp, num_dim, noise=10, indep=False, low=0, high=3):
+def exp_sim(num_samp, num_dim, noise=3, indep=False, low=0, high=3):
     """
     Function for generating an exponential simulation.
 
@@ -88,8 +88,8 @@ def exp_sim(num_samp, num_dim, noise=10, indep=False, low=0, high=3):
     return x, y
 
 
-def cub_sim(num_samp, num_dim, noise=80, indep=False, low=-1, high=1,
-            cub_coeff=np.array([-12, 48, 128]), scale=1/3):
+def cub_sim(num_samp, num_dim, noise=15, indep=False, low=-1, high=1,
+            cub_coeff=np.array([50, 10, 100]), scale=1/100000):
     """
     Function for generating a cubic simulation.
 
@@ -131,7 +131,7 @@ def joint_sim(num_samp, num_dim, noise=0.5):
 
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
-    :param noise: noise level of the simulation, defaults to 80
+    :param noise: noise level of the simulation, defaults to 0.5
 
     :return: the data matrix and a response array
     """
@@ -157,43 +157,13 @@ def joint_sim(num_samp, num_dim, noise=0.5):
     return x, y
 
 
-def step_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
+def step_sim(num_samp, num_dim, noise=0.1, indep=False, low=-1, high=1):
     """
     Function for generating a joint-normal simulation.
 
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
-    :param noise: noise level of the simulation, defaults to 1
-    :param indep: whether to sample x and y independently, defaults to false
-    :param low: the lower limit of the data matrix, defaults to -1
-    :param high: the upper limit of the data matrix, defaults to 1
-
-    :return: the data matrix and a response array
-    """
-    x = gen_x_unif(num_samp, num_dim, low=low, high=high)
-    coeffs = gen_coeffs(num_dim)
-    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
-    if (num_dim > 1):
-        kappa = 1
-    else:
-        kappa = 0
-
-    x_coeff = np.dot(a=x, b=coeffs)
-    x_coeff = 1 * (x_coeff > 0)
-    y = (x_coeff + kappa*noise*gauss_noise)
-    if indep:
-        x = gen_x_unif(num_samp, num_dim, low=low, high=high)
-
-    return x, y
-
-
-def quad_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
-    """
-    Function for generating a quadratic simulation.
-
-    :param num_samp: number of samples for the simulation
-    :param num_dim: number of dimensions for the simulation
-    :param noise: noise level of the simulation, defaults to 1
+    :param noise: noise level of the simulation, defaults to 0.1
     :param indep: whether to sample x and y independently, defaults to false
     :param low: the lower limit of the data matrix, defaults to -1
     :param high: the upper limit of the data matrix, defaults to 1
@@ -208,14 +178,45 @@ def quad_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
     else:
         kappa = 0
 
-    y = ((np.dot(a=x, b=coeffs)**2) + kappa*noise*gauss_noise)
+    x_coeff = np.dot(a=x, b=coeffs)
+    x_coeff = 1 * (x_coeff > 0)
+    y = (x_coeff + kappa*noise*gauss_noise)
     if indep:
         x = gen_x_unif(num_samp, num_dim, low=low, high=high)
 
     return x, y
 
 
-def w_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1):
+def quad_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, amp=5):
+    """
+    Function for generating a quadratic simulation.
+
+    :param num_samp: number of samples for the simulation
+    :param num_dim: number of dimensions for the simulation
+    :param noise: noise level of the simulation, defaults to 1
+    :param indep: whether to sample x and y independently, defaults to false
+    :param low: the lower limit of the data matrix, defaults to -1
+    :param high: the upper limit of the data matrix, defaults to 1
+    :param amp: amplitude of the quadratic simulation, defaults to 5
+
+    :return: the data matrix and a response array
+    """
+    x = gen_x_unif(num_samp, num_dim, low=low, high=high)
+    coeffs = gen_coeffs(num_dim)
+    gauss_noise = np.random.normal(loc=0, scale=1, size=(num_samp, 1))
+    if (num_dim == 1):
+        kappa = 1
+    else:
+        kappa = 0
+
+    y = ((amp*np.dot(a=x, b=coeffs)**2) + kappa*noise*gauss_noise)
+    if indep:
+        x = gen_x_unif(num_samp, num_dim, low=low, high=high)
+
+    return x, y
+
+
+def w_sim(num_samp, num_dim, noise=0.5, indep=False, low=-1, high=1):
     """
     Function for generating a w-shaped simulation.
 
@@ -274,7 +275,7 @@ def spiral_sim(num_samp, num_dim, noise=0.4, low=0, high=5):
     return x, y
 
 
-def ubern_sim(num_samp, num_dim, noise=0.5, bern_prob=0.5):
+def ubern_sim(num_samp, num_dim, noise=0.05, bern_prob=0.5):
     """
     Function for generating an uncorrelated bernoulli simulation.
 
@@ -412,11 +413,11 @@ def sin_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=4*np
     return x, y
 
 
-def square_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=-np.pi/8):
+def square_sim(num_samp, num_dim, noise=1, indep=False, low=-1, high=1, period=-np.pi/2):
     """
     Function for generating a square or diamond simulation.
 
-    Note: For producing square or diamond simulations, change the ``period`` to -pi/8 or -pi/4.
+    Note: For producing square or diamond simulations, change the ``period`` to -pi/2 or -pi/4.
 
     :param num_samp: number of samples for the simulation
     :param num_dim: number of dimensions for the simulation
@@ -478,7 +479,7 @@ def two_parab_sim(num_samp, num_dim, noise=2, low=-1, high=1, prob=0.5):
     return x, y
 
 
-def circle_sim(num_samp, num_dim, noise=0.4, low=-1, high=1, radius=1):
+def circle_sim(num_samp, num_dim, noise=0.1, low=-1, high=1, radius=1):
     """
     Function for generating a circle or ellipse simulation.
 
@@ -493,7 +494,7 @@ def circle_sim(num_samp, num_dim, noise=0.4, low=-1, high=1, radius=1):
 
     :return: the data matrix and a response array
     """
-    if num_dim > 1:
+    if num_dim == 1:
         kappa = 1
     else:
         kappa = 0
@@ -510,7 +511,7 @@ def circle_sim(num_samp, num_dim, noise=0.4, low=-1, high=1, radius=1):
     for i in range(num_dim - 1):
         x[:, i+1] = (x[:, i].reshape((num_samp)) * np.cos(z[:, i+1].reshape((num_samp)) * np.pi))
         x[:, i] = (x[:, i].reshape((num_samp)) * np.sin(z[:, i+1].reshape((num_samp)) * np.pi))
-    x = rx * x + noise*rx*gauss_noise
+    x = rx * x + kappa*noise*rx*gauss_noise
 
     y = ry * np.sin(z[:, 0].reshape((num_samp, 1)) * np.pi)
 

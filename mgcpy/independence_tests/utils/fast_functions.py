@@ -100,6 +100,7 @@ def _sub_sample(matrix_X, matrix_Y, test_statistic, num_samples, sub_samples, wh
 
     return test_statistic_sub_sampling
 
+
 def _approx_null_dist(num_samples, test_statistic_sub_sampling, which_test):
     """
     Approximates the null distribution of the p value calculation

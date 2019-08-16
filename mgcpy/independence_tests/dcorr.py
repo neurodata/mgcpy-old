@@ -1,10 +1,6 @@
-import math
-import warnings
-from statistics import mean, stdev
+from statistics import mean
 
 import numpy as np
-from scipy.stats import norm, t
-
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 from mgcpy.independence_tests.utils.compute_distance_matrix import \
     compute_distance
@@ -18,7 +14,7 @@ from mgcpy.independence_tests.utils.fast_functions import (_approx_null_dist,
 
 class DCorr(IndependenceTest):
 
-    def __init__(self, compute_distance_matrix=None, which_test='unbiased'):
+    def __init__(self, compute_distance_matrix=None, which_test='unbiased', is_paired=False):
         '''
         :param compute_distance_matrix: a function to compute the pairwise distance matrix, given a data matrix
         :type compute_distance_matrix: FunctionType or callable()
@@ -30,6 +26,7 @@ class DCorr(IndependenceTest):
         if which_test not in ['unbiased', 'biased', 'mantel']:
             raise ValueError('which_test must be unbiased, biased, or mantel')
         self.which_test = which_test
+        self.is_paired = is_paired
 
     def test_statistic(self, matrix_X, matrix_Y, is_fast=False, fast_dcorr_data={}):
         """
@@ -99,7 +96,12 @@ class DCorr(IndependenceTest):
             if variance_X <= 0 or variance_Y <= 0:
                 correlation = 0
             else:
-                correlation = covariance/np.real(np.sqrt(variance_X*variance_Y))
+                if self.is_paired:
+                    n = transformed_dist_mtx_X.shape[0]
+                    correlation = (variance_X/n/(n-1)) + (variance_Y/n/(n-1)) \
+                        - 2*np.sum(np.multiply(transformed_dist_mtx_X, np.transpose(transformed_dist_mtx_Y)).diagonal())/n
+                else:
+                    correlation = covariance/np.real(np.sqrt(variance_X*variance_Y))
 
             # store the variance of X, variance of Y and the covariace as metadata
             test_statistic_metadata = {'variance_X': variance_X, 'variance_Y': variance_Y, 'covariance': covariance}
@@ -262,6 +264,8 @@ class DCorr(IndependenceTest):
 
         if is_fast:
             p_value, p_value_metadata = self._fast_dcorr_p_value(matrix_X, matrix_Y, **fast_dcorr_data)
+            if p_value == 0:
+                p_value = 1 / replication_factor
             self.p_value_ = p_value
             self.p_value_metadata_ = p_value_metadata
             return p_value, p_value_metadata
@@ -303,11 +307,6 @@ class DCorr(IndependenceTest):
         '''
         test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y, is_fast=True, fast_dcorr_data={"sub_samples": sub_samples})
         p_value = _fast_pvalue(test_statistic, test_statistic_metadata)
-
-        # The results are not statistically significant
-        if p_value > 0.05:
-            warnings.warn("The p-value is greater than 0.05, implying that the results are not statistically significant.\n" +
-                          "Use results such as test_statistic and optimal_scale, with caution!")
 
         p_value_metadata = {"test_statistic": test_statistic}
 

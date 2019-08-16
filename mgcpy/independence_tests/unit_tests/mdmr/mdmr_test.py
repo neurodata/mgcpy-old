@@ -1,5 +1,5 @@
 import numpy as np
-
+import pytest
 from mgcpy.independence_tests.mdmr import MDMR
 
 
@@ -21,7 +21,7 @@ def test_mdmr():
     assert np.allclose(a, 79.43449382)
 
     # p-value
-    assert np.allclose(b, 0.0)  # 0.000999
+    assert np.allclose(b, 1/1000)  # 0.000999
 
     # individual statistics
     assert np.allclose(results1[0, 1], 10.772903841496253)

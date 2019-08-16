@@ -12,14 +12,6 @@ mgcpy.hypothesis\_tests.transforms module
     :undoc-members:
     :show-inheritance:
 
-mgcpy.hypothesis\_tests.unit\_test module
------------------------------------------
-
-.. automodule:: mgcpy.hypothesis_tests.unit_test
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 
 Module contents
 ---------------

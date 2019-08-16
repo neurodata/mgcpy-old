@@ -17,11 +17,8 @@ from mgcpy.independence_tests.kendall_spearman import KendallSpearman
 from mgcpy.independence_tests.mdmr import MDMR
 from mgcpy.independence_tests.mgc import MGC
 from mgcpy.independence_tests.rv_corr import RVCorr
-from mgcpy.independence_tests.utils.mdmr_functions import \
-    compute_distance_matrix
 
 # In[2]:
-
 
 
 # In[5]:
@@ -105,8 +102,9 @@ def fill_params_dict_list_dimensions(do_fast_mgc=False):
     rv_corr = RVCorr(which_test='rv')
     hhg = HHG()
     cca = RVCorr(which_test='cca')
-    mdmr = MDMR(compute_distance_matrix=compute_distance_matrix)
-    independence_tests = []  # [mgc, mcorr, dcorr, mantel, rv_corr, cca]
+    mdmr = MDMR()
+    hsic = DCorr(which_test='unbiased', compute_distance_matrix=lambda x: squareform(pdist(x, metric='correlation')))
+    independence_tests = [hsic]  # [mgc, mcorr, dcorr, mantel, rv_corr, cca]
 
     params_dict_list = []
     for sim_name, sim_func in simulations.items():
@@ -168,7 +166,7 @@ def fill_params_dict_list_sample_sizes(do_fast_mgc=False):
     mgc = MGC()
     hhg = HHG()
     pearson = RVCorr(which_test='pearson')
-    mdmr = MDMR(compute_distance_matrix=compute_distance_matrix)
+    mdmr = MDMR()
     independence_tests = []
 
     params_dict_list = []

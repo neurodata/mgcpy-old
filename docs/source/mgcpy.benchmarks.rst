@@ -6,6 +6,7 @@ Subpackages
 
 .. toctree::
 
+    mgcpy.benchmarks.hypothesis_tests
     mgcpy.benchmarks.unit_tests
 
 Submodules
