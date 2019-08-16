@@ -265,8 +265,8 @@ def plot_all_curves(which_type):
             sim_name = simulation_names[simulation_type]
             simulation_type += 1
             if which_type == 'dimension':
-                tests = ['mgc', 'unbiased', 'biased', 'mantel', 'hhg', 'rv', 'cca', 'mdmr', 'fast_mgc', 'fast_unbiased', 'unbiased_hsic', 'biased_hsic']
-                test_names = ['MGC', 'Unbiased Dcorr', 'Biased Dcorr', 'Mantel', 'HHG', 'RV', 'CCA', 'MDMR', 'Fast MGC', 'Fast Dcorr', 'Unbiased Hsic', 'Biased Hsic']
+                tests = ['mgc', 'unbiased', 'biased', 'mantel', 'hhg', 'rv', 'cca', 'mdmr', 'fast_mgc', 'fast_unbiased', 'hsic']
+                test_names = ['MGC', 'Unbiased Dcorr', 'Biased Dcorr', 'Mantel', 'HHG', 'RV', 'CCA', 'MDMR', 'Fast MGC', 'Fast Dcorr', 'Hsic']
                 dir_name = '../mgcpy/benchmarks/python_power_curves_dimensions/'
                 if simulation_type in [1, 2, 3]:
                     tests.remove('mdmr')
@@ -299,8 +299,8 @@ def plot_all_curves(which_type):
                     count += 1
                     #file = open('../../NeuroData/power_curve_{}.pkl'.format(sim_name),  'rb')
             else:
-                tests = ['mgc', 'unbiased', 'biased', 'mantel', 'hhg', 'mdmr', 'fast_mgc', 'fast_unbiased', 'unbiased_hsic', 'biased_hsic']
-                test_names = ['MGC', 'Unbiased Dcorr', 'Biased Dcorr', 'Mantel', 'HHG', 'MDMR', 'Fast MGC', 'Fast Dcorr', 'Unbiased Hsic', 'Biased Hsic']
+                tests = ['mgc', 'unbiased', 'biased', 'mantel', 'hhg', 'mdmr', 'fast_mgc', 'fast_unbiased', 'hsic']
+                test_names = ['MGC', 'Unbiased Dcorr', 'Biased Dcorr', 'Mantel', 'HHG', 'MDMR', 'Fast MGC', 'Fast Dcorr', 'Hsic']
                 dir_name = '../mgcpy/benchmarks/python_power_curves_sample_size/'
                 #mgc_power = np.genfromtxt(dir_name + '{}_mgc_sample_size.csv'.format(simulation_type), delimiter=',')
 
@@ -345,12 +345,12 @@ def plot_all_curves(which_type):
 
 # %%
 plot_all_curves('dimension')
-plt.savefig('power_vs_dimension.eps', bbox_inches='tight', transparent=True)
+plt.savefig('power_vs_dimension.pdf', bbox_inches='tight', transparent=True)
 
 
 # %%
 plot_all_curves('sample_size')
-plt.savefig('power_vs_sample_size.eps', bbox_inches='tight', transparent=True)
+plt.savefig('power_vs_sample_size.pdf', bbox_inches='tight', transparent=True)
 
 
 # %%
@@ -368,7 +368,7 @@ def plot_diff_curves(which_type):
             sim_name = simulation_names[simulation_type]
             simulation_type += 1
             if which_type == 'dimension':
-                tests = ['mgc', 'unbiased', 'biased', 'mantel', 'hhg', 'rv', 'cca']
+                tests = ['mgc', 'unbiased', 'biased', 'mantel', 'hhg', 'rv', 'cca', 'hsic']
                 python_results_dir_name = '../mgcpy/benchmarks/python_power_curves_dimensions/'
 
                 matlab_file_name = dir_name + 'dimension/CorrIndTestDimType{}N100Dim.mat'.format(simulation_type)

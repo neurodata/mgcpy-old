@@ -21,7 +21,6 @@ from mgcpy.independence_tests.rv_corr import RVCorr
 # In[2]:
 
 
-
 # In[5]:
 
 
@@ -104,7 +103,8 @@ def fill_params_dict_list_dimensions(do_fast_mgc=False):
     hhg = HHG()
     cca = RVCorr(which_test='cca')
     mdmr = MDMR()
-    independence_tests = []  # [mgc, mcorr, dcorr, mantel, rv_corr, cca]
+    hsic = DCorr(which_test='unbiased', compute_distance_matrix=lambda x: squareform(pdist(x, metric='correlation')))
+    independence_tests = [hsic]  # [mgc, mcorr, dcorr, mantel, rv_corr, cca]
 
     params_dict_list = []
     for sim_name, sim_func in simulations.items():
