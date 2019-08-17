@@ -146,30 +146,4 @@ class DCorrX(IndependenceTest):
         >>> cdcv = CDCV()
         >>> p_value, metadata = dcorr.p_value(X, Y, replication_factor = 100)
         '''
-        assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be equal to q"
-
-        # Compute test statistic
-        n = matrix_X.shape[0]
-        if len(matrix_X.shape) == 1:
-            matrix_X = matrix_X.reshape((n,1))
-        if len(matrix_Y.shape) == 1:
-            matrix_Y = matrix_Y.reshape((n,1))
-        matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
-        observed_test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
-
-        # Block bootstrap
-        block_size = int(np.ceil(np.sqrt(n)))
-        test_stats_null = np.zeros(replication_factor)
-        for rep in range(replication_factor):
-            # Generate new time series sample for Y
-            permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
-            permuted_indices = np.mod(permuted_indices, n)
-            permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
-
-            # Compute test statistic
-            test_stats_null[rep], _ = self.test_statistic(matrix_X, permuted_Y)
-
-        self.p_value_ = np.sum(np.greater(test_stats_null, observed_test_statistic)) / replication_factor
-        self.p_value_metadata_ = { 'null_distribution' : test_stats_null }
-
-        return self.p_value_, self.p_value_metadata_
+        return super(DCorrX, self).p_value_block(matrix_X, matrix_Y, replication_factor)
