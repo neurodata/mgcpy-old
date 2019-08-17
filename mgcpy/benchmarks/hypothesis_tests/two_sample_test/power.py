@@ -1,11 +1,29 @@
 import numpy as np
 import math
 from mgcpy.hypothesis_tests.transforms import k_sample_transform
+from sklearn.ensemble import RandomForestRegressor
 import scipy.io
 import os
 
+def proximityMatrix(model, X, normalize=True):      
 
-def power_given_data(base_path, independence_test, simulation_type, num_samples, repeats=1000, alpha=.05, additional_params={}):
+    terminals = model.apply(X)
+    nTrees = terminals.shape[1]
+
+    a = terminals[:,0]
+    proxMat = 1*np.equal.outer(a, a)
+
+    for i in range(1, nTrees):
+        a = terminals[:,i]
+        proxMat += 1*np.equal.outer(a, a)
+
+    if normalize:
+        proxMat = proxMat / nTrees
+
+    return proxMat
+
+
+def power_given_data(base_path, independence_test, simulation_type, num_samples, repeats=1000, alpha=.05, additional_params={}, is_rf=False):
     # test statistics under the null, used to estimate the cutoff value under the null distribution
     test_stats_null = np.zeros(repeats)
     # test statistic under the alternative
@@ -34,7 +52,7 @@ def power_given_data(base_path, independence_test, simulation_type, num_samples,
         matrix_U, matrix_V = k_sample_transform(data_matrix, rotated_data_matrix)
 
         # permutation test
-        if additional_params and additional_params["is_fast"]:
+        if additional_params:
             p_values[rep], _ = independence_test.p_value(matrix_U, matrix_V, **additional_params)
         else:
             permuted_V = np.random.permutation(matrix_V)
@@ -49,7 +67,7 @@ def power_given_data(base_path, independence_test, simulation_type, num_samples,
             test_stats_null[rep] = abs(test_stats_null[rep])
             test_stats_alternative[rep] = abs(test_stats_alternative[rep])
 
-    if additional_params and additional_params["is_fast"]:
+    if additional_params:
         empirical_power = np.where(p_values <= alpha)[0].shape[0] / repeats
     else:
         # the cutoff is determined so that 1-alpha of the test statistics under the null distribution

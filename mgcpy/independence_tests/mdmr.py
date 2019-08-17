@@ -4,7 +4,6 @@
 
 import numpy as np
 import scipy.spatial as scp
-
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 from mgcpy.independence_tests.utils.compute_distance_matrix import \
     compute_distance
