@@ -31,7 +31,7 @@ def k_sample_transform(x, y, is_y_categorical=False):
     :rtype: list
     '''
     if not is_y_categorical:
-        assert x.shape == y.shape, "Matrices X and Y need to be of same dimensions [n, p]"
+        assert x.shape[1] == y.shape[1], "Matrices X and Y need to be of same dimension p"
     else:
         assert x.shape[0] == y.shape[0] and y.shape[1] == 1, "Matrices X and Y need to be of dimensions [n, p], [n, 1]"
 

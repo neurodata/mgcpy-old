@@ -10,7 +10,9 @@ from scipy.stats import kendalltau, pearsonr, spearmanr, t
 from mgcpy.independence_tests.utils.compute_distance_matrix import \
     compute_distance
 
-def EUCLIDEAN_DISTANCE(x): return squareform(pdist(x, metric='euclidean'))
+
+def EUCLIDEAN_DISTANCE(x):
+    return squareform(pdist(x, metric="euclidean"))
 
 
 class IndependenceTest(ABC):
@@ -38,10 +40,10 @@ class IndependenceTest(ABC):
         super().__init__()
 
     def get_name(self):
-        '''
+        """
         :return: the name of the independence test
         :rtype: string
-        '''
+        """
         return self.which_test
 
     @abstractmethod
@@ -94,7 +96,7 @@ class IndependenceTest(ABC):
             '''
             for the unbiased centering scheme used to compute unbiased dcorr test statistic
             we can use a t-test to compute the p-value
-            notation follows from: Székely, Gábor J., and Maria L. Rizzo.
+            notation follows from: SzÃ©kely, GÃ¡bor J., and Maria L. Rizzo.
             "The distance correlation t-test of independence in high dimension."
             Journal of Multivariate Analysis 117 (2013): 193-213.
             '''
@@ -171,6 +173,7 @@ class IndependenceTest(ABC):
         self.p_value_ = p_value
         self.p_value_metadata_ = p_value_metadata
         return p_value, p_value_metadata
+
     def p_value_block(self, matrix_X, matrix_Y, replication_factor=1000):
         """
         Tests independence between two datasets using block permutation test.
@@ -215,9 +218,9 @@ class IndependenceTest(ABC):
         # Compute test statistic
         n = matrix_X.shape[0]
         if len(matrix_X.shape) == 1:
-            matrix_X = matrix_X.reshape((n,1))
+            matrix_X = matrix_X.reshape((n, 1))
         if len(matrix_Y.shape) == 1:
-            matrix_Y = matrix_Y.reshape((n,1))
+            matrix_Y = matrix_Y.reshape((n, 1))
         matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
         test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
 
@@ -236,6 +239,6 @@ class IndependenceTest(ABC):
         self.p_value_ = np.sum(np.greater(test_stats_null, test_statistic)) / replication_factor
         if self.p_value == 0.0:
             self.p_value = 1 / replication_factor
-        self.p_value_metadata_ = { 'null_distribution' : test_stats_null }
+        self.p_value_metadata_ = {'null_distribution': test_stats_null}
 
         return self.p_value_, self.p_value_metadata_
