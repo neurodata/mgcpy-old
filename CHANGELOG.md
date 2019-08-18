@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+# [0.4.0] - 2019-02-07
+- Update sphinx docs
+- Fix discretized p-value bug
+- Fix zero p-value bug
+- Add MGC/Dcorr Time Series
+- Raised some package requirements to fix errors with called packages
+
 ## [0.3.0] - 2019-02-07
 - Refactor the mgcpy package structure
 - Add Manova
