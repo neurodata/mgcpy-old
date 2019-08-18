@@ -25,11 +25,9 @@ copyright = "2018"
 authors = u"NeuroData"
 
 # The short X.Y version
-# Find mgcpy version.
-PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
-for line in open(os.path.join(PROJECT_PATH, "..", "mgcpy", "__init__.py")):
-    if line.startswith("__version__ = "):
-        version = line.strip().split()[2][1:-1]
+version = 'v0.4.0'
+# The full version, including alpha/beta/rc tags
+release = 'beta'
 
 # The full version, including alpha/beta/rc tags
 release = "alpha"
@@ -89,9 +87,8 @@ html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_theme_options = {
     # 'includehidden': False,
-    "navigation_depth": 2,
-    "collapse_navigation": False,
     "navigation_depth": 3,
+    "collapse_navigation": False,
 }
 
 # Custom sidebar templates, must be a dictionary that maps document names
