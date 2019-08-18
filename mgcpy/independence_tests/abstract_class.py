@@ -152,7 +152,7 @@ class IndependenceTest(ABC):
             test_statistic, p_value = spearmanr(matrix_X, matrix_Y)
             p_value_metadata = {"test_statistic": test_statistic}
         elif self.get_name() == "pearson":
-            test_statistic, p_value = pearsonr(matrix_X, matrix_Y)
+            test_statistic, p_value = pearsonr(matrix_X.reshape(-1), matrix_Y.reshape(-1))
             p_value_metadata = {"test_statistic": test_statistic}
         else:
             # estimate the null by a permutation test
