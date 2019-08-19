@@ -11,7 +11,7 @@
   publish = "docs/_build/html/"
 
   # Default build command.
-  command = "set -ex; pip install -r docs/requirements.txt; cd docs; make html; cd ..; set +ex"
+  command = "python setup.py build_ext --inplace; set -ex; pip install -r docs/requirements.txt; cd docs; make html; cd ..; set +ex"
 
   # Directory with the serverless Lambda functions to deploy to AWS.
   # functions = "project/functions/"
