@@ -89,7 +89,7 @@ def exp_sim(num_samp, num_dim, noise=3, indep=False, low=0, high=3):
 
 
 def cub_sim(num_samp, num_dim, noise=15, indep=False, low=-1, high=1,
-            cub_coeff=np.array([50, 10, 100]), scale=1/100000):
+            cub_coeff=np.array([-12, 48, 128]), scale=1/100000):
     """
     Function for generating a cubic simulation.
 
