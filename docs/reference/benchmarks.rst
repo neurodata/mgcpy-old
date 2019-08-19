@@ -98,5 +98,3 @@ Power Computations
 ------------------
 
 .. autofunction:: power
-
-.. autofunction:: power_given_data
