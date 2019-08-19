@@ -64,11 +64,20 @@ Documentation
    :maxdepth: 1
 
    install
+   reference/index
+   tutorial
    license
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Useful Links
+
+   mgcpy @ GitHub <https://github.com/neurodata/mgcpy/>
+   mgcpy @ PyPI <https://pypi.org/project/mgcpy/>
+   Issue Tracker <https://github.com/neurodata/mgcpy/issues/>
 
 Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

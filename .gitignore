@@ -1,3 +1,6 @@
+# VSCode
+.vscode/
+
 # Mac
 .DS_Store
 _build
