@@ -166,11 +166,11 @@ class MGCX(IndependenceTest):
         matrix_X, matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
         test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
 
+        block_size = int(np.ceil(np.sqrt(n)))
         if is_fast:
-            return self._fast_p_value(test_statistic, subsample_size)
+            return self._fast_p_value(test_statistic, matrix_X, matrix_Y, subsample_size, block_size)
 
         # Block bootstrap
-        block_size = int(np.ceil(np.sqrt(n)))
         test_stats_null = np.zeros(replication_factor)
         for rep in range(replication_factor):
             # Generate new time series sample for Y
@@ -188,15 +188,16 @@ class MGCX(IndependenceTest):
 
         return self.p_value_, self.p_value_metadata_
 
-    def _fast_p_value(self, test_statistic, subsample_size):
+    def _fast_p_value(self, test_statistic, matrix_X, matrix_Y, subsample_size, block_size):
         if subsample_size is None:
             subsamples_size = np.maximum(2*self.max_lag, 10)
         num_samples, sub_samples = _sample_atrr(matrix_Y, subsamples_size)
-        sub_samples = np.maximum(2*self.max_lag, subsamples)
+        sub_samples = np.maximum(2*self.max_lag, sub_samples)
 
         test_statistic_sub_sampling = np.zeros(num_samples)
 
         # Block permute Y.
+        n = matrix_Y.shape[0]
         permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
         permuted_indices = np.mod(permuted_indices, n)
         permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
@@ -212,7 +213,7 @@ class MGCX(IndependenceTest):
 
         self.p_value_ = 1 - norm.cdf(test_statistic, mu, sigma)
         if self.p_value_ == 0.0:
-            self.p_value_ = 1 / replication_factor
+            self.p_value_ = 1 / num_samples
         self.p_value_metadata_ = {'null_distribution': test_statistic_sub_sampling}
 
         return self.p_value_, self.p_value_metadata_
