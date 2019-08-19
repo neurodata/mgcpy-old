@@ -189,15 +189,13 @@ class MGCX(IndependenceTest):
         return self.p_value_, self.p_value_metadata_
 
     def _fast_p_value(self, test_statistic, matrix_X, matrix_Y, subsample_size, block_size):
-        if subsample_size is None:
-            subsamples_size = np.maximum(2*self.max_lag, 10)
-        num_samples, sub_samples = _sample_atrr(matrix_Y, subsamples_size)
-        sub_samples = np.maximum(2*self.max_lag, sub_samples)
+        n = matrix_Y.shape[0]
+        sub_samples = 10
+        num_samples = n // 10
 
         test_statistic_sub_sampling = np.zeros(num_samples)
 
         # Block permute Y.
-        n = matrix_Y.shape[0]
         permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
         permuted_indices = np.mod(permuted_indices, n)
         permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
@@ -208,8 +206,8 @@ class MGCX(IndependenceTest):
             sub_matrix_Y = permuted_Y[(sub_samples*i):sub_samples*(i+1), :]
             test_statistic_sub_sampling[i], _ = self.test_statistic(sub_matrix_X, sub_matrix_Y)
 
-        sigma = stdev(test_statistic_sub_sampling) / num_samples
-        mu = max(0, mean(test_statistic_sub_sampling))
+        sigma = stdev(test_statistic_sub_sampling) / np.sqrt(num_samples)
+        mu = np.maximum(0, mean(test_statistic_sub_sampling))
 
         self.p_value_ = 1 - norm.cdf(test_statistic, mu, sigma)
         if self.p_value_ == 0.0:
