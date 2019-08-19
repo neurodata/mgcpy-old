@@ -16,7 +16,7 @@ import sphinx_rtd_theme
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(".."))
+#sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
@@ -26,9 +26,6 @@ authors = u"NeuroData"
 
 # The short X.Y version
 version = 'v0.4.0'
-# The full version, including alpha/beta/rc tags
-release = 'beta'
-
 # The full version, including alpha/beta/rc tags
 release = "alpha"
 
