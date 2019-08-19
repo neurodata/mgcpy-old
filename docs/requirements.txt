@@ -5,3 +5,4 @@ numpydoc
 nbsphinx
 IPython
 ipykernel
+Cython>=0.29
