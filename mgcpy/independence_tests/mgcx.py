@@ -116,7 +116,7 @@ class MGCX(IndependenceTest):
         self.test_statistic_ = np.sum(dependence_by_lag)
         return self.test_statistic_, self.test_statistic_metadata_
 
-    def p_value(self, matrix_X, matrix_Y, replication_factor = 1000, is_fast = False, subsample_size = None):
+    def p_value(self, matrix_X, matrix_Y, replication_factor = 1000, is_fast = False):
         """
         Tests independence between two datasets using block permutation test.
 
@@ -168,7 +168,7 @@ class MGCX(IndependenceTest):
 
         block_size = int(np.ceil(np.sqrt(n)))
         if is_fast:
-            return self._fast_p_value(test_statistic, matrix_X, matrix_Y, subsample_size, block_size)
+            return self._fast_p_value(test_statistic, matrix_X, matrix_Y, block_size)
 
         # Block bootstrap
         test_stats_null = np.zeros(replication_factor)
@@ -188,30 +188,29 @@ class MGCX(IndependenceTest):
 
         return self.p_value_, self.p_value_metadata_
 
-    def _fast_p_value(self, test_statistic, matrix_X, matrix_Y, subsample_size, block_size):
+    def _fast_p_value(self, test_statistic, matrix_X, matrix_Y, block_size):
+        # Generate sqrt(n) permutations.
         n = matrix_Y.shape[0]
-        sub_samples = block_size
-        num_samples = n - block_size + 1
-
+        num_blocks = int(np.ceil(n / block_size))
+        num_samples = block_size * num_blocks
         test_statistic_sub_sampling = np.zeros(num_samples)
-
-        # Block permute Y.
-        permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
-        permuted_indices = np.mod(permuted_indices, n)
-        permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
-
-        # Compute test statistics on each subsample.
-        for i in range(num_samples):
-            sub_matrix_X = matrix_X[i:(i + block_size), :]
-            sub_matrix_Y = permuted_Y[i:(i + block_size), :]
-            test_statistic_sub_sampling[i], _ = self.test_statistic(sub_matrix_X, sub_matrix_Y)
-
-        sigma = (stdev(test_statistic_sub_sampling))**2 / num_samples
-        mu = np.maximum(0, mean(test_statistic_sub_sampling))
-
-        self.p_value_ = 1 - norm.cdf(test_statistic, mu, sigma)
-        if self.p_value_ == 0.0:
+        
+        for i in range(block_size):
+            permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, num_blocks)]].flatten()[:n]
+            permuted_indices = np.mod(permuted_indices, n)
+            permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
+            
+            starts = np.random.choice(n, num_blocks)
+            for start in starts:
+                indices = np.mod(np.arange(start, start + block_size), n)
+                sub_matrix_X = matrix_X[indices, :]
+                sub_matrix_Y = permuted_Y[indices, :]
+                test_statistic_sub_sampling[i], _ = self.test_statistic(sub_matrix_X, sub_matrix_Y)
+            
+        self.p_value_ = np.sum(np.greater(test_statistic_sub_sampling, test_statistic)) / num_samples
+        
+        if self.p_value_ < 1 / num_samples:
             self.p_value_ = 1 / num_samples
         self.p_value_metadata_ = {'null_distribution': test_statistic_sub_sampling}
-
+        
         return self.p_value_, self.p_value_metadata_
