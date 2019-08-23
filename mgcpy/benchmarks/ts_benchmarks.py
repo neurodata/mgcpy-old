@@ -23,13 +23,7 @@ class TimeSeriesProcess(ABC):
         Abstract method to simulate observations of the process.
 
         :param n: sample_size
-        :type n: int
-
-        :return X: a ``[n*1]`` data matrix, a matrix with n samples
-        :type X: 2D `numpy.array`
-
-        :return Y: a ``[n*1]`` data matrix, a matrix with n samples
-        :type Y: 2D `numpy.array`
+        :type n: integer
 
         :return: returns a list of two items, that contains:
 
@@ -50,13 +44,13 @@ class IndependentAR1(TimeSeriesProcess):
         Method to simulate observations of the process.
 
         :param n: sample_size
-        :type n: int
+        :type n: integer
 
-        :return X: a ``[n*1]`` data matrix, a matrix with n samples
-        :type X: 2D `numpy.array`
+        :param phi: AR coefficient.
+        :type phi: float
 
-        :return Y: a ``[n*1]`` data matrix, a matrix with n samples
-        :type Y: 2D `numpy.array`
+        :param sigma2: Variance of noise.
+        :type sigma2: float
 
         :return: returns a list of two items, that contains:
 
@@ -93,13 +87,13 @@ class CorrelatedAR1(TimeSeriesProcess):
         Method to simulate observations of the process.
 
         :param n: sample_size
-        :type n: int
+        :type n: integer
 
-        :return X: a ``[n*1]`` data matrix, a matrix with n samples
-        :type X: 2D `numpy.array`
+        :param phi: AR coefficient.
+        :type phi: float
 
-        :return Y: a ``[n*1]`` data matrix, a matrix with n samples
-        :type Y: 2D `numpy.array`
+        :param sigma2: Variance of noise.
+        :type sigma2: float
 
         :return: returns a list of two items, that contains:
 
@@ -135,13 +129,10 @@ class NonlinearLag1(TimeSeriesProcess):
         Method to simulate observations of the process.
 
         :param n: sample_size
-        :type n: int
+        :type n: integer
 
-        :return X: a ``[n*1]`` data matrix, a matrix with n samples
-        :type X: 2D `numpy.array`
-
-        :return Y: a ``[n*1]`` data matrix, a matrix with n samples
-        :type Y: 2D `numpy.array`
+        :param sigma2: Variance of noise.
+        :type sigma2: float
 
         :return: returns a list of two items, that contains:
 
@@ -169,8 +160,28 @@ class NonlinearLag1(TimeSeriesProcess):
 
 # Power computation functions.
 
-def power_curve(tests, process, num_sims, alpha, sample_sizes):
+def power_curve(tests, process, num_sims, alpha, sample_size, verbose = False):
+    """
+    Method to generate power curves for time series.
 
+    :param tests: An array-like object containing TimeSeriesIndependenceTest objects.
+    :type tests: 1-D array-like
+
+    :param process: A TimeSeriesProcess object for which to profile the test.
+    :type process: TimeSeriesProcess
+
+    :param num_sims: number of simulation at each sample size.
+    :type num_sims: integer
+
+    :param alpha: significance level.
+    :type alpha: float
+
+    :param verbose: whether to display output.
+    :type verbose: boolean
+
+    :param sample_sizes: range of sample sizes for which to estimate power.
+    :type sample_sizes: 1-D array-like
+    """
     # Store simulate processes.
     n_full = sample_sizes[len(sample_sizes) - 1]
     X_full = np.zeros((n_full, num_sims))
@@ -182,6 +193,7 @@ def power_curve(tests, process, num_sims, alpha, sample_sizes):
         powers = np.zeros(len(sample_sizes))
         for i in range(len(sample_sizes)):
             n = sample_sizes[i]
+            if verbose: print("Estimating power at sample size: %d" % n)
             powers[i] = compute_power(test, X_full, Y_full, num_sims, alpha, n)
         test['powers'] = powers
 
@@ -189,6 +201,30 @@ def power_curve(tests, process, num_sims, alpha, sample_sizes):
     plot_power(tests, sample_sizes, alpha, process)
 
 def compute_power(test, X_full, Y_full, num_sims, alpha, n):
+    """
+    Helper method estimate power of a test on a given simulation.
+
+    :param test: Test to profile, either DCorrX or MGCX.
+    :type test: TimeSeriesIndependenceTest
+
+    :param X_full: An ``[n*num_sims]`` data matrix where ``n`` is the highest sample size.
+    :type X_full: 2D ``numpy.array``
+
+    :param Y_full: An ``[n*num_sims]`` data matrix where ``n`` is the highest sample size.
+    :type Y_full: 2D ``numpy.array``
+
+    :param num_sims: number of simulation at each sample size.
+    :type num_sims: integer
+
+    :param alpha: significance level.
+    :type alpha: float
+
+    :param n: sample size.
+    :type n: integer
+
+    :return: returns the estimated power.
+    :rtype: float
+    """
     num_rejects = 0.0
 
     def worker(s):
@@ -206,6 +242,21 @@ def compute_power(test, X_full, Y_full, num_sims, alpha, n):
     return num_rejects / num_sims
 
 def plot_power(tests, sample_sizes, alpha, process):
+    """
+    Helper method to generate power curves for time series.
+
+    :param tests: An array-like object containing TimeSeriesIndependenceTest objects.
+    :type tests: 1-D array-like
+
+    :param sample_sizes: range of sample sizes for which to estimate power.
+    :type sample_sizes: 1-D array-like
+
+    :param alpha: significance level.
+    :type alpha: float
+
+    :param process: A TimeSeriesProcess object for which to profile the test.
+    :type process: TimeSeriesProcess
+    """
     plt.rcParams.update({'font.size': 15})
     fig, ax = plt.subplots()
     plt.title(process.name)
