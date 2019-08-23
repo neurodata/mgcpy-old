@@ -14,6 +14,7 @@ from mgcpy.independence_tests.utils.fast_functions import (_approx_null_dist,
                                                            _sub_sample)
 from mgcpy.independence_tests.mgc import MGC
 
+from joblib import Parallel, delayed
 
 class MGCX(IndependenceTest):
     def __init__(self, compute_distance_matrix=None, max_lag = 0):
@@ -97,7 +98,6 @@ class MGCX(IndependenceTest):
         optimal_lag = 0
         optimal_scale = mgc_metadata['optimal_scale']
 
-        # TO DO: parallelize?
         for j in range(1,M+1):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
@@ -167,21 +167,31 @@ class MGCX(IndependenceTest):
         test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
 
         block_size = int(np.ceil(np.sqrt(n)))
-        if is_fast == "subsample":
+        if is_fast:
             return self._fast_p_value(matrix_X, matrix_Y, test_statistic, block_size)
-        if is_fast == "block_subsample":
-            return self._fast_p_value_block(matrix_X, matrix_Y, test_statistic, block_size)
 
-        # Block bootstrap
-        test_stats_null = np.zeros(replication_factor)
-        for rep in range(replication_factor):
-            # Generate new time series sample for Y
+        # Parallelized block bootstrap.
+        def worker(rep):
             permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
             permuted_indices = np.mod(permuted_indices, n)
             permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
 
             # Compute test statistic
-            test_stats_null[rep], _ = self.test_statistic(matrix_X, permuted_Y)
+            ret, _ = self.test_statistic(matrix_X, permuted_Y)
+            return ret
+
+        test_stats_null = Parallel(n_jobs=-2)(delayed(worker)(rep) for rep in range(replication_factor))
+
+        # Block bootstrap
+        # test_stats_null = np.zeros(replication_factor)
+        # for rep in range(replication_factor):
+        #     # Generate new time series sample for Y
+        #     permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
+        #     permuted_indices = np.mod(permuted_indices, n)
+        #     permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
+        #
+        #     # Compute test statistic
+        #     test_stats_null[rep], _ = self.test_statistic(matrix_X, permuted_Y)
 
         self.p_value_ = np.sum(np.greater(test_stats_null, test_statistic)) / replication_factor
         if self.p_value_ == 0.0:
@@ -190,48 +200,26 @@ class MGCX(IndependenceTest):
 
         return self.p_value_, self.p_value_metadata_
 
-    def _fast_p_value(self, matrix_X, matrix_Y, test_statistic, block_size):
+    def _fast_p_value(self, matrix_X, matrix_Y, test_statistic, block_size, subsample_size = 10):
         n = matrix_X.shape[0]
-        test_stats_null = np.zeros(n)
+        num_samples = n // subsample_size
 
         # Permute once.
         permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
         permuted_indices = np.mod(permuted_indices, n)
         permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
 
-        # Subsample.
-        test_stats_null = np.zeros(n)
-        for i in range(n):
-            indices = np.mod(np.arange(i, i + block_size), n)
+        test_stats_null = np.zeros(num_samples * subsample_size)
+        for i in range(num_samples):
+            indices = np.arange(subsample_size*i, subsample_size*(i + 1))
             sub_matrix_X = matrix_X[np.ix_(indices, indices)]
             sub_matrix_Y = permuted_Y[np.ix_(indices, indices)]
             test_stats_null[i], _ = self.test_statistic(sub_matrix_X, sub_matrix_Y)
 
-        # Count the test_statistic observations greater than the observed.
-        self.p_value_ = np.sum(np.greater(test_stats_null, test_statistic)) / n
-        self.p_value_metadata_ = {'null_distribution': test_stats_null}
-
-        return self.p_value_, self.p_value_metadata_
-        
-    def _fast_p_value_block(self, matrix_X, matrix_Y, test_statistic, block_size):
-        n = matrix_X.shape[0]
-        test_stats_null = np.zeros(n)
-
-        # Permute once.
-        permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
-        permuted_indices = np.mod(permuted_indices, n)
-        permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
-
-        # Subsample.
-        test_stats_null = np.zeros(n)
-        for i in range(n):
-            indices = np.mod(np.arange(i, i + block_size), n)
-            sub_matrix_X = matrix_X[np.ix_(indices, indices)]
-            sub_matrix_Y = permuted_Y[np.ix_(indices, indices)]
-            test_stats_null[i], _ = self.test_statistic(sub_matrix_X, sub_matrix_Y)
-
-        # Count the test_statistic observations greater than the observed.
-        self.p_value_ = np.sum(np.greater(test_stats_null, test_statistic)) / n
+        # Normal approximation for the p_value.
+        mu = np.mean(test_stats_null)
+        sigma = np.std(test_stats_null) / np.sqrt(num_samples)
+        self.p_value_ = 1 - norm.cdf(test_statistic, mu, sigma)
         self.p_value_metadata_ = {'null_distribution': test_stats_null}
 
         return self.p_value_, self.p_value_metadata_
