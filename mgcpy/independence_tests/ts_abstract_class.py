@@ -130,18 +130,25 @@ class TimeSeriesIndependenceTest(ABC):
 
         # Collect the test statistic by lag, and sum them for the full test statistic.
         dependence_by_lag = np.zeros(M+1)
-        statistic, _ = test.test_statistic(matrix_X, matrix_Y)
-        dependence_by_lag[0] = np.maximum(0.0, statistic)
+        optimal_scale = None
+        optimal_lag = 0
 
+        statistic, metadata = test.test_statistic(matrix_X, matrix_Y)
+        if self.which_test == 'mgcx': optimal_scale = metadata['optimal_scale']
+
+        dependence_by_lag[0] = np.maximum(0.0, statistic)
         for j in range(1, M+1):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
-            statistic, _ = test.test_statistic(dist_mtx_X, dist_mtx_Y)
+            statistic, metadata = test.test_statistic(dist_mtx_X, dist_mtx_Y)
             dependence_by_lag[j] = (n-j)*np.maximum(0.0, statistic) / n
+            if dependence_by_lag[j] > dependence_by_lag[optimal_lag]:
+                optimal_lag = j
+                if self.which_test == 'mgcx': optimal_scale = metadata['optimal_scale']
 
         # Reporting optimal lag
-        optimal_lag = np.argmax(dependence_by_lag)
         test_statistic_metadata = { 'optimal_lag' : optimal_lag, 'dependence_by_lag' : dependence_by_lag }
+        if self.which_test == 'mgcx': test_statistic_metadata['optimal_scale'] = optimal_scale
         self.test_statistic_ = np.sum(dependence_by_lag)
         self.test_statistic_metadata_ = test_statistic_metadata
         return self.test_statistic_, self.test_statistic_metadata_
@@ -204,7 +211,7 @@ class TimeSeriesIndependenceTest(ABC):
 
         return self.p_value_, self.p_value_metadata_
 
-    def _fast_p_value(self, matrix_X, matrix_Y, test_statistic, block_size, subsample_size = 10):
+    def _fast_p_value(self, matrix_X, matrix_Y, test_statistic, block_size, subsample_size = -1):
         """
         Fast and powerful test by subsampling that runs in O(n^2 log(n)+ns*n), based on
         C. Shen and J. Vogelstein, “Fast and Powerful Testing for Distance-Based Correlations”
@@ -244,7 +251,12 @@ class TimeSeriesIndependenceTest(ABC):
         :rtype: list
         """
         n = matrix_X.shape[0]
+        if subsample_size < self.max_lag + 10:
+            subsample_size = self.max_lag + 10
+
         num_samples = n // subsample_size
+        if num_samples < 4:
+            raise ValueError('n must be at least 4*(max_lag + 10) to use fast implementation.')
 
         # Permute once.
         permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]

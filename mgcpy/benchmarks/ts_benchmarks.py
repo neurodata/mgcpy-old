@@ -158,6 +158,25 @@ class NonlinearLag1(TimeSeriesProcess):
 
         return X, Y
 
+# Plotting univariate time series.
+
+def plot_1d_ts(X, Y, title, xlab = "X_t", ylab = "Y_t"):
+    n = X.shape[0]
+    t = range(1, n + 1)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15,7.5))
+    fig.suptitle(title)
+    plt.rcParams.update({'font.size': 15})
+
+    ax1.plot(t, X)
+    ax1.plot(t, Y)
+    ax1.legend(['X_t', 'Y_t'], loc = 'upper left', prop={'size': 12})
+    ax1.set_xlabel("t")
+
+    ax2.scatter(X,Y, color="black")
+    ax2.set_ylabel(ylab)
+    ax2.set_xlabel(xlab)
+
 # Power computation functions.
 
 def power_curve(tests, process, num_sims, alpha, sample_size, verbose = False):
@@ -194,13 +213,13 @@ def power_curve(tests, process, num_sims, alpha, sample_size, verbose = False):
         for i in range(len(sample_sizes)):
             n = sample_sizes[i]
             if verbose: print("Estimating power at sample size: %d" % n)
-            powers[i] = compute_power(test, X_full, Y_full, num_sims, alpha, n)
+            powers[i] = _compute_power(test, X_full, Y_full, num_sims, alpha, n)
         test['powers'] = powers
 
     # Display.
-    plot_power(tests, sample_sizes, alpha, process)
+    _plot_power(tests, sample_sizes, alpha, process)
 
-def compute_power(test, X_full, Y_full, num_sims, alpha, n):
+def _compute_power(test, X_full, Y_full, num_sims, alpha, n):
     """
     Helper method estimate power of a test on a given simulation.
 
@@ -241,7 +260,7 @@ def compute_power(test, X_full, Y_full, num_sims, alpha, n):
 
     return num_rejects / num_sims
 
-def plot_power(tests, sample_sizes, alpha, process):
+def _plot_power(tests, sample_sizes, alpha, process):
     """
     Helper method to generate power curves for time series.
 

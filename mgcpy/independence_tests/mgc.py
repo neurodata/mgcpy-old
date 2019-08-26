@@ -80,10 +80,12 @@ class MGC(IndependenceTest):
         """
         assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be equal to q"
 
+        distance_matrix_X, distance_matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
         if is_fast:
-            mgc_statistic, test_statistic_metadata = self._fast_mgc_test_statistic(matrix_X, matrix_Y, **fast_mgc_data)
+            mgc_statistic, test_statistic_metadata = self._fast_mgc_test_statistic(distance_matrix_X,
+                                                                                   distace_matrix_Y,
+                                                                                   **fast_mgc_data)
         else:
-            distance_matrix_X, distance_matrix_Y = compute_distance(matrix_X, matrix_Y, self.compute_distance_matrix)
             local_correlation_matrix = local_correlations(distance_matrix_X, distance_matrix_Y,
                                                           base_global_correlation=self.base_global_correlation)["local_correlation_matrix"]
             m, n = local_correlation_matrix.shape
