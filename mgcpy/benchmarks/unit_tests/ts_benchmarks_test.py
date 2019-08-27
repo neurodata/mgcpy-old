@@ -7,7 +7,7 @@ from mgcpy.independence_tests.dcorr import DCorr
 
 def test_ts_benchmarks():
     n = 1000
-    random.seed(123)
+    random.seed(456)
     alpha = 0.05
 
     # Independent simulation.
@@ -16,9 +16,9 @@ def test_ts_benchmarks():
     assert np.all(X.shape == (n,))
     assert np.all(Y.shape == (n,))
 
-    # Independent simulation.
+    # Correlated simulation.
     corr = CorrelatedAR1()
-    X, Y = corr.simulate(n)
+    X, Y = corr.simulate(n, phi = 0.9)
     assert np.all(X.shape == (n,))
     assert np.all(Y.shape == (n,))
 
@@ -26,12 +26,8 @@ def test_ts_benchmarks():
     p_value = pearsonr(X[1:n],Y[0:(n-1)])[1]
     assert np.greater(alpha, p_value)
 
-    # Independent simulation.
+    # Nonlinear simulation.
     nonlin = NonlinearLag1()
     X, Y = nonlin.simulate(n)
     assert np.all(X.shape == (n,))
     assert np.all(Y.shape == (n,))
-
-    dcorr = DCorr()
-    p_value = dcorr.p_value(X[1:n].reshape(n-1, 1),Y[0:(n-1)].reshape(n-1, 1), is_fast = True)[0]
-    assert np.greater(alpha, p_value)
