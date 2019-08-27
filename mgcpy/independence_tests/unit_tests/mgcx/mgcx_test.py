@@ -46,6 +46,7 @@ def test_mgcx():
 def test_fast_mgcx():
 
     # n is too low for subsample_size to be unspecified.
+    random.seed(456)
     mgcx = MGCX(max_lag = 10)
     X = np.random.normal(0.0, 1.0, 15)
     Y = np.random.normal(0.0, 1.0, 15)

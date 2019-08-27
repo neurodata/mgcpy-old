@@ -68,6 +68,7 @@ def test_dcorrx():
 def test_fast_dcorrx():
 
     # n is too low for subsample_size to be unspecified.
+    random.seed(456)
     unbiased = DCorrX(which_test='unbiased', max_lag = 10)
     X = np.random.normal(0.0, 1.0, 15)
     Y = np.random.normal(0.0, 1.0, 15)
