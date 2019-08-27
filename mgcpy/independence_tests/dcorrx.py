@@ -16,7 +16,11 @@ class DCorrX(TimeSeriesIndependenceTest):
         '''
         if which_test not in ['unbiased', 'biased']:
             raise ValueError('which_test must be unbiased or biased.')
-        super().__init__(DCorr(), which_test, compute_distance_matrix, max_lag)
+        super().__init__(DCorr(compute_distance_matrix = compute_distance_matrix,
+                               which_test = which_test),
+                         which_test,
+                         compute_distance_matrix,
+                         max_lag)
 
     def test_statistic(self, matrix_X, matrix_Y):
         """"

@@ -11,7 +11,7 @@ class MGCX(TimeSeriesIndependenceTest):
         :param max_lag: Furthest lag to check for dependence. Defaults to log(n).
         :type max_lag: integer
         '''
-        super().__init__(MGC(), "mgcx", compute_distance_matrix, max_lag)
+        super().__init__(MGC(compute_distance_matrix = compute_distance_matrix), "mgcx", compute_distance_matrix, max_lag)
 
     def test_statistic(self, matrix_X, matrix_Y):
         """"

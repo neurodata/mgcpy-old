@@ -1,5 +1,5 @@
 import warnings
-from scipy.stats import norm
+from scipy.stats import chi2
 from scipy.spatial.distance import pdist, squareform
 import numpy as np
 from mgcpy.independence_tests.utils.compute_distance_matrix import compute_distance
@@ -84,12 +84,12 @@ class TimeSeriesIndependenceTest(ABC):
         :rtype: list
         """
         assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be different from q"
-        if self.which_test == "unbiased" and matrix_X.shape[0] <= 3:
-            raise ValueError('Cannot use unbiased estimator of distance covariance with n <= 3.')
+        n = matrix_X.shape[0]
+        if n - 4 <= M:
+            raise ValueError('max_lag must be less than n - 4.')
 
         # Represent univariate data as matrices.
         # Use the matrix shape and diagonal elements to determine if the given data is a distance matrix or not.
-        n = matrix_X.shape[0]
         if len(matrix_X.shape) == 1:
             matrix_X = matrix_X.reshape((n,1))
         if len(matrix_Y.shape) == 1:
@@ -272,8 +272,9 @@ class TimeSeriesIndependenceTest(ABC):
 
         # Normal approximation for the p_value.
         mu = np.mean(test_stats_null)
-        sigma = np.std(test_stats_null) / np.sqrt(num_samples)
-        self.p_value_ = 1 - norm.cdf(test_statistic, mu, sigma)
+        sigma = np.std(test_stats_null)
+        x = np.sqrt(2.0)*(test_statistic - mu)/sigma + 1
+        self.p_value_ = 1 - chi2.cdf(x, 1)
         self.p_value_metadata_ = {'null_distribution': test_stats_null}
 
         return self.p_value_, self.p_value_metadata_
