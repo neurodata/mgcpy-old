@@ -1,5 +1,5 @@
 import warnings
-from scipy.stats import chi2
+from scipy.stats import norm
 from scipy.spatial.distance import pdist, squareform
 import numpy as np
 from mgcpy.independence_tests.utils.compute_distance_matrix import compute_distance
@@ -153,7 +153,7 @@ class TimeSeriesIndependenceTest(ABC):
         self.test_statistic_metadata_ = test_statistic_metadata
         return self.test_statistic_, self.test_statistic_metadata_
 
-    def p_value(self, matrix_X, matrix_Y, replication_factor=1000, is_fast = False, block_size = None):
+    def p_value(self, matrix_X, matrix_Y, replication_factor=1000, is_fast = False, block_size = None, subsample_size = -1):
         """
         Tests independence between two datasets using block permutation test.
 
@@ -179,6 +179,9 @@ class TimeSeriesIndependenceTest(ABC):
         :param block_size: Block size for block permutation procedure. Default sqrt(n).
         :type block_size: integer
 
+        :param subsample_size: specifies the number of observations in the subsample.
+        :type subsample_size: integer
+
         :return: returns a list of two items, that contains:
 
             - :p_value: P-value of MGC
@@ -190,7 +193,7 @@ class TimeSeriesIndependenceTest(ABC):
 
         test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
         if is_fast:
-            return self._fast_p_value(matrix_X, matrix_Y, test_statistic, block_size)
+            return self._fast_p_value(matrix_X, matrix_Y, test_statistic, block_size, subsample_size = subsample_size)
 
         # Parallelized block bootstrap.
         def worker(rep):
@@ -240,8 +243,8 @@ class TimeSeriesIndependenceTest(ABC):
         :param block_size: Block size for block permutation test.
         :type block_size: integer
 
-        :param subsamples_size: specifies the number of observations in the subsample.
-        :type subsamples_size: integer
+        :param subsample_size: specifies the number of observations in the subsample.
+        :type subsample_size: integer
 
         :return: returns a list of two items, that contains:
 
@@ -256,25 +259,27 @@ class TimeSeriesIndependenceTest(ABC):
 
         num_samples = n // subsample_size
         if num_samples < 4:
-            raise ValueError('n must be at least 4*(max_lag + 10) to use fast implementation.')
+            raise ValueError('n must be at least 4*(max_lag + subsample_size) to use fast implementation.')
 
         # Permute once.
         permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
         permuted_indices = np.mod(permuted_indices, n)
         permuted_Y = matrix_Y[np.ix_(permuted_indices, permuted_indices)]
 
-        test_stats_null = np.zeros(num_samples * subsample_size)
-        for i in range(num_samples):
+        # Parallelized subsample.
+        def worker(i):
             indices = np.arange(subsample_size*i, subsample_size*(i + 1))
             sub_matrix_X = matrix_X[np.ix_(indices, indices)]
             sub_matrix_Y = permuted_Y[np.ix_(indices, indices)]
-            test_stats_null[i], _ = self.test_statistic(sub_matrix_X, sub_matrix_Y)
+            return self.test_statistic(sub_matrix_X, sub_matrix_Y)[0]
+
+        test_stats_null = Parallel(n_jobs=-2)(delayed(worker)(i) for i in range(num_samples))
 
         # Normal approximation for the p_value.
         mu = np.mean(test_stats_null)
         sigma = np.std(test_stats_null)
-        x = np.sqrt(2.0)*(test_statistic - mu)/sigma + 1
-        self.p_value_ = 1 - chi2.cdf(x, 1)
+        x = (test_statistic - mu)/(sigma/np.sqrt(num_samples))
+        self.p_value_ = 1 - norm.cdf(x)
         self.p_value_metadata_ = {'null_distribution': test_stats_null}
 
         return self.p_value_, self.p_value_metadata_
