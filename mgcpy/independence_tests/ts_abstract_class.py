@@ -85,7 +85,7 @@ class TimeSeriesIndependenceTest(ABC):
         """
         assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be different from q"
         n = matrix_X.shape[0]
-        if n - 4 <= M:
+        if M >= n - 4:
             raise ValueError('max_lag must be less than n - 4.')
 
         # Represent univariate data as matrices.
@@ -189,9 +189,9 @@ class TimeSeriesIndependenceTest(ABC):
                     - :null_distribution: numpy array representing distribution of test statistic under null.
         :rtype: list
         """
-        matrix_X, matrix_Y, block_size, M, n = self._validate_input(matrix_X, matrix_Y, block_size, self.max_lag)
+        matrix_X, matrix_Y, block_size, _, n = self._validate_input(matrix_X, matrix_Y, block_size, self.max_lag)
 
-        test_statistic, test_statistic_metadata = self.test_statistic(matrix_X, matrix_Y)
+        test_statistic, _ = self.test_statistic(matrix_X, matrix_Y)
         if is_fast:
             return self._fast_p_value(matrix_X, matrix_Y, test_statistic, block_size, subsample_size = subsample_size)
 
@@ -255,14 +255,14 @@ class TimeSeriesIndependenceTest(ABC):
         """
         n = matrix_X.shape[0]
         if subsample_size < self.max_lag + 10:
-            subsample_size = self.max_lag + 10
+            subsample_size = np.maximum(self.max_lag + 10, int(np.floor(np.sqrt(n))))
 
         # TO DO.
-        subsample_size = int(np.floor(np.sqrt(n)))
+        # subsample_size = int(np.floor(np.sqrt(n)))
 
         num_samples = n // subsample_size
         if num_samples < 4:
-            raise ValueError('n must be at least 4*(max_lag + subsample_size) to use fast implementation.')
+            raise ValueError('n must be at least 4*(max_lag + max(sqrt(n), 10)) to use fast implementation.')
         
         # Permute once.
         permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
@@ -278,21 +278,11 @@ class TimeSeriesIndependenceTest(ABC):
 
         test_stats_null = Parallel(n_jobs=-2)(delayed(worker)(i) for i in range(num_samples))
 
-        # test_stats_null = np.zeros(num_samples)
-        # for i in range(num_samples):
-        #     indices = np.arange(subsample_size*i, subsample_size*(i + 1))
-        #     sub_matrix_X = matrix_X[np.ix_(indices, indices)]
-        #     sub_matrix_Y = permuted_Y[np.ix_(indices, indices)]
-        #     test_stats_null[i], _ = self.test_statistic(sub_matrix_X, sub_matrix_Y)
-
         # Normal approximation for the p_value.
         mu = np.mean(test_stats_null)
         sigma = np.std(test_stats_null)
-        #x = np.sqrt(num_samples*(self.max_lag + 1))*(test_statistic - mu)/sigma
-        # self.p_value_ = 1 - norm.cdf(x)
         x = num_samples*(test_statistic - mu)/sigma + 1
         self.p_value_ = 1 - chi2.cdf(x, 1)
-        # self.p_value_ = np.sum(np.greater(test_stats_null, test_statistic)) / num_samples
         self.p_value_metadata_ = {'null_distribution': test_stats_null}
 
         return self.p_value_, self.p_value_metadata_
