@@ -281,7 +281,10 @@ class TimeSeriesIndependenceTest(ABC):
         # Normal approximation for the p_value.
         mu = np.mean(test_stats_null)
         sigma = np.std(test_stats_null)
-        x = num_samples*(test_statistic - mu)/sigma + 1
+        if sigma < 10e-4:
+            x = 0.0
+        else:
+            x = num_samples*(test_statistic - mu)/sigma + 1
         self.p_value_ = 1 - chi2.cdf(x, 1)
         self.p_value_metadata_ = {'null_distribution': test_stats_null}
 
