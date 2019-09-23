@@ -1,5 +1,5 @@
 import warnings
-from scipy.stats import norm
+from scipy.stats import norm, chi2
 from scipy.spatial.distance import pdist, squareform
 import numpy as np
 from mgcpy.independence_tests.utils.compute_distance_matrix import compute_distance
@@ -141,7 +141,7 @@ class TimeSeriesIndependenceTest(ABC):
             dist_mtx_X = matrix_X[j:n,j:n]
             dist_mtx_Y = matrix_Y[0:(n-j),0:(n-j)]
             statistic, metadata = test.test_statistic(dist_mtx_X, dist_mtx_Y)
-            dependence_by_lag[j] = (n-j)*np.maximum(0.0, statistic) / n
+            dependence_by_lag[j] = (n - j)*np.maximum(0.0, statistic) / n
             if dependence_by_lag[j] > dependence_by_lag[optimal_lag]:
                 optimal_lag = j
                 if self.which_test == 'mgcx': optimal_scale = metadata['optimal_scale']
@@ -257,10 +257,13 @@ class TimeSeriesIndependenceTest(ABC):
         if subsample_size < self.max_lag + 10:
             subsample_size = self.max_lag + 10
 
+        # TO DO.
+        subsample_size = int(np.floor(np.sqrt(n)))
+
         num_samples = n // subsample_size
         if num_samples < 4:
             raise ValueError('n must be at least 4*(max_lag + subsample_size) to use fast implementation.')
-
+        
         # Permute once.
         permuted_indices = np.r_[[np.arange(t, t + block_size) for t in np.random.choice(n, n // block_size + 1)]].flatten()[:n]
         permuted_indices = np.mod(permuted_indices, n)
@@ -275,11 +278,21 @@ class TimeSeriesIndependenceTest(ABC):
 
         test_stats_null = Parallel(n_jobs=-2)(delayed(worker)(i) for i in range(num_samples))
 
+        # test_stats_null = np.zeros(num_samples)
+        # for i in range(num_samples):
+        #     indices = np.arange(subsample_size*i, subsample_size*(i + 1))
+        #     sub_matrix_X = matrix_X[np.ix_(indices, indices)]
+        #     sub_matrix_Y = permuted_Y[np.ix_(indices, indices)]
+        #     test_stats_null[i], _ = self.test_statistic(sub_matrix_X, sub_matrix_Y)
+
         # Normal approximation for the p_value.
         mu = np.mean(test_stats_null)
         sigma = np.std(test_stats_null)
-        x = (test_statistic - mu)/(sigma/np.sqrt(num_samples))
-        self.p_value_ = 1 - norm.cdf(x)
+        #x = np.sqrt(num_samples*(self.max_lag + 1))*(test_statistic - mu)/sigma
+        # self.p_value_ = 1 - norm.cdf(x)
+        x = num_samples*(test_statistic - mu)/sigma + 1
+        self.p_value_ = 1 - chi2.cdf(x, 1)
+        # self.p_value_ = np.sum(np.greater(test_stats_null, test_statistic)) / num_samples
         self.p_value_metadata_ = {'null_distribution': test_stats_null}
 
         return self.p_value_, self.p_value_metadata_
