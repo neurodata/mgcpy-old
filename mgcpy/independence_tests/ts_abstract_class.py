@@ -254,11 +254,9 @@ class TimeSeriesIndependenceTest(ABC):
         :rtype: list
         """
         n = matrix_X.shape[0]
+        lambda_ = 0.5
         if subsample_size < self.max_lag + 10:
-            subsample_size = np.maximum(self.max_lag + 10, int(np.floor(np.sqrt(n))))
-
-        # TO DO.
-        # subsample_size = int(np.floor(np.sqrt(n)))
+            subsample_size = np.maximum(self.max_lag + 10, int(np.floor(np.power(n, lambda_))))
 
         num_samples = n // subsample_size
         if num_samples < 4:
@@ -278,10 +276,10 @@ class TimeSeriesIndependenceTest(ABC):
 
         test_stats_null = Parallel(n_jobs=-2)(delayed(worker)(i) for i in range(num_samples))
 
-        # Normal approximation for the p_value.
+        # Chi-square for the p_value.
         mu = np.mean(test_stats_null)
         sigma = np.std(test_stats_null)
-        if sigma < 10e-4:
+        if sigma < 10e-4 and mu < 10e-4:
             x = 0.0
         else:
             x = num_samples*(test_statistic - mu)/sigma + 1
