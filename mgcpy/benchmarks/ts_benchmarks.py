@@ -103,8 +103,8 @@ class CorrelatedAR1(TimeSeriesProcess):
         # Innovations follow N(0, sigma2).
 
         # Innovations.
-        epsilons = np.random.uniform(0.0, 1.0, n)
-        etas = np.random.normal(0.0, 1.0, n)
+        epsilons = np.random.normal(0.0, sigma2, n)
+        etas = np.random.normal(0.0, sigma2, n)
 
         X = np.zeros(n)
         Y = np.zeros(n)

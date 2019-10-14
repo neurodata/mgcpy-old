@@ -59,7 +59,7 @@ def test_fast_mgcx():
     '''
     random.seed(123)
     mgcx = MGCX(max_lag = 1)
-    n = 45
+    n = 100
     num_sims = 25
     alpha = 0.05
     num_rejects = 0

@@ -18,9 +18,9 @@ class DCorrX(TimeSeriesIndependenceTest):
             raise ValueError('which_test must be unbiased or biased.')
         super().__init__(DCorr(compute_distance_matrix = compute_distance_matrix,
                                which_test = which_test),
-                         which_test,
-                         compute_distance_matrix,
-                         max_lag)
+                         which_test = which_test,
+                         compute_distance_matrix = compute_distance_matrix,
+                         max_lag = max_lag)
 
     def test_statistic(self, matrix_X, matrix_Y):
         """"
@@ -60,7 +60,7 @@ class DCorrX(TimeSeriesIndependenceTest):
         """
         return super().test_statistic(matrix_X, matrix_Y)
 
-    def p_value(self, matrix_X, matrix_Y, replication_factor=1000, is_fast = False, block_size = None):
+    def p_value(self, matrix_X, matrix_Y, replication_factor=1000, is_fast = False, block_size = None, subsample_size = -1):
         """
         Tests independence between two datasets using block permutation test.
 
@@ -105,4 +105,9 @@ class DCorrX(TimeSeriesIndependenceTest):
         >>> dcorrx = DCorrX()
         >>> p_value, metadata = dcorrx.p_value(X, Y, replication_factor = 100)
         """
-        return super().p_value(matrix_X, matrix_Y, replication_factor, is_fast, block_size)
+        return super().p_value(matrix_X, 
+                            matrix_Y,
+                            replication_factor = replication_factor,
+                            is_fast = is_fast, 
+                            block_size = block_size,
+                            subsample_size = subsample_size)
