@@ -220,3 +220,84 @@ class NonlinearDependence(TimeSeriesProcess):
 
             if (eta ** 2 + epsilon ** 2 > radius ** 2) or (d > extinction_rate):
                 return eta, epsilon
+
+
+class EconometricProcess(TimeSeriesProcess):
+    """
+    Econometric process that models market volatility.
+    Proposed by Gretton et al. 2016
+    """
+
+    def __init__(self):
+        self.name = "Econometric Process"
+        self.filename = "econometric_proc"
+
+    def simulate(self, n):
+        """
+        Method to simulate observations of the process.
+
+        :param n: sample_size
+        :type n: integer
+
+        :return: returns a list of two items, that contains:
+
+            - :X: a ``[n*1]`` data matrix, a matrix with n samples
+            - :Y: a ``[n*1]`` data matrix, a matrix with n samples
+        :rtype: list
+        """
+        # Innovations.
+        epsilons = np.random.normal(0, 1, 2)
+
+        X = np.zeros(n)
+        Y = np.zeros(n)
+        X[0] = epsilons[0]
+        Y[0] = epsilons[1]
+
+        for t in range(1, n):
+            epsilons = np.random.normal(0, 1, 2)
+            sigma = 1 + 0.45 * (X[t - 1] ** 2 + Y[t - 1] ** 2)
+            X[t] = epsilons[0] * sigma
+            Y[t] = epsilons[1] * sigma
+
+        return X, Y
+
+
+class DynamicProcess(TimeSeriesProcess):
+    """
+    Dynamic process.
+    Proposed by Gretton et al. 2016
+    """
+
+    def __init__(self):
+        self.name = "Dynamic Process"
+        self.filename = "dynamic_proc"
+
+    def simulate(self, n):
+        # Setting parameters
+        f_1 = 4
+        f_2 = 20
+        T_s = 1 / 100
+        C = 0.4
+
+        epsilons = np.random.normal(0, 1, 2)
+
+        X = np.zeros(n)
+        Y = np.zeros(n)
+
+        phi_1 = np.zeros(n)
+        phi_2 = np.zeros(n)
+        phi_1[0] = 0.1 * epsilons[0] + 2 * np.pi * f_1 * T_s
+        phi_2[0] = 0.1 * epsilons[1] + 2 * np.pi * f_2 * T_s
+
+        X[0] = np.cos(phi_1[0])
+        Y[0] = (2 + C * np.sin(phi_1[0])) * np.cos(phi_2[0])
+
+        for t in range(1, n):
+            epsilons = np.random.normal(0, 1, 2)
+            phi_1[t] = phi_1[t - 1] + 0.1 * epsilons[0] + 2 * np.pi * f_1 * T_s
+            phi_2[t] = phi_2[t - 1] + 0.1 * epsilons[0] + 2 * np.pi * f_2 * T_s
+
+            X[t] = np.cos(phi_1[t])
+            Y[t] = (2 + C * np.sin(phi_1[t])) * np.cos(phi_2[t])
+
+        return X, Y
