@@ -80,15 +80,18 @@ class CorrelatedAR1(TimeSeriesProcess):
         self.name = 'Correlated AR(1)'
         self.filename = 'corr_ar1'
 
-    def simulate(self, n, phi = 0.5, sigma2 = 1.0):
+    def simulate(self, n, phi_1 = 0.5, phi_3 = 0.0, sigma2 = 1.0):
         """
         Method to simulate observations of the process.
 
         :param n: sample_size
         :type n: integer
 
-        :param phi: AR coefficient.
-        :type phi: float
+        :param phi_1: AR(1) coefficient.
+        :type phi_1: float
+
+        :param phi_3: AR(3) coefficient.
+        :type phi_3: float
 
         :param sigma2: Variance of noise.
         :type sigma2: float
@@ -108,19 +111,22 @@ class CorrelatedAR1(TimeSeriesProcess):
 
         X = np.zeros(n)
         Y = np.zeros(n)
-        X[0] = epsilons[0]
-        Y[0] = etas[0]
-
-        for t in range(1,n):
-            X[t] = phi*Y[t-1] + epsilons[t]
-            Y[t] = phi*X[t-1] + etas[t]
+        for s in range(3):
+            X[s] = epsilons[s]
+            Y[s] = etas[s]
+    
+        # AR(1) process, unless phi_3 is specified.
+        for t in range(3,n):
+            X[t] = phi_1*Y[t-1] + phi_3*Y[t-3] + epsilons[t]
+            Y[t] = phi_1*X[t-1] + phi_3*X[t-3] + etas[t]
 
         return X, Y
 
-class NonlinearLag1(TimeSeriesProcess):
-    def __init__(self):
-        self.name = 'Nonlinearly Related Lag 1'
-        self.filename = 'nonlin_lag1'
+class Nonlinear(TimeSeriesProcess):
+    def __init__(self, lag = 1):
+        self.lag = int(lag)
+        self.name = 'Nonlinearly Related Lag %d' % self.lag
+        self.filename = 'nonlin_lag%d' % self.lag
 
     def simulate(self, n, sigma2 = 1.0):
         """
@@ -147,11 +153,12 @@ class NonlinearLag1(TimeSeriesProcess):
 
         X = np.zeros(n)
         Y = np.zeros(n)
-        X[0] = epsilons[0]
-        Y[0] = etas[0]
+        for s in range(self.lag):
+            X[s] = epsilons[s]
+            Y[s] = etas[s]
 
-        for t in range(1, n):
-            X[t] = epsilons[t]*Y[t-1]
+        for t in range(self.lag, n):
+            X[t] = epsilons[t]*Y[t-self.lag]
             Y[t] = etas[t]
 
         return X, Y
