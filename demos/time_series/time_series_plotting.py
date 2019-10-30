@@ -151,7 +151,7 @@ def power_curve(tests, process, num_sims, alpha, sample_size, verbose = False):
     # Display.
     _plot_power(tests, sample_sizes, alpha, process)
 
-def plot_optimal_lags(optimal_lags, process, test_name, color, true_correlations = None, savefig = True):
+def plot_optimal_lags(optimal_lags, process, test, n, true_correlations = None, savefig = True):
     """
     Visualize distribution of optimal lag estimates. If the time series process is linear, then plot true cross correlations.
 
@@ -194,9 +194,10 @@ def plot_optimal_lags(optimal_lags, process, test_name, color, true_correlations
              weights = weights, 
              align = 'mid',
              edgecolor ='black',
-             color = color)
+             color = test['color'])
     
-    plt.title(process.title)
+    title = '%s, %s, n = %d' % (test['name'], process.name, n)
+    plt.title(title)
     if savefig:
         filename = "optimal_lags_%s_%s.pdf" % (process.filename, test_name)
         plt.savefig(filename)
