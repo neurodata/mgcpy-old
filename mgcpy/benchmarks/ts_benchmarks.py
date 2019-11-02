@@ -239,7 +239,7 @@ class EconometricProcess(TimeSeriesProcess):
         self.name = "Econometric Process"
         self.filename = "econometric_proc"
 
-    def simulate(self, n):
+    def simulate(self, n, add = 0.5, mult = 0.1):
         """
         Method to simulate observations of the process.
 
@@ -262,7 +262,7 @@ class EconometricProcess(TimeSeriesProcess):
 
         for t in range(1, n):
             epsilons = np.random.normal(0, 1, 2)
-            sigma = 1 + 0.45 * (X[t - 1] ** 2 + Y[t - 1] ** 2)
+            sigma = add + mult * (X[t - 1] ** 2 + Y[t - 1] ** 2)
             X[t] = epsilons[0] * sigma
             Y[t] = epsilons[1] * sigma
 
