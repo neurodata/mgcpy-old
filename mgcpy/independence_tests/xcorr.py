@@ -1,7 +1,6 @@
 import numpy as np
-from scipy.stats import chi2, norm
+from scipy.stats import chi2
 
-from mgcpy.independence_tests.mgc import MGC
 from mgcpy.independence_tests.ts_abstract_class import TimeSeriesIndependenceTest
 
 
@@ -10,9 +9,33 @@ class LjungBoxX(TimeSeriesIndependenceTest):
         self.max_lag = max_lag
         self.which_test = "LjungBoxX"
 
+    def test_statistic(self, matrix_X, matrix_Y):
+        """
+        Test statistic for LjungBox between two time series.
+
+        :param matrix_X: a [n*1] data matrix, a matrix with n samples in 1 dimensions
+        :type matrix_X: 2D `numpy.array`
+
+        :param matrix_Y: a [n*1] data matrix, a matrix with n samples in 1 dimensions
+        :type matrix_Y: 2D `numpy.array`
+        """
+        matrix_X, matrix_Y, M, n = self._validate_input(
+            matrix_X, matrix_Y, self.max_lag
+        )
+
+        cross_corrs = self._compute_cross_corr(matrix_X, matrix_Y)
+
+        q_stat = 0
+        for i, j in enumerate(range(1, self.max_lag + 1)):
+            q_stat += cross_corrs[i] / (n - j)
+
+        q_stat *= n * (n + 2)
+
+        self.test_statistic_ = q_stat
+
     def p_value(self, matrix_X, matrix_Y):
-        """"
-        Test statistic for MGCX between two time series.
+        """
+        P-value for LjungBox between two time series.
 
         :param matrix_X: a [n*1] data matrix, a matrix with n samples in 1 dimensions
         :type matrix_X: 2D `numpy.array`
@@ -22,20 +45,9 @@ class LjungBoxX(TimeSeriesIndependenceTest):
         """
         self.test_statistic(matrix_X, matrix_Y)
 
+        self.p_value_ = chi2.sf(self.test_statistic_, self.max_lag)
+
         return self.p_value_
-
-    def test_statistic(self, matrix_X, matrix_Y):
-        matrix_X, matrix_Y, M, n = self._validate_input(
-            matrix_X, matrix_Y, self.max_lag
-        )
-
-        cross_corrs = self._compute_cross_corr(matrix_X, matrix_Y)
-        q_stat, p_value = self._compute_q_stat(cross_corrs, n)
-
-        self.test_statistic_ = q_stat
-        self.p_value_ = p_value
-
-        return self.test_statistic_
 
     def _validate_input(self, matrix_X, matrix_Y, M):
         """
@@ -95,24 +107,18 @@ class LjungBoxX(TimeSeriesIndependenceTest):
         :return cross_corr: array of normalized cross-correlations up to max lag
         :rtype cross_corr: 1D `numpy.array`
         """
-        n = X.shape[0]
+        X = X.ravel()
+        Y = Y.ravel()
 
-        X0 = X - X.mean()
-        Y0 = Y - Y.mean()
+        covs = np.cov(X, Y)
+        acvf_x = covs[0, 0]
+        acvf_y = covs[1, 1]
 
-        d = np.correlate(np.ones(n), np.ones(n), "full")
+        cross_corrs = []
+        for j in range(1, self.max_lag + 1):
+            covs = np.cov(X[j:], Y[:-j])
+            ccvf_j = covs[0, 1] / np.sqrt(acvf_x * acvf_y)
 
-        cross_cov = np.correlate(X0.ravel(), Y0.ravel(), "full") / d
-        cross_corr = cross_cov / (np.std(X) * np.std(Y))
+            cross_corrs.append(ccvf_j)
 
-        return cross_corr[: n - 1][::-1][: self.max_lag + 1]
-
-    def _compute_q_stat(self, corrs, n_obs):
-        q_stat = 0
-        for i, k in enumerate(range(1, len(corrs) + 1)):
-            q_stat += corrs[i] / (n_obs - k)
-        q_stat *= n_obs * (n_obs + 2)
-
-        p_value = chi2.sf(q_stat, self.max_lag)
-
-        return q_stat, p_value
+        return cross_corrs
