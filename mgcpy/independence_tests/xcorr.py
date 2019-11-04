@@ -27,7 +27,7 @@ class LjungBoxX(TimeSeriesIndependenceTest):
 
         q_stat = 0
         for i, j in enumerate(range(1, self.max_lag + 1)):
-            q_stat += cross_corrs[i] / (n - j)
+            q_stat += (cross_corrs[i] ** 2) / (n - j)
 
         q_stat *= n * (n + 2)
 
@@ -121,4 +121,30 @@ class LjungBoxX(TimeSeriesIndependenceTest):
 
             cross_corrs.append(ccvf_j)
 
-        return cross_corrs
+        return np.array(cross_corrs)
+
+
+class BoxPierceX(LjungBoxX):
+    def __init__(self, max_lag=1):
+        self.max_lag = max_lag
+        self.which_test = "BoxPierceX"
+
+    def test_statistic(self, matrix_X, matrix_Y):
+        """
+        Test statistic for BoxPierce between two time series.
+
+        :param matrix_X: a [n*1] data matrix, a matrix with n samples in 1 dimensions
+        :type matrix_X: 2D `numpy.array`
+
+        :param matrix_Y: a [n*1] data matrix, a matrix with n samples in 1 dimensions
+        :type matrix_Y: 2D `numpy.array`
+        """
+        matrix_X, matrix_Y, M, n = self._validate_input(
+            matrix_X, matrix_Y, self.max_lag
+        )
+
+        cross_corrs = self._compute_cross_corr(matrix_X, matrix_Y)
+
+        q_stat = np.sum(cross_corrs ** 2) * n
+
+        self.test_statistic_ = q_stat
