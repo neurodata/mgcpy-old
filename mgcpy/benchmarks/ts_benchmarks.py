@@ -174,17 +174,8 @@ class NonlinearDependence(TimeSeriesProcess):
     Parameter defaults are set to replicate results from paper.
     """
 
-    def __init__(self):
-        self.name = "Nonlinear Dependence"
-        self.filename = "nonlin_dependence"
-
-    def simulate(self, n, extinction_rate, radius=1, alpha=0.2):
+    def __init__(self, extinction_rate = 0.5, radius = 1, alpha = 0.2):
         """
-        Method to simulate observations of the process.
-
-        :param n: sample_size
-        :type n: integer
-
         :param extinction_rate: Rate of extinction \in [0, 1]
         :type extinction_rate: float
 
@@ -193,6 +184,19 @@ class NonlinearDependence(TimeSeriesProcess):
 
         :param alpha: autoregressive component (default: 0.2)
         :type alpha: float
+        """
+        self.name = "Nonlinear Dependence"
+        self.filename = "nonlin_dependence"
+        self.extinction_rate = extinction_rate
+        self.radius = radius
+        self.alpha = alpha
+
+    def simulate(self, n):
+        """
+        Method to simulate observations of the process.
+
+        :param n: sample_size
+        :type n: integer
 
         :return: returns a list of two items, that contains:
 
@@ -200,12 +204,12 @@ class NonlinearDependence(TimeSeriesProcess):
             - :Y: a ``[n*1]`` data matrix, a matrix with n samples
         :rtype: list
         """
-        if (extinction_rate < 0) or (extinction_rate > 1):
+        if (self.extinction_rate < 0) or (self.extinction_rate > 1):
             msg = "extinction_rate must be between 0 and 1, inclusive."
             raise ValueError(msg)
 
         # Innovations.
-        eta, epsilon = self._sample_innovations(extinction_rate, radius)
+        eta, epsilon = self._sample_innovations(self.extinction_rate, self.radius)
 
         X = np.zeros(n)
         Y = np.zeros(n)
@@ -213,9 +217,9 @@ class NonlinearDependence(TimeSeriesProcess):
         Y[0] = eta
 
         for t in range(1, n):
-            eta, epsilon = self._sample_innovations(extinction_rate, radius)
-            X[t] = alpha * X[t - 1] + epsilon
-            Y[t] = alpha * Y[t - 1] + eta
+            eta, epsilon = self._sample_innovations(self.extinction_rate, self.radius)
+            X[t] = self.alpha * X[t - 1] + epsilon
+            Y[t] = self.alpha * Y[t - 1] + eta
 
         return X, Y
 
@@ -289,14 +293,15 @@ class DynamicProcess(TimeSeriesProcess):
         C = 0.4
 
         epsilons = np.random.normal(0, 1, 2)
+        init = np.random.normal(0, 1, 2)
 
         X = np.zeros(n)
         Y = np.zeros(n)
 
         phi_1 = np.zeros(n)
         phi_2 = np.zeros(n)
-        phi_1[0] = 0.1 * epsilons[0] + 2 * np.pi * f_1 * T_s
-        phi_2[0] = 0.1 * epsilons[1] + 2 * np.pi * f_2 * T_s
+        phi_1[0] = init[0] + 0.1 * epsilons[0] + 2 * np.pi * f_1 * T_s
+        phi_2[0] = init[1] + 0.1 * epsilons[1] + 2 * np.pi * f_2 * T_s
 
         X[0] = np.cos(phi_1[0])
         Y[0] = (2 + C * np.sin(phi_1[0])) * np.cos(phi_2[0])
@@ -304,7 +309,7 @@ class DynamicProcess(TimeSeriesProcess):
         for t in range(1, n):
             epsilons = np.random.normal(0, 1, 2)
             phi_1[t] = phi_1[t - 1] + 0.1 * epsilons[0] + 2 * np.pi * f_1 * T_s
-            phi_2[t] = phi_2[t - 1] + 0.1 * epsilons[0] + 2 * np.pi * f_2 * T_s
+            phi_2[t] = phi_2[t - 1] + 0.1 * epsilons[1] + 2 * np.pi * f_2 * T_s
 
             X[t] = np.cos(phi_1[t])
             Y[t] = (2 + C * np.sin(phi_1[t])) * np.cos(phi_2[t])
