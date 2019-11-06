@@ -235,11 +235,13 @@ class EconometricProcess(TimeSeriesProcess):
     Proposed by Gretton et al. 2016
     """
 
-    def __init__(self):
+    def __init__(self, shift = 1, scale = 0.45):
         self.name = "Econometric Process"
         self.filename = "econometric_proc"
+        self.shift = shift
+        self.scale = scale
 
-    def simulate(self, n, add = 0.5, mult = 0.1):
+    def simulate(self, n):
         """
         Method to simulate observations of the process.
 
@@ -262,7 +264,7 @@ class EconometricProcess(TimeSeriesProcess):
 
         for t in range(1, n):
             epsilons = np.random.normal(0, 1, 2)
-            sigma = add + mult * (X[t - 1] ** 2 + Y[t - 1] ** 2)
+            sigma = self.shift + self.scale * (X[t - 1] ** 2 + Y[t - 1] ** 2)
             X[t] = epsilons[0] * sigma
             Y[t] = epsilons[1] * sigma
 
