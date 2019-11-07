@@ -92,33 +92,7 @@ class IndependenceTest(ABC):
         # calculte the test statistic with the given data
         test_statistic, independence_test_metadata = self.test_statistic(matrix_X, matrix_Y)
 
-        if self.get_name() == "unbiased":
-            '''
-            for the unbiased centering scheme used to compute unbiased dcorr test statistic
-            we can use a t-test to compute the p-value
-            notation follows from: SzÃ©kely, GÃ¡bor J., and Maria L. Rizzo.
-            "The distance correlation t-test of independence in high dimension."
-            Journal of Multivariate Analysis 117 (2013): 193-213.
-            '''
-            null_distribution = []
-            for _ in range(replication_factor):
-                # use random permutations on the second data set
-                premuted_matrix_Y = np.random.permutation(matrix_Y)
-
-                temp_mgc_statistic, temp_independence_test_metadata = self.test_statistic(
-                    matrix_X, premuted_matrix_Y)
-                null_distribution.append(temp_mgc_statistic)
-
-            T, df = self.unbiased_T(matrix_X=matrix_X, matrix_Y=matrix_Y)
-            # p-value is the probability of obtaining values more extreme than the test statistic
-            # under the null
-            if T < 0:
-                p_value = t.cdf(T, df=df)
-            else:
-                p_value = 1 - t.cdf(T, df=df)
-            p_value_metadata = {"test_statistic": test_statistic,
-                                "null_distribution": null_distribution}
-        elif self.get_name() == "mgc":
+        if self.get_name() == "mgc":
             local_correlation_matrix = independence_test_metadata["local_correlation_matrix"]
 
             p_local_correlation_matrix = np.zeros(local_correlation_matrix.shape)
