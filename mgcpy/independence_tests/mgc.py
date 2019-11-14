@@ -1,6 +1,7 @@
 """
     **Main MGC Independence Test Module**
 """
+import numpy as np
 from mgcpy.independence_tests.abstract_class import IndependenceTest
 from mgcpy.independence_tests.mgc_utils.local_correlation import \
     local_correlations
@@ -78,6 +79,9 @@ class MGC(IndependenceTest):
         >>> mgc = MGC()
         >>> mgc_statistic, test_statistic_metadata = mgc.test_statistic(X, Y)
         """
+        matrix_X = matrix_X.astype(np.float64)
+        matrix_Y = matrix_Y.astype(np.float64)
+
         assert matrix_X.shape[0] == matrix_Y.shape[0], "Matrices X and Y need to be of dimensions [n, p] and [n, q], respectively, where p can be equal to q"
 
         if is_fast:
