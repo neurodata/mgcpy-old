@@ -168,13 +168,13 @@ class Nonlinear(TimeSeriesProcess):
         return X, Y
 
 
-class NonlinearDependence(TimeSeriesProcess):
+class ExtinctGaussian(TimeSeriesProcess):
     """
     Nonlinear dependence setting proposed by Gretton et al 2014.
     Parameter defaults are set to replicate results from paper.
     """
 
-    def __init__(self, extinction_rate = 0.5, radius = 1, alpha = 0.2):
+    def __init__(self, extinction_rate=0.5, radius=1, alpha=0.2):
         """
         :param extinction_rate: Rate of extinction \in [0, 1]
         :type extinction_rate: float
@@ -185,8 +185,8 @@ class NonlinearDependence(TimeSeriesProcess):
         :param alpha: autoregressive component (default: 0.2)
         :type alpha: float
         """
-        self.name = "Nonlinear Dependence"
-        self.filename = "nonlin_dependence"
+        self.name = "Extinct Gaussian"
+        self.filename = "extinct_gaussian"
         self.extinction_rate = extinction_rate
         self.radius = radius
         self.alpha = alpha
@@ -239,7 +239,7 @@ class EconometricProcess(TimeSeriesProcess):
     Proposed by Gretton et al. 2016
     """
 
-    def __init__(self, shift = 1, scale = 0.45):
+    def __init__(self, shift=0.5, scale=0.1):
         self.name = "Econometric Process"
         self.filename = "econometric_proc"
         self.shift = shift
