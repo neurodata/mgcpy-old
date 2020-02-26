@@ -1,3 +1,5 @@
+### NOTE: MGCPY HAS RECENTLY BEEN MOVED TO HYPPO. IT CONTAINS THE MOST UP TO DATE IMPLEMENTATION, A MORE USER-FRIENDLY API, AND FASTER TESTS, AMONG OTHER THINGS. MGCPY WILL NO LONGER BE UPDATED. THE NEW REPO CAN BE FOUND HERE: https://github.com/neurodata/hyppo.
+
 The R version is available on CRAN and https://github.com/neurodata/r-mgc.
 The MATLAB version is available at https://github.com/neurodata/mgc-matlab.
 
